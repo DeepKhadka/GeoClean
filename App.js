@@ -11,6 +11,22 @@ import ForgotPass from './screens/forgotpass';
 import fire from "./database/firebase";
 import { LogBox } from "react-native";
 import _ from "lodash";
+import VolunteerManagement from './screens/volunteerManage';
+import CurrentEvent from './screens/currentEvent';
+import CurrentEventAdmin from './screens/currentEventAdmin';
+import EventManagement from './screens/eventManage';
+import EventReport from './screens/eventReport';
+import EventStatus from './screens/eventStatus';
+import AsssignVolunteer from './screens/assignVolunteer';
+import RemoveVolunteer from './screens/removeVolunteer';
+import ReportObject from './screens/reportObject';
+import ReportOther from './screens/reportOther';
+import StartEvent from './screens/startEvent';
+import ZoneDetail from './screens/zoneDetail';
+import ZoneManagement from './screens/zoneManage';
+import LastEvent from './screens/lastEvent';
+import JoinEvent from './screens/joinEvent';
+import ReassignVolunteers from './screens/reassignVolunteer';
 
 
 LogBox.ignoreLogs(["Setting a timer"]);
@@ -29,7 +45,21 @@ function adminhome() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="AdminHome" component={AdminHome} />
+        <Stack.Screen name="VolunteerManagement" component={VolunteerManagement} />
+        <Stack.Screen name="ZoneManagement" component={ZoneManagement} />
+        <Stack.Screen name="EventManagement" component={EventManagement} />
+        <Stack.Screen name="StartEvent" component={StartEvent} />
+        <Stack.Screen name="EventReport" component={EventReport} />
+        <Stack.Screen name="EventStatus" component={EventStatus} />
+        <Stack.Screen name="LastEvent" component={LastEvent} />
+        <Stack.Screen name="AssignVolunteer" component={AsssignVolunteer} />
+        <Stack.Screen name="RemoveVolunteer" component={RemoveVolunteer} />
+        <Stack.Screen name="ZoneDetail" component={ZoneDetail} />
+        <Stack.Screen name="CurrentEventAdmin" component={CurrentEventAdmin}/>
+        <Stack.Screen name="ReassignVolunteers" component={ReassignVolunteers}/>
 
+
+     
 
       </Stack.Navigator>
     </NavigationContainer>
@@ -41,6 +71,11 @@ function volunteerhome() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="VolunteerHome" component={VolunteerHome} />
+        <Stack.Screen name="JoinEvent" component={JoinEvent}/>
+        <Stack.Screen name="CurrentEvent" component={CurrentEvent}/>
+        <Stack.Screen name="ReportOther" component={ReportOther}/>
+        <Stack.Screen name="ReportObject" component={ReportObject}/>
+
       </Stack.Navigator>
     </NavigationContainer>
   )
