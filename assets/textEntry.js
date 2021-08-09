@@ -68,7 +68,7 @@ export default class TextEntry extends Component {
           style={{
             height: 30,
             fontSize: 15,
-            color: "white",
+            color: "black",
             
             borderBottomWidth: 2,
             paddingLeft: 5,
@@ -82,7 +82,7 @@ export default class TextEntry extends Component {
     ) : (
       <View
         style={{
-          backgroundColor: "#272727",
+        
           width: "80%",
           borderTopEndRadius: 5,
           borderTopStartRadius: 5,
@@ -95,7 +95,7 @@ export default class TextEntry extends Component {
           style={{
             height: 150,
             fontSize: 15,
-            color: "white",
+            color: "black",
             borderBottomWidth: 2,
             borderBottomColor:
               isFocused || this.props.test !== "" ? "#BB86FC" : "gray",
@@ -103,6 +103,7 @@ export default class TextEntry extends Component {
           }}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}
+          
           
         ></TextInput>
       </View>
