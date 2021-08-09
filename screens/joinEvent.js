@@ -83,7 +83,11 @@ export default class JoinEvent extends Component {
                         .collection("VOLUNTEERS")
                         .doc(fire.auth().currentUser.uid.toString())
                         .set({
-                            volunteerID: fire.auth().currentUser.uid.toString()
+                            volunteerID: fire.auth().currentUser.uid.toString(),
+                            status:"active",
+                            leader:false,
+                            zoneNumber:0
+
                         })
                         .then(() => {
                             Alert.alert("Event Joined Successfully!")
