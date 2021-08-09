@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, StyleSheet, SafeAreaView, TouchableOpacity, Text, Button, Alert } from "react-native";
+import { View, FlatList, ListItem,StyleSheet, SafeAreaView, TouchableOpacity, Text, Button, Alert } from "react-native";
 import fire from "../database/firebase";
 
 export default class JoinEvent extends Component {
@@ -127,11 +127,30 @@ export default class JoinEvent extends Component {
                 <View>
 
 
-                    <TouchableOpacity style={styles.card} onPress={this.joinEvent } >
+                <FlatList
+        data={this.state.data}
+        renderItem={({ item }) => (
+         <TouchableOpacity style={styles.card}onPress={this.joinEvent}>
+             <View style={{padding:"5%"}}>
+                 <Text style={styles.headerText} > 
+               {item.eventName}
+                 </Text>
+                 
+                 <Text style={styles.text}>
+                      Time :{ item.eventTime}
+                 </Text>
+                 <Text style={styles.text}>
+                     Date :{ item.eventDate}
+                 </Text>
+                 <Text style={styles.text}> 
+                Description:  {item.eventDescription}
+                 </Text>
+             </View>
+         </TouchableOpacity>
+        )}
 
-                        <Text style={{ fontSize: 30, padding: "5%" }}>Rush Creek Park</Text>
-
-                    </TouchableOpacity>
+      />
+   
 
 
 
@@ -170,15 +189,23 @@ const styles = StyleSheet.create({
         alignItems: "center",
         borderRadius: 20,
 
+
     },
     text: {
-        padding: "10%",
-        fontSize: 20,
-        fontWeight: 'bold'
+       
+        fontSize: 15,
+        fontWeight: 'bold',
+        marginTop:"2%"
 
 
     },
+    headerText: {
+       
+        fontSize: 20,
+        fontWeight: 'bold',
+       
 
+    },
 
 
 
