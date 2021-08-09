@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, StyleSheet, SafeAreaView, TouchableOpacity, Text, Button } from "react-native";
+import { View, StyleSheet, SafeAreaView, TouchableOpacity, Text, Button, Alert } from "react-native";
 import fire from "../database/firebase";
 
 export default class JoinEvent extends Component {
@@ -7,14 +7,13 @@ export default class JoinEvent extends Component {
     state = {
         data: null,
         loading: true,
+        eventID: ""
     }
 
 
     getCurrentEvent = () => {
 
         var eventID;
-
-
 
         fire.firestore()
             .collection("ADMIN")
@@ -29,11 +28,13 @@ export default class JoinEvent extends Component {
                     sub.forEach((doc) => {
                         const x = doc.data();
                         x.id = doc.id.toString();
+                        eventID = doc.id.toString();
                         data.push(x);
 
                     });
                     this.setState({
-                        data: data
+                        data: data,
+                        eventID: eventID
                     })
 
                 }
@@ -44,6 +45,7 @@ export default class JoinEvent extends Component {
                 console.log(this.state.data)
                 this.setState({
                     loading: false
+
                 })
 
 
@@ -57,6 +59,50 @@ export default class JoinEvent extends Component {
     }
 
     joinEvent = () => {
+
+        fire
+            .firestore()
+            .collection("ADMIN")
+            .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+            .collection("EVENT MANAGEMENT")
+            .doc(this.state.eventID)
+            .collection("VOLUNTEERS")
+            .where("volunteerID", "==", fire.auth().currentUser.uid.toString())
+            .get()
+            .then((sub) => {
+                if (sub.docs.length > 0) {
+                    return Alert.alert("Already a volunteer!")
+                }
+                else {
+                    fire
+                        .firestore()
+                        .collection("ADMIN")
+                        .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+                        .collection("EVENT MANAGEMENT")
+                        .doc(this.state.eventID)
+                        .collection("VOLUNTEERS")
+                        .doc(fire.auth().currentUser.uid.toString())
+                        .set({
+                            volunteerID: fire.auth().currentUser.uid.toString()
+                        })
+                        .then(() => {
+                            Alert.alert("Event Joined Successfully!")
+                        })
+                        .catch((err) => {
+                            console.log(err.toString())
+                        })
+
+
+                }
+
+
+            })
+            .catch((err) => {
+                console.log(err.toString())
+            })
+
+
+
 
     }
 
@@ -77,11 +123,13 @@ export default class JoinEvent extends Component {
                 <View>
 
 
-                    <TouchableOpacity style={styles.card} onPress={() => { navigation.navigate("CurrentEvent"); }} >
+                    <TouchableOpacity style={styles.card} onPress={this.joinEvent } >
 
-                        <Text>Rush Creek Park</Text>
+                        <Text style={{ fontSize: 30, padding: "5%" }}>Rush Creek Park</Text>
 
                     </TouchableOpacity>
+
+
 
 
                 </View>
