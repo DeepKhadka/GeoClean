@@ -23,6 +23,7 @@ fire.auth().signOut();
                             <Text style={styles.text}>Current Event</Text>
                             
                         </TouchableOpacity>
+                        <Button onPress={this.handlesignout()}><Text>Logout</Text></Button>
                       
                 </View>
             </SafeAreaView>
