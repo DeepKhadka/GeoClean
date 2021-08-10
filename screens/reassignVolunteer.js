@@ -19,6 +19,9 @@ import {
   NativeBaseProvider,
   Select,
 } from "native-base";
+import { Icon } from 'react-native-elements';
+
+
 
 export default class ReassignVolunteers extends Component {
   state = {
@@ -30,6 +33,7 @@ export default class ReassignVolunteers extends Component {
     statusLabel: "Active",
 
   };
+  
 
   removeVolunteer = () => {
 
@@ -118,7 +122,29 @@ export default class ReassignVolunteers extends Component {
 
 
 
+iconPress=()=>{
 
+  Alert.alert(
+    "Are you sure?",
+    "Are you sure you want do delete ?",
+    [
+      {
+        text: "Yes",
+        onPress: () => {
+         // console.log("Ask me later pressed")
+
+        this.removeVolunteer();
+        }
+      },
+      {
+        text: "No",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "cancel"
+      }
+    
+    ]
+  );
+}
 
   handlesignout = () => {
     fire.auth().signOut();
@@ -155,13 +181,15 @@ export default class ReassignVolunteers extends Component {
 
 
     return (
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={styles.safeview}>
         <View style={styles.mainView}>
-          <TouchableOpacity style={styles.card}>
+          <View style={styles.card}>
+            <View style={{alignItems:'center'}}>
             <Text style={styles.headerText}>{fname}</Text>
             <Text style={styles.headerText}>{lname}</Text>
             <Text style={styles.text}>{email}</Text>
-            <View style={{ flexDirection: "row", marginTop: "10%" }}>
+            </View>
+            <View style={{ flexDirection: "row",justifyContent:'space-between', marginTop: "5%" ,marginLeft:"2%"}}>
               <Text style={styles.headerText}>Leader</Text>
               <Switch
                 trackColor={{ false: "gray", true: "green" }}
@@ -170,13 +198,13 @@ export default class ReassignVolunteers extends Component {
                 value={this.state.leader}
               />
             </View>
-            <View style={{ flexDirection: "row", marginTop: "5%" }}>
+            <View style={styles.rowView}>
               <NativeBaseProvider>
                 <Select
                   placeholder={this.state.zoneplaceHolder}
                   placeholderTextColor="black"
                   width={150}
-                  margin="5%"
+                  
                   onValueChange={(itemValue) => this.onPickerSelect(itemValue)}
                 >
                   <Select.Item label="Zone 1" value={1} />
@@ -189,18 +217,25 @@ export default class ReassignVolunteers extends Component {
               </NativeBaseProvider>
 
             </View>
-            <View>
-              <Text style={styles.headerText}>Status</Text>
+            <View style={styles.rowView}>
+           <View style={styles.rowView}>
+           <Text style={styles.headerText}>Status</Text>
               <Switch
                 placeholder="Status"
+                marginLeft="5%"
                 trackColor={{ false: "gray", true: "green" }}
                 thumbColor={this.state.status ? "white" : "white"}
                 onValueChange={this.statusSwitch.bind(this)}
                 value={this.state.status}
               />
+           </View>
+       
+           <Icon name="delete" onPress={this.iconPress}size={50}></Icon>
+       
+              
             </View>
 
-          </TouchableOpacity>
+          </View>
           <Button title="Update" onPress={this.checkLeaderStatus}></Button>
         </View>
       </SafeAreaView>
@@ -212,6 +247,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#a09fdf",
     height: "100%",
     width: "100%",
+    flex:1,
   },
   mainView: {
     height: "100%",
@@ -223,7 +259,7 @@ const styles = StyleSheet.create({
     margin: "5%",
     backgroundColor: "#D9ACEA",
     justifyContent: "center",
-    alignItems: "center",
+  
     borderRadius: 20,
   },
   text: {
@@ -234,5 +270,15 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 20,
     fontWeight: "bold",
+    alignContent:"center"
   },
+  rowView:{
+      flexDirection:"row",
+      marginVertical:"5 %",
+      justifyContent:'space-between',
+      marginLeft:"2%"
+  
+
+
+  }
 });

@@ -191,49 +191,23 @@ export default class AssignVolunteer extends Component {
                   backgroundColor: "lightblue",
                   justifyContent: "space-between",
                   borderRadius: 10,
+                  
                 }}
               >
-                <View>
-                  <Text>{item.fName}</Text>
+                <View style={{flexDirection:'row'}}>
+                  <Text style={styles.headerText}>{item.fName} {item.lName}</Text>
+              
+
                 </View>
-                <View>
-                  <Text>{item.email}</Text>
-                </View>
+                
                 <View
                   style={{
                     flexDirection: "row",
                     justifyContent: "space-between",
                   }}
                 >
-                  <View>
-                    <NativeBaseProvider>
-                      <Select
-                        placeholder="Zone"
-                        placeholderTextColor="black"
-                        width={150}
-                        onValueChange={(itemValue) =>
-                          this.onPickerSelect(itemValue, item.id)
-                        }
-                      >
-                        <Select.Item label="Zone 1" value={1} />
-                        <Select.Item label="Zone 2" value={2} />
-                        <Select.Item label="Zone 3" value={3} />
-                        <Select.Item label="Zone 4" value={4} />
-                        <Select.Item label="Zone 5" value={5} />
-                        <Select.Item label="Zone 6" value={6} />
-                      </Select>
-                    </NativeBaseProvider>
-                  </View>
-
-                  <View>
-                    <Switch
-                      trackColor={{ false: "#767577", true: "#81b0ff" }}
-                      thumbColor={this.state.status ? "#f5dd4b" : "#f4f3f4"}
-                      ios_backgroundColor="#3e3e3e"
-                      onValueChange={this.toggleSwitch.bind(this)}
-                      value={this.state.status}
-                    />
-                  </View>
+                 
+               
                 </View>
               </TouchableOpacity>
             )}
@@ -254,4 +228,45 @@ export default class AssignVolunteer extends Component {
   }
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  safeview: {
+    backgroundColor: "#a09fdf",
+    height: "100%",
+    width: "100%",
+    flex:1,
+  },
+  mainView: {
+    height: "100%",
+    width: "100%",
+
+    flex: 1,
+  },
+  card: {
+    margin: "5%",
+    backgroundColor: "#D9ACEA",
+    justifyContent: "center",
+  
+    borderRadius: 20,
+  },
+  text: {
+    fontSize: 15,
+    fontWeight: "bold",
+    marginTop: "2%",
+
+  },
+  headerText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    alignContent:"center",
+    padding:"5%"
+  },
+  rowView:{
+      flexDirection:"row",
+      marginVertical:"5 %",
+      justifyContent:'space-between',
+      marginLeft:"2%"
+  
+
+
+  }
+});
