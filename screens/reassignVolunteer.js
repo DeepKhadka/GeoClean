@@ -8,6 +8,7 @@ import {
   Text,
   Button,
   Switch,
+  Alert,
 } from "react-native";
 import fire from "../database/firebase";
 import {
@@ -26,14 +27,98 @@ export default class ReassignVolunteers extends Component {
     zoneplaceHolder: "Select Zone",
     leader: false,
     status: true,
-    statusLabel:"Active"
+    statusLabel: "Active",
+
   };
 
-  onPressUpdate = (val) => {
-    //handle updating data base shit
+  removeVolunteer = () => {
 
-    console.log(val);
-  };
+    fire
+      .firestore()
+      .collection("ADMIN")
+      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+      .collection("EVENT MANAGEMENT")
+      .doc(this.props.route.params.currentEventID.toString())
+      .collection("VOLUNTEERS")
+      .doc(this.props.route.params.itemId.toString())
+      .delete()
+      .then(() => {
+        Alert.alert("Volunteer removed!");
+        this.navigation.goBack();
+      })
+      .catch((err) => {
+        console.log(err.toString())
+      })
+
+  }
+
+  checkLeaderStatus = () => {
+
+    if (this.state.Zone == "") {
+      Alert.alert("Please asign a Zone to the Volunteer!");
+
+    } else if (this.state.status == false && this.state.leader == true) {
+
+      Alert.alert("A leader cannot be inactive!")
+
+    }
+    else if (this.state.leader == true) {
+
+      fire
+        .firestore()
+        .collection("ADMIN")
+        .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+        .collection("EVENT MANAGEMENT")
+        .doc(this.props.route.params.currentEventID.toString())
+        .collection("VOLUNTEERS")
+        .where("leader", "==", true)
+        .get()
+        .then((sub) => {
+          if (sub.docs.length > 0) {
+            Alert.alert("Leader already assigned!");
+          } else {
+            this.onPressUpdate()
+          }
+        })
+        .catch((err) => {
+          console.log(err.toString())
+        })
+
+
+    } else {
+      this.onPressUpdate()
+    }
+  }
+
+  onPressUpdate = () => {
+    fire
+      .firestore()
+      .collection("ADMIN")
+      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+      .collection("EVENT MANAGEMENT")
+      .doc(this.props.route.params.currentEventID.toString())
+      .collection("VOLUNTEERS")
+      .doc(this.props.route.params.itemId.toString())
+      .update({
+        leader: this.state.leader,
+        status: this.state.status,
+        zoneNumber: this.state.Zone
+      })
+      .then(() => {
+        Alert.alert("Assignment completed!")
+      })
+      .catch((err) => {
+        console.log(err.toString())
+      })
+
+  }
+
+
+
+
+
+
+
 
   handlesignout = () => {
     fire.auth().signOut();
@@ -42,17 +127,17 @@ export default class ReassignVolunteers extends Component {
   toggleSwitch() {
     this.setState({
       leader: !this.state.leader,
-     
+
     });
   }
 
-  statusSwitch=()=>{
-     this.setState({
-         status: !this.state.status,
-     })
+  statusSwitch = () => {
+    this.setState({
+      status: !this.state.status,
+    })
 
   }
- 
+
 
   onPickerSelect = (value) => {
     this.setState({
@@ -68,6 +153,7 @@ export default class ReassignVolunteers extends Component {
     const lname = this.props.route.params.lname;
     const email = this.props.route.params.email;
 
+
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.mainView}>
@@ -78,8 +164,8 @@ export default class ReassignVolunteers extends Component {
             <View style={{ flexDirection: "row", marginTop: "10%" }}>
               <Text style={styles.headerText}>Leader</Text>
               <Switch
-                trackColor={{ false: "yellow", true: "green" }}
-                thumbColor={this.state.leader ? "white" : "red"}
+                trackColor={{ false: "gray", true: "green" }}
+                thumbColor={this.state.leader ? "white" : "white"}
                 onValueChange={this.toggleSwitch.bind(this)}
                 value={this.state.leader}
               />
@@ -104,18 +190,18 @@ export default class ReassignVolunteers extends Component {
 
             </View>
             <View>
-                <Text style={styles.headerText}>Status</Text>
-            <Switch
+              <Text style={styles.headerText}>Status</Text>
+              <Switch
                 placeholder="Status"
-                trackColor={{ false: "red", true: "green" }}
-                thumbColor={this.state.status ? "white" : "black"}
+                trackColor={{ false: "gray", true: "green" }}
+                thumbColor={this.state.status ? "white" : "white"}
                 onValueChange={this.statusSwitch.bind(this)}
                 value={this.state.status}
               />
             </View>
-           
+
           </TouchableOpacity>
-          <Button title="Update" onPress={this.onPressUpdate}></Button>
+          <Button title="Update" onPress={this.checkLeaderStatus}></Button>
         </View>
       </SafeAreaView>
     );

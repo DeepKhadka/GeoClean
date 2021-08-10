@@ -184,7 +184,7 @@ export default class AssignVolunteer extends Component {
             renderItem={({ item }) => (
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate("ReassignVolunteers",{itemId: item.id, fname:item.fName, lname:item.lName, email:item.email});
+                  navigation.navigate("ReassignVolunteers",{itemId: item.id, fname:item.fName, lname:item.lName, email:item.email,currentEventID:this.state.eventID});
                 }}
                 style={{
                   margin: "4%",
