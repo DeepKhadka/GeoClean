@@ -47,7 +47,7 @@ export default class ReassignVolunteers extends Component {
       .doc(this.props.route.params.itemId.toString())
       .delete()
       .then(() => {
-        Alert.alert("Volunteer removed!");
+        Alert.alert("Volunteer removed!");w
         this.navigation.goBack();
       })
       .catch((err) => {
