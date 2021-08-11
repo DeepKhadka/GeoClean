@@ -70,6 +70,9 @@ export default class AssignVolunteer extends Component {
 
   getCurrentEvent = () => {
     var eventID;
+    this.setState({
+      eventID:""
+    })
 
     fire
       .firestore()
@@ -78,8 +81,12 @@ export default class AssignVolunteer extends Component {
       .collection("EVENT MANAGEMENT")
       .where("eventStatus", "==", "current")
       .get()
-      .then((sub) => {
+      .then(async (sub) => {
+
+
         if (sub.docs.length > 0) {
+
+        
           const data = [];
           sub.forEach((doc) => {
             eventID = doc.id.toString();
@@ -87,17 +94,60 @@ export default class AssignVolunteer extends Component {
           this.setState({
             eventID: eventID,
           });
+        } else {
+
+          await fire
+            .firestore()
+            .collection("ADMIN")
+            .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+            .collection("EVENT MANAGEMENT")
+            .where("eventStatus", "==", "paused")
+            .get()
+            .then((subdoc) => {
+
+              if (subdoc.docs.length > 0) {
+                console.log("else bhitra")
+                const data_1 = []
+                subdoc.forEach((doc_1) => {
+                  eventID = doc_1.id.toString();
+                });
+                this.setState({
+                  eventID: eventID
+                })
+              }
+              
+            })
+            .catch((err) => {
+              console.log(err.toString() + " error")
+            });
+
+
+
         }
       })
       .then(() => {
-        this.getVolunteersInfo();
+        if(this.state.eventID==""){
+          this.setState({
+            data:[],
+            refreshing:false
+          })
+
+        }else{
+          this.getVolunteersInfo();
+        }
+      
+
       })
       .catch((err) => {
         console.log(err.toString());
       });
   };
 
+
   async getVolunteersInfo() {
+
+    
+
     var data = [];
 
     return await fire
@@ -136,6 +186,7 @@ export default class AssignVolunteer extends Component {
           return Promise.all(results);
         },
         function (val) {
+          d
           // The Promise was rejected.
           console.log(val);
         }
@@ -152,7 +203,13 @@ export default class AssignVolunteer extends Component {
       .catch(function (error) {
         console.log("Error getting documents: ", error);
       });
-  }
+
+    }
+
+
+  
+
+  
 
   emptyComponent = () => {
     return (
@@ -184,30 +241,30 @@ export default class AssignVolunteer extends Component {
             renderItem={({ item }) => (
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate("ReassignVolunteers",{itemId: item.id, fname:item.fName, lname:item.lName, email:item.email,currentEventID:this.state.eventID});
+                  navigation.navigate("ReassignVolunteers", { itemId: item.id, fname: item.fName, lname: item.lName, email: item.email, currentEventID: this.state.eventID });
                 }}
                 style={{
                   margin: "4%",
                   backgroundColor: "lightblue",
                   justifyContent: "space-between",
                   borderRadius: 10,
-                  
+
                 }}
               >
-                <View style={{flexDirection:'row'}}>
+                <View style={{ flexDirection: 'row' }}>
                   <Text style={styles.headerText}>{item.fName} {item.lName}</Text>
-              
+
 
                 </View>
-                
+
                 <View
                   style={{
                     flexDirection: "row",
                     justifyContent: "space-between",
                   }}
                 >
-                 
-               
+
+
                 </View>
               </TouchableOpacity>
             )}
@@ -233,7 +290,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#a09fdf",
     height: "100%",
     width: "100%",
-    flex:1,
+    flex: 1,
   },
   mainView: {
     height: "100%",
@@ -245,7 +302,7 @@ const styles = StyleSheet.create({
     margin: "5%",
     backgroundColor: "#D9ACEA",
     justifyContent: "center",
-  
+
     borderRadius: 20,
   },
   text: {
@@ -257,15 +314,15 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 20,
     fontWeight: "bold",
-    alignContent:"center",
-    padding:"5%"
+    alignContent: "center",
+    padding: "5%"
   },
-  rowView:{
-      flexDirection:"row",
-      marginVertical:"5 %",
-      justifyContent:'space-between',
-      marginLeft:"2%"
-  
+  rowView: {
+    flexDirection: "row",
+    marginVertical: "5 %",
+    justifyContent: 'space-between',
+    marginLeft: "2%"
+
 
 
   }

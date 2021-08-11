@@ -47,8 +47,8 @@ export default class ReassignVolunteers extends Component {
       .doc(this.props.route.params.itemId.toString())
       .delete()
       .then(() => {
-        Alert.alert("Volunteer removed!");w
-        this.navigation.goBack();
+        Alert.alert("Volunteer removed!");
+        this.props.navigation.goBack();
       })
       .catch((err) => {
         console.log(err.toString())
@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
   },
   card: {
     margin: "5%",
-    backgroundColor: "#D9ACEA",
+    backgroundColor: "lightblue",
     justifyContent: "center",
   
     borderRadius: 20,

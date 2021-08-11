@@ -1,11 +1,12 @@
 import React, { Component } from "react";
-import { View, StyleSheet, SafeAreaView, TouchableOpacity, Text, Button } from "react-native";
+import { View, StyleSheet, SafeAreaView, TouchableOpacity, Text, Button, Alert } from "react-native";
 import fire from "../database/firebase";
 
 export default class VolunteerManagement extends Component {
 
     state = {
-        eventID: ""
+        eventID: "",
+        data: null
     }
 
 
@@ -19,8 +20,12 @@ export default class VolunteerManagement extends Component {
             .collection("EVENT MANAGEMENT")
             .where("eventStatus", "==", "current")
             .get()
-            .then((sub) => {
+            .then(async (sub) => {
+
+               
                 if (sub.docs.length > 0) {
+                    
+                
                     const data = [];
                     sub.forEach((doc) => {
                         eventID = doc.id.toString();
@@ -28,10 +33,39 @@ export default class VolunteerManagement extends Component {
                     this.setState({
                         eventID: eventID,
                     });
+                } else {
+                    
+          await  fire
+                        .firestore()
+                        .collection("ADMIN")
+                        .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+                        .collection("EVENT MANAGEMENT")
+                        .where("eventStatus", "==", "paused")
+                        .get()
+                        .then((subdoc) => {
+
+                            if (subdoc.docs.length > 0) {
+                                console.log("else bhitra")
+                                const data_1 = []
+                                subdoc.forEach((doc_1) => {
+                                    eventID = doc_1.id.toString();
+                                });
+                                this.setState({
+                                    eventID: eventID
+                                })
+                            }
+                        })
+                        .catch((err)=>{
+                            console.log(err.toString()+" error")
+                        });
+
+
+
                 }
             })
             .then(() => {
-                console.log(this.state.eventID)
+                console.log("here1 - " + this.state.eventID)
+
             })
             .catch((err) => {
                 console.log(err.toString());
@@ -40,52 +74,64 @@ export default class VolunteerManagement extends Component {
 
 
 
-    async releaseAllVolunteers() {
-        var data = [];
+    releaseAllVolunteers = async () => {
 
-        return await fire
+        if(this.state.eventID==""){
+            Alert.alert("No event in progress!")
+
+        }else{
+            await fire
             .firestore()
             .collection("ADMIN")
             .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
             .collection("EVENT MANAGEMENT")
-            .doc(this.state.eventID)
+            .doc(this.state.eventID.toString())
             .collection("VOLUNTEERS")
             .get()
             .then(
-                function (querySnapshot) {
-                    var results = [];
 
-                    querySnapshot.forEach(function (doc) {
-                        var docRef = fire
-                            .firestore()
-                            .collection("ADMIN")
-                            .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-                            .collection("EVENT MANAGEMENT")
-                            .doc(this.state.eventID)
-                            .collection("VOLUNTEERS")
-                            .doc(doc.id)
-                            .update({
-                                leader: false,
-                                satus: false
-                            })
-                            .then(
-                                console.log("Updated!")
-                            );
-                        // push promise from get into results
-                        results.push(docRef);
-                    });
-                    // dbPromise.then() resolves to  a single promise that resolves
-                    // once all results have resolved
-                    return Promise.all(results);
-                },
-                function (val) {
-                    // The Promise was rejected.
-                    console.log(val);
+                (sub) => {
+                    if (sub.docs.length > 0) {
+                        var results = []
+                        sub.forEach((doc) => {
+                            var docRef = fire
+                                .firestore()
+                                .collection("ADMIN")
+                                .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+                                .collection("EVENT MANAGEMENT")
+                                .doc(this.state.eventID.toString())
+                                .collection("VOLUNTEERS")
+                                .doc(doc.id)
+                                .update({
+                                    leader: false,
+                                    status: false
+                                })
+                                .then(
+                                    console.log("Updated - " + doc.id.toString())
+                                );
+                            results.push(docRef);
+
+
+                        })
+                        return Promise.all(results);
+
+
+
+                    }
                 }
             )
+            .then(() => {
+                console.log("Yeta - " + this.state.data)
+                Alert.alert("All Volunteers released!")
+            })
             .catch(function (error) {
                 console.log("Error getting documents: ", error);
             });
+
+        }
+
+
+       
     }
 
 

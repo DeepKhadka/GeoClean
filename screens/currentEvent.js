@@ -3,10 +3,7 @@ import { View,StyleSheet, SafeAreaView, TouchableOpacity,Text,Button } from "rea
 import fire from "../database/firebase";
 
 export default class CurrentEvent extends Component {
-    
-    handlesignout = ()=>{
-        fire.auth().signOut();
-            }
+
         
             render() {
                 const { navigation } = this.props;

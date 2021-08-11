@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, SafeAreaView, TouchableOpacity, Text, Button, Alert } from "react-native";
+import { View, SafeAreaView, StyleSheet, TouchableOpacity, Text, Button, Alert } from "react-native";
 import fire from "../database/firebase";
 import FloatingTextBox from "../assets/textEntry";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -16,10 +16,10 @@ function formatDate(date) {
 
     return (MM + "-" + DD + "-" + YYYY)
 }
-function formateTime(date){
-    var HH= date.getHours();
-    var MM= date.getMinutes();
-    return(HH+":"+MM)
+function formateTime(date) {
+    var HH = date.getHours();
+    var MM = date.getMinutes();
+    return (HH + ":" + MM)
 }
 
 
@@ -33,26 +33,26 @@ export default class StartEvent extends Component {
         volunteers: "",
         eventTime: "",
         eventDescription: "",
-        visibility:false,
+        visibility: false,
 
 
 
     }
-  showDatePicker = () => {
-        this.setState({visibility: true})
-      }
-    
-     hideDatePicker = () => {
-       this.setState({visibility:false})
-      }
-    
-     handleConfirm = (datetime) => {
-        this.setState({eventDate:datetime.toString()})
-        this.setState({eventTime:formateTime(datetime)})
-       this. hideDatePicker();
-       console.log(this.state.eventDate)
-       console.log(this.state.eventTime)
-      }
+    showDatePicker = () => {
+        this.setState({ visibility: true })
+    }
+
+    hideDatePicker = () => {
+        this.setState({ visibility: false })
+    }
+
+    handleConfirm = (datetime) => {
+        this.setState({ eventDate: datetime.toString() })
+        this.setState({ eventTime: formateTime(datetime) })
+        this.hideDatePicker();
+        console.log(this.state.eventDate)
+        console.log(this.state.eventTime)
+    }
 
 
 
@@ -88,15 +88,27 @@ export default class StartEvent extends Component {
 
     checkCurrentEvent = () => {
 
-        if (this.state.eventName == "" || this.state.eventDate == "" || this.state.eventAddress == "" || this.state.volunteers == "" || this.state.eventTime== "" || this.state.eventDate=="" || this.state.eventDescription==""|| this.state.volunteers==0) {
+        if (this.state.eventName == "" || this.state.eventDate == "" || this.state.eventAddress == "" || this.state.volunteers == "" || this.state.eventTime == "" || this.state.eventDate == "" || this.state.eventDescription == "" || this.state.volunteers == 0) {
             Alert.alert("Please fill all the fields!")
         } else {
 
-            fire.firestore().collection("ADMIN").doc(fire.auth().currentUser.uid.toString()).collection("EVENT MANAGEMENT").where("eventStatus", "==", "current")
+            fire.firestore().collection("ADMIN").doc(fire.auth().currentUser.uid.toString())
+                .collection("EVENT MANAGEMENT").where("eventStatus", "==", "current")
                 .get()
                 .then((snapshot) => {
                     if (snapshot.empty) {
-                        return this.startevent();
+                        fire.firestore().collection("ADMIN").doc(fire.auth().currentUser.uid.toString())
+                            .collection("EVENT MANAGEMENT").where("eventStatus", "==", "paused")
+                            .get().then((snap) => {
+                                if (snap.empty) {
+                                    return this.startevent();
+                                }
+                                else {
+                                    Alert.alert("Ongoing Event!")
+                                }
+
+                            })
+
 
                     }
                     else {
@@ -106,10 +118,7 @@ export default class StartEvent extends Component {
                 .catch((err) => {
                     console.log(err.toString())
                     //Alert.alert(err.toString())
-
                 })
-
-
         }
 
     }
@@ -119,9 +128,9 @@ export default class StartEvent extends Component {
     render() {
         const { navigation } = this.props;
         return (
-            <SafeAreaView style={{ flex: 1 }}>
-                <View style={{ alignItems: "center", justifyContent:"space-between" }}>
-                 
+            <SafeAreaView style={styles.safeview}>
+                <View style={{ alignItems: "center", justifyContent: "space-between" }}>
+
                     <FloatingTextBox
                         label="Event Name"
                         autoCapitalize="none"
@@ -132,17 +141,17 @@ export default class StartEvent extends Component {
                         }}
                         test={this.state.eventName}
                     ></FloatingTextBox>
-            
-      <DateTimePickerModal
-        isVisible={this.state.visibility}
-        mode="datetime"
-        onConfirm={this.handleConfirm}
-        onCancel={this.hideDatePicker}
-        minimumDate={new Date()}
-        
-      />
 
-                    
+                    <DateTimePickerModal
+                        isVisible={this.state.visibility}
+                        mode="datetime"
+                        onConfirm={this.handleConfirm}
+                        onCancel={this.hideDatePicker}
+                        minimumDate={new Date()}
+
+                    />
+
+
                     <FloatingTextBox
                         label="Event Address"
                         autoCapitalize="none"
@@ -167,16 +176,16 @@ export default class StartEvent extends Component {
                         label="Description"
                         autoCapitalize="none"
                         placeholderTextColor="gray"
-                      
+
                         onChangeText={(val) => {
                             this.setState({ eventDescription: val });
                         }}
                         test={this.state.eventDescription}
                     ></FloatingTextBox>
-                   
-                      <TouchableOpacity onPress={this.showDatePicker} style={{width:"30%",marginTop:"10%",backgroundColor:"lightblue",borderRadius:10,padding:"2%"}}><Text>Date and Time</Text></TouchableOpacity>
-                       {this.state.eventDate != "" ? <Text style={{marginTop:"10%", fontWeight:"bold"}}>{this.state.eventDate}</Text> : null}             
-                    <TouchableOpacity style={{ backgroundColor: "red", marginTop: "20%", height: "10%", width: "80%", alignItems: "center" }}
+
+                    <TouchableOpacity onPress={this.showDatePicker} style={{ width: "30%", marginTop: "10%", backgroundColor: "lightblue", borderRadius: 10, padding: "2%" }}><Text>Date and Time</Text></TouchableOpacity>
+                    {this.state.eventDate != "" ? <Text style={{ marginTop: "10%", fontWeight: "bold" }}>{this.state.eventDate}</Text> : null}
+                    <TouchableOpacity style={styles.button}
                         onPress={this.checkCurrentEvent}
                     >
                         <Text style={{ padding: 10, fontSize: 20, fontWeight: "bold" }}>Finish</Text>
@@ -193,3 +202,21 @@ export default class StartEvent extends Component {
 
     }
 }
+const styles = StyleSheet.create({
+    safeview: {
+        backgroundColor: "lightblue",
+        height: "100%",
+        width: "100%",
+        flex: 1,
+    },
+    button: {
+        backgroundColor: "lightyellow",
+        marginTop: "20%",
+        height: "10%",
+        width: "40%",
+        alignItems: "center",
+        borderRadius: 10,
+
+
+    }
+});

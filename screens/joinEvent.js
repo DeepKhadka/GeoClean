@@ -1,15 +1,34 @@
 import React, { Component } from "react";
-import { View, FlatList, ListItem,StyleSheet, SafeAreaView, TouchableOpacity, Text, Button, Alert } from "react-native";
+import { View, FlatList, ListItem, StyleSheet, SafeAreaView, TouchableOpacity, Text, Button, Alert } from "react-native";
 import fire from "../database/firebase";
+import {
+    Spinner,
+    HStack,
+    useColorModeValue,
+    Center,
+    NativeBaseProvider,
+    Select,
+} from "native-base";
 
 export default class JoinEvent extends Component {
 
     state = {
         data: null,
         loading: true,
+        refreshing: false,
         eventID: ""
     }
 
+    handleRefresh = () => {
+        this.setState(
+          {
+            refreshing: true,
+          },
+          () => {
+            this.componentDidMount();
+          }
+        );
+      };
 
     getCurrentEvent = () => {
 
@@ -34,7 +53,8 @@ export default class JoinEvent extends Component {
                     });
                     this.setState({
                         data: data,
-                        eventID: eventID
+                        eventID: eventID,
+                        refreshing:false
                     })
 
                 }
@@ -84,13 +104,14 @@ export default class JoinEvent extends Component {
                         .doc(fire.auth().currentUser.uid.toString())
                         .set({
                             volunteerID: fire.auth().currentUser.uid.toString(),
-                            status:"active",
-                            leader:false,
-                            zoneNumber:0
+                            status: "active",
+                            leader: false,
+                            zoneNumber: 0
 
                         })
                         .then(() => {
                             Alert.alert("Event Joined Successfully!")
+                            this.props.navigation.goBack();
                         })
                         .catch((err) => {
                             console.log(err.toString())
@@ -116,6 +137,16 @@ export default class JoinEvent extends Component {
         this.getCurrentEvent();
     }
 
+    emptyComponent = () => {
+        return (
+            <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+                <Text style={{ fontSize: 20, fontStyle: "italic", fontWeight: "bold" }}>
+                    No Volunteers Signed Up Yet...
+                </Text>
+            </View>
+        );
+    };
+
 
 
     render() {
@@ -124,40 +155,53 @@ export default class JoinEvent extends Component {
 
         return (
             <SafeAreaView style={{ flex: 1 }}>
-                <View>
+             
 
 
-                <FlatList
-        data={this.state.data}
-        renderItem={({ item }) => (
-         <TouchableOpacity style={styles.card}onPress={this.joinEvent}>
-             <View style={{padding:"5%"}}>
-                 <Text style={styles.headerText} > 
-               {item.eventName}
-                 </Text>
-                 
-                 <Text style={styles.text}>
-                      Time :{ item.eventTime}
-                 </Text>
-                 <Text style={styles.text}>
-                     Date :{ item.eventDate}
-                 </Text>
-                 <Text style={styles.text}> 
-                Description:  {item.eventDescription}
-                 </Text>
-             </View>
-         </TouchableOpacity>
-        )}
+                  {
+                      this.state.data ? (
+                        <FlatList
+                        data={this.state.data}
+                        renderItem={({ item }) => (
+                            <TouchableOpacity style={styles.card} onPress={this.joinEvent}>
+                                <View style={{ padding: "5%" }}>
+                                    <Text style={styles.headerText} >
+                                        {item.eventName}
+                                    </Text>
 
-      />
-   
+                                    <Text style={styles.text}>
+                                        Time :{item.eventTime}
+                                    </Text>
+                                    <Text style={styles.text}>
+                                        Date :{item.eventDate}
+                                    </Text>
+                                    <Text style={styles.text}>
+                                        Description:  {item.eventDescription}
+                                    </Text>
+                                </View>
+                            </TouchableOpacity>
+                        )}
+                        keyExtractor={(item) => item.eventDate}
+                        ListEmptyComponent={this.emptyComponent}
+                        refreshing={this.state.refreshing}
+            onRefresh={this.handleRefresh}
+
+                    />
+                      ):(
+                        <NativeBaseProvider>
+                        <Center flex={1}>
+                          <Spinner color="blue.500" />
+                        </Center>
+                      </NativeBaseProvider>
+                      )
+                  }
 
 
 
 
-                </View>
+
             </SafeAreaView>
-        )
+        );
 
 
 
@@ -192,18 +236,18 @@ const styles = StyleSheet.create({
 
     },
     text: {
-       
+
         fontSize: 15,
         fontWeight: 'bold',
-        marginTop:"2%"
+        marginTop: "2%"
 
 
     },
     headerText: {
-       
+
         fontSize: 20,
         fontWeight: 'bold',
-       
+
 
     },
 
