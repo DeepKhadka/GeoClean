@@ -71,6 +71,27 @@ export default class VolunteerManagement extends Component {
                 console.log(err.toString());
             });
     };
+    handleRelease =()=>{
+        Alert.alert(
+            "Release",
+            "Are you sure ? This will release all volunteers. ",
+      
+            [
+              {
+                text: "No",
+                onPress: () => {
+                  console.log("No")
+                },
+              },
+              {
+                text: "Yes",
+                onPress: () => {
+                  this.releaseAllVolunteers();
+                },
+              },
+            ]
+          );
+    }
 
 
 
@@ -150,7 +171,7 @@ export default class VolunteerManagement extends Component {
                 </TouchableOpacity>
 
 
-                <TouchableOpacity style={styles.card} onPress={this.releaseAllVolunteers} >
+                <TouchableOpacity style={styles.card} onPress={this.handleRelease} >
 
                     <Text style={styles.text}>Release All </Text>
                 </TouchableOpacity>

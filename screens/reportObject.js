@@ -10,6 +10,7 @@ import {
   Button,
   StyleSheet,
   TextInputComponent,
+  Alert,
 } from "react-native";
 import fire from "../database/firebase";
 import { NativeBaseProvider, Select } from "native-base";
@@ -31,17 +32,17 @@ export default class ReportObject extends Component {
 
   componentDidMount = () => {
      
-    async () => {
-      if (Platform.OS !== "web") {
+  
+  };
+  pickImage = async () => {
+    if (Platform.OS !== "web") {
         const { status } =
           await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== "granted") {
           alert("Sorry, we need camera roll permissions to make this work!");
         }
       }
-    };
-  };
-  pickImage = async () => {
+
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -88,10 +89,56 @@ export default class ReportObject extends Component {
 
   };
 
+
+ openCamera = async () => {
+    // Ask the user for the permission to access the camera
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert("You've refused to allow this appp to access your camera!");
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync();
+
+    // Explore the result
+    console.log(result);
+
+    if (!result.cancelled) {
+        this.setState({ resultUri: result.uri });
+        console.log("State")
+        console.log(this.state.resultUri);
+    }
+  }
+
   handleReport=()=>{
       
   }
+handleImagePicker=()=>{
+    Alert.alert(
+        "Media",
+        "Please Select ",
+        
+        [
+          {
+            text: "Take A Picture",
+            onPress: () => {
+             
+            this.openCamera();
+            }
+          },
+          {
+            text: "Camera Roll",
+            onPress:()=>{
+                this.pickImage();
 
+            },
+      
+          }
+        
+        ]
+      );
+}
 
   uploadImage =async()=>{
 
@@ -184,7 +231,7 @@ this.handleReport();
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.card}
-            onPress={this.pickImage}
+            onPress={this.handleImagePicker}
           >
             <Text style={styles.text}>Image </Text>
           </TouchableOpacity>
