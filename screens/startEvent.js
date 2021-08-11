@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, SafeAreaView, TouchableOpacity, Text, Button, Alert } from "react-native";
+import { View, SafeAreaView,StyleSheet, TouchableOpacity, Text, Button, Alert } from "react-native";
 import fire from "../database/firebase";
 import FloatingTextBox from "../assets/textEntry";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -119,7 +119,7 @@ export default class StartEvent extends Component {
     render() {
         const { navigation } = this.props;
         return (
-            <SafeAreaView style={{ flex: 1 }}>
+            <SafeAreaView style={styles.safeview}>
                 <View style={{ alignItems: "center", justifyContent:"space-between" }}>
                  
                     <FloatingTextBox
@@ -176,7 +176,7 @@ export default class StartEvent extends Component {
                    
                       <TouchableOpacity onPress={this.showDatePicker} style={{width:"30%",marginTop:"10%",backgroundColor:"lightblue",borderRadius:10,padding:"2%"}}><Text>Date and Time</Text></TouchableOpacity>
                        {this.state.eventDate != "" ? <Text style={{marginTop:"10%", fontWeight:"bold"}}>{this.state.eventDate}</Text> : null}             
-                    <TouchableOpacity style={{ backgroundColor: "red", marginTop: "20%", height: "10%", width: "80%", alignItems: "center" }}
+                    <TouchableOpacity style={styles.button}
                         onPress={this.checkCurrentEvent}
                     >
                         <Text style={{ padding: 10, fontSize: 20, fontWeight: "bold" }}>Finish</Text>
@@ -193,3 +193,21 @@ export default class StartEvent extends Component {
 
     }
 }
+const styles = StyleSheet.create({
+    safeview: {
+      backgroundColor: "lightblue",
+      height: "100%",
+      width: "100%",
+      flex:1,
+    },
+    button:{
+        backgroundColor: "lightyellow",
+         marginTop: "20%", 
+         height: "10%", 
+         width: "40%",
+          alignItems: "center" ,
+          borderRadius:10,
+
+
+    }
+});

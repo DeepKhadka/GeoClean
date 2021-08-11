@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
   },
   card: {
     margin: "5%",
-    backgroundColor: "#D9ACEA",
+    backgroundColor: "lightblue",
     justifyContent: "center",
   
     borderRadius: 20,
