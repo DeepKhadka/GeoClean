@@ -192,9 +192,7 @@ export default class ReportObject extends Component {
             this.pickImage();
 
           },
-
         }
-
       ]
     );
   }
@@ -282,7 +280,7 @@ export default class ReportObject extends Component {
           ></Image>
         </View>
 
-        
+
         <View style={{ alignItems: 'center' }}>
           <Image source={{ uri: this.state.resultUri }} style={{ height: 150, width: 150 }}></Image>
         </View>

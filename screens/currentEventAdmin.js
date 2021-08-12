@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, SafeAreaView, TouchableOpacity,StyleSheet, Text, Button, Alert } from "react-native";
+import { View, SafeAreaView, TouchableOpacity, StyleSheet, Text, Button, Alert } from "react-native";
 import fire from "../database/firebase";
 
 export default class CurrentEvent extends Component {
@@ -8,14 +8,14 @@ export default class CurrentEvent extends Component {
     state = {
 
         eventID: "",
-        eventStatus:"paused",
+        eventStatus: "",
+        data: null
 
     }
-   
 
-    //start the event
+
+    //Start the event
     handleStart = () => {
-
 
         fire
             .firestore()
@@ -24,6 +24,7 @@ export default class CurrentEvent extends Component {
             .collection("EVENT MANAGEMENT")
             .doc(this.state.eventID)
             .update({
+
                 eventStatus: "current"
 
             })
@@ -106,6 +107,7 @@ export default class CurrentEvent extends Component {
     getCurrentEvent = () => {
 
         var eventID;
+        var eventStatus;
 
         fire
             .firestore()
@@ -120,12 +122,14 @@ export default class CurrentEvent extends Component {
                 if (sub.docs.length > 0) {
 
 
-                    const data = [];
+
                     sub.forEach((doc) => {
+                        eventStatus = doc.data().eventStatus;
                         eventID = doc.id.toString();
                     });
                     this.setState({
                         eventID: eventID,
+                        eventStatus: eventStatus
                     });
                 } else {
 
@@ -140,12 +144,14 @@ export default class CurrentEvent extends Component {
 
                             if (subdoc.docs.length > 0) {
 
-                                const data_1 = []
+
                                 subdoc.forEach((doc_1) => {
                                     eventID = doc_1.id.toString();
+                                    eventStatus = doc_1.data().eventStatus;
                                 });
                                 this.setState({
-                                    eventID: eventID
+                                    eventID: eventID,
+                                    eventStatus: eventStatus
                                 })
                             }
                         })
@@ -157,7 +163,7 @@ export default class CurrentEvent extends Component {
                 }
             })
             .then(() => {
-                console.log(this.state.eventID)
+                console.log(this.state.eventID + " - " + this.state.eventStatus)
 
             })
             .catch((err) => {
@@ -179,34 +185,34 @@ export default class CurrentEvent extends Component {
         this.getCurrentEvent()
     }
 
-    display=()=>{
-        return(
+    display = () => {
+        return (
             <SafeAreaView style={{ flex: 1 }}>
-            <View>
-            {this.state.eventStatus== "current" ?
-         
-         <TouchableOpacity style={styles.card}onPress={this.handlePause} >
-         <Text style={styles.text}>Pause</Text>
-         
-     </TouchableOpacity>
-            :
-            <TouchableOpacity style={styles.card}onPress={this.handleStart} >
-            <Text style={styles.text}>Start</Text>
-            
-        </TouchableOpacity>
-            
-            }
-            
-            <TouchableOpacity style={styles.card}onPress={()=>{alert("Pressed");}} >
-                <Text style={styles.text}>Post Pone</Text>
-                
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.card}onPress={()=>{alert("Pressed");}} >
-                <Text style={styles.text}>Cancel Event</Text>
-                
-            </TouchableOpacity>
-            </View>
-        </SafeAreaView>
+                <View>
+                    {this.state.eventStatus == "current" ?
+
+                        <TouchableOpacity style={styles.card} onPress={this.handlePause} >
+                            <Text style={styles.text}>Pause</Text>
+
+                        </TouchableOpacity>
+                        :
+                        <TouchableOpacity style={styles.card} onPress={this.handleStart} >
+                            <Text style={styles.text}>Start</Text>
+
+                        </TouchableOpacity>
+
+                    }
+
+                    <TouchableOpacity style={styles.card} onPress={() => { alert("Pressed"); }} >
+                        <Text style={styles.text}>Post Pone</Text>
+
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.card} onPress={() => { alert("Pressed"); }} >
+                        <Text style={styles.text}>Cancel Event</Text>
+
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
 
         );
     }
@@ -216,9 +222,9 @@ export default class CurrentEvent extends Component {
     render() {
         const { navigation } = this.props;
         {
-            return this.state.eventID == "" ? this.emptyComponent():this.display()
+            return this.state.eventID == "" ? this.emptyComponent() : this.display()
 
-          
+
 
 
         }
@@ -230,25 +236,25 @@ export default class CurrentEvent extends Component {
 }
 const styles = StyleSheet.create({
 
-    
-    card:{
-        margin:"5%",
-        backgroundColor:"#D9ACEA" , 
-         justifyContent:"center",
-        alignItems:"center",
-        borderRadius:20,
-       
-    },
-    text:{
-        padding:"10%",
-        fontSize:20,
-       fontWeight:'bold'
-      
+
+    card: {
+        margin: "5%",
+        backgroundColor: "#D9ACEA",
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 20,
 
     },
-    
-  
-   
-  
-    
-  });
+    text: {
+        padding: "10%",
+        fontSize: 20,
+        fontWeight: 'bold'
+
+
+    },
+
+
+
+
+
+});
