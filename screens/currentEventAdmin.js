@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, SafeAreaView, TouchableOpacity, Text, Button, Alert } from "react-native";
+import { View, SafeAreaView, TouchableOpacity,StyleSheet, Text, Button, Alert } from "react-native";
 import fire from "../database/firebase";
 
 export default class CurrentEvent extends Component {
@@ -8,8 +8,10 @@ export default class CurrentEvent extends Component {
     state = {
 
         eventID: "",
+        eventStatus:"paused",
 
     }
+   
 
     //start the event
     handleStart = () => {
@@ -23,6 +25,7 @@ export default class CurrentEvent extends Component {
             .doc(this.state.eventID)
             .update({
                 eventStatus: "current"
+
             })
             .then(() => {
                 Alert.alert("Event started!")
@@ -186,19 +189,46 @@ export default class CurrentEvent extends Component {
         this.getCurrentEvent()
     }
 
+    display=()=>{
+        return(
+            <SafeAreaView style={{ flex: 1 }}>
+            <View>
+            {this.state.eventStatus== "current" ?
+         
+         <TouchableOpacity style={styles.card}onPress={this.handlePause} >
+         <Text style={styles.text}>Pause</Text>
+         
+     </TouchableOpacity>
+            :
+            <TouchableOpacity style={styles.card}onPress={this.handleStart} >
+            <Text style={styles.text}>Start</Text>
+            
+        </TouchableOpacity>
+            
+            }
+            
+            <TouchableOpacity style={styles.card}onPress={()=>{alert("Pressed");}} >
+                <Text style={styles.text}>Post Pone</Text>
+                
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.card}onPress={()=>{alert("Pressed");}} >
+                <Text style={styles.text}>Cancel Event</Text>
+                
+            </TouchableOpacity>
+            </View>
+        </SafeAreaView>
+
+        );
+    }
+
+
 
     render() {
         const { navigation } = this.props;
         {
-            return this.state.eventID == "" ? this.emptyComponent() :
+            return this.state.eventID == "" ? this.emptyComponent():this.display()
 
-                <SafeAreaView style={{ flex: 1 }}>
-                    <View>
-
-                        <Text>Current Event Admin</Text>
-
-                    </View>
-                </SafeAreaView>
+          
 
 
         }
@@ -208,3 +238,27 @@ export default class CurrentEvent extends Component {
 
     }
 }
+const styles = StyleSheet.create({
+
+    
+    card:{
+        margin:"5%",
+        backgroundColor:"#D9ACEA" , 
+         justifyContent:"center",
+        alignItems:"center",
+        borderRadius:20,
+       
+    },
+    text:{
+        padding:"10%",
+        fontSize:20,
+       fontWeight:'bold'
+      
+
+    },
+    
+  
+   
+  
+    
+  });
