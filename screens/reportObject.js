@@ -10,6 +10,7 @@ import {
   Button,
   StyleSheet,
   TextInputComponent,
+  Alert,
 } from "react-native";
 
 import fire from "../database/firebase";
@@ -17,6 +18,8 @@ import { NativeBaseProvider, Select } from "native-base";
 import { Icon } from "react-native-elements";
 import * as Location from "expo-location";
 import FloatingTextBox from "../assets/textEntry";
+import Constants from "expo-constants";
+
 
 export default class ReportObject extends Component {
   state = {
@@ -24,16 +27,40 @@ export default class ReportObject extends Component {
     Zone: "",
     zoneplaceHolder: "Select Zone",
     description: "",
-    location: "",
-    resultUri: "",
+    latitude: "",
+    longitude: "",
+    resultUri: " ",
     downloadUri: "",
     uploading: false,
   };
 
-  geoTag = () => {
+  _getLocation = async () => {
 
 
+    (async () => {
+      if (Platform.OS === 'android' && !Constants.isDevice) {
 
+        alert("Oops, this will not work on Snack in an Android emulator. Try it on your device!");
+
+        return;
+      }
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+
+        alert('Permission to access location was denied')
+
+        return;
+      }
+
+
+      let location = await Location.getCurrentPositionAsync({});
+      this.setState({
+
+        latitude: location.coords.latitude.toString(),
+        longitude: location.coords.longitude.toString()
+
+      }, this.handleReport)
+    })();
 
   }
 
@@ -42,20 +69,18 @@ export default class ReportObject extends Component {
 
   componentDidMount = () => {
 
-    async () => {
-      if (Platform.OS !== "web") {
-        const { status } =
-          await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== "granted") {
-          alert("Sorry, we need camera roll permissions to make this work!");
-        }
-      }
-    };
 
-    // console.log(this.props.route.params.ID)
   };
 
+
   pickImage = async () => {
+    if (Platform.OS !== "web") {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        alert("Sorry, we need camera roll permissions to make this work!");
+      }
+    }
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -85,24 +110,18 @@ export default class ReportObject extends Component {
   };
 
   checkEmpty = () => {
-    if (this.state.Zone != "" && this.state.description != "" && this.state.resultUri != "") {
-      this.handleReport();
+    if (this.state.Zone != "" && this.state.description != "" && this.state.resultUri != " ") {
+      this.uploadImage()
 
     }
-    else if (this.state.Zone == "" || this.state.description == "" || this.state.resultUri == "") {
+    else if (this.state.Zone == "" || this.state.description == "" || this.state.resultUri == " ") {
       alert("Please fill all the fields!");
-
-
 
     }
   };
 
   handleReport = () => {
 
-    console.log(this.state.Zone);
-    console.log(this.state.description);
-    console.log(this.state.location)
-    console.log(this.state.downloadUri);
 
 
     fire
@@ -117,8 +136,8 @@ export default class ReportObject extends Component {
       .set({
         zone: Number(this.state.Zone),
         description: this.state.description,
-        longitude: "",
-        latitude: "",
+        longitude: this.state.longitude,
+        latitude: this.state.latitude,
         imageUri: this.state.downloadUri,
 
       })
@@ -130,10 +149,56 @@ export default class ReportObject extends Component {
         console.log(err.toString())
       })
 
-
-
   }
 
+
+  openCamera = async () => {
+    // Ask the user for the permission to access the camera
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert("You've refused to allow this appp to access your camera!");
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync();
+
+    // Explore the result
+    console.log(result);
+
+    if (!result.cancelled) {
+      this.setState({ resultUri: result.uri });
+      console.log("State")
+      console.log(this.state.resultUri);
+    }
+  }
+
+
+  handleImagePicker = () => {
+    Alert.alert(
+      "Media",
+      "Please Select ",
+
+      [
+        {
+          text: "Take A Picture",
+          onPress: () => {
+
+            this.openCamera();
+          }
+        },
+        {
+          text: "Camera Roll",
+          onPress: () => {
+            this.pickImage();
+
+          },
+
+        }
+
+      ]
+    );
+  }
 
   uploadImage = async () => {
 
@@ -159,17 +224,8 @@ export default class ReportObject extends Component {
     this.setState({
       downloadUri: url
 
-    });
-
-
-
-
+    }, this._getLocation);
   }
-
-
-
-
-
 
 
 
@@ -178,10 +234,6 @@ export default class ReportObject extends Component {
       Zone: value,
       zoneplaceHolder: value.toString(),
     });
-  };
-  handleGeoTag = () => {
-    //handle geo tagging here
-    alert("Your locaton was saved");
   };
 
   render() {
@@ -218,17 +270,12 @@ export default class ReportObject extends Component {
           placeholderTextColor="purple"
         />
         <View style={styles.rowView}>
+
           <TouchableOpacity
             style={styles.card}
-            onPress={this.handleGeoTag}
+            onPress={this.handleImagePicker}
           >
-            <Text style={styles.text}>Geo Tag</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.card}
-            onPress={this.pickImage}
-          >
-            <Text style={styles.text}>Image </Text>
+            <Text style={styles.text}>Add Image </Text>
           </TouchableOpacity>
 
         </View>
