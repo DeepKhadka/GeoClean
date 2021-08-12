@@ -12,11 +12,14 @@ import {
   TextInputComponent,
   Alert,
 } from "react-native";
+
 import fire from "../database/firebase";
 import { NativeBaseProvider, Select } from "native-base";
 import { Icon } from "react-native-elements";
 import * as Location from "expo-location";
 import FloatingTextBox from "../assets/textEntry";
+import Constants from "expo-constants";
+
 
 export default class ReportObject extends Component {
   state = {
@@ -24,13 +27,52 @@ export default class ReportObject extends Component {
     Zone: "",
     zoneplaceHolder: "Select Zone",
     description: "",
-    location: "",
+    latitude: "",
+    longitude: "",
     resultUri: " ",
     downloadUri: "",
     uploading: false,
   };
 
-  componentDidMount = () => {};
+  _getLocation = async () => {
+
+
+    (async () => {
+      if (Platform.OS === 'android' && !Constants.isDevice) {
+
+        alert("Oops, this will not work on Snack in an Android emulator. Try it on your device!");
+
+        return;
+      }
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+
+        alert('Permission to access location was denied')
+
+        return;
+      }
+
+
+      let location = await Location.getCurrentPositionAsync({});
+      this.setState({
+
+        latitude: location.coords.latitude.toString(),
+        longitude: location.coords.longitude.toString()
+
+      }, this.handleReport)
+    })();
+
+  }
+
+
+
+
+  componentDidMount = () => {
+
+
+  };
+
+
   pickImage = async () => {
     if (Platform.OS !== "web") {
       const { status } =
@@ -39,43 +81,76 @@ export default class ReportObject extends Component {
         alert("Sorry, we need camera roll permissions to make this work!");
       }
     }
-
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      
+
       quality: 1,
     });
 
+
+
     if (!result.cancelled) {
       this.setState({ resultUri: result.uri });
-      console.log("State");
-      console.log(this.state.resultUri);
+      console.log("State")
+      // console.log(this.state.resultUri);
+
     }
+
   };
+
   handlesignout = () => {
     fire.auth().signOut();
   };
+
   setLocation = (value) => {
     this.setState({
       location: value,
     });
   };
+
   checkEmpty = () => {
-    if (
-      this.state.Zone != "" &&
-      this.state.description != "" &&
-      this.state.resultUri != " "
-    ) {
-      this.uploadImage();
-    } else if (this.state.Zone == "") {
-      alert("Please select a Zone");
-    } else if (this.state.description == "") {
-      alert("Please Provide Description");
-    } else {
-      alert("Please upload a picture");
+    if (this.state.Zone != "" && this.state.description != "" && this.state.resultUri != " ") {
+      this.uploadImage()
+
+    }
+    else if (this.state.Zone == "" || this.state.description == "" || this.state.resultUri == " ") {
+      alert("Please fill all the fields!");
+
     }
   };
+
+  handleReport = () => {
+
+
+
+    fire
+      .firestore()
+
+      .collection("ADMIN")
+      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+      .collection("EVENT MANAGEMENT")
+      .doc(this.props.route.params.ID)
+      .collection("ZONE " + this.state.Zone)
+      .doc()
+      .set({
+        zone: Number(this.state.Zone),
+        description: this.state.description,
+        longitude: this.state.longitude,
+        latitude: this.state.latitude,
+        imageUri: this.state.downloadUri,
+
+      })
+      .then(() => {
+        alert("Report Submitted!");
+        this.props.navigation.goBack();
+      })
+      .catch((err) => {
+        console.log(err.toString())
+      })
+
+  }
+
 
   openCamera = async () => {
     // Ask the user for the permission to access the camera
@@ -93,12 +168,11 @@ export default class ReportObject extends Component {
 
     if (!result.cancelled) {
       this.setState({ resultUri: result.uri });
-      console.log("State");
+      console.log("State")
       console.log(this.state.resultUri);
     }
   };
 
-  handleReport = () => {};
   handleImagePicker = () => {
     Alert.alert(
       "Media",
@@ -108,20 +182,25 @@ export default class ReportObject extends Component {
         {
           text: "Take A Picture",
           onPress: () => {
+
             this.openCamera();
-          },
+          }
         },
         {
           text: "Camera Roll",
           onPress: () => {
             this.pickImage();
+
           },
-        },
+
+        }
+
       ]
     );
-  };
+  }
 
   uploadImage = async () => {
+
     const blob = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.onload = function () {
@@ -129,33 +208,31 @@ export default class ReportObject extends Component {
       };
       xhr.onerror = function (e) {
         console.log(e);
-        reject(new TypeError("Network request failed"));
+        reject(new TypeError('Network request failed'));
+
       };
-      xhr.responseType = "blob";
-      xhr.open("GET", this.state.resultUri, true);
+      xhr.responseType = 'blob';
+      xhr.open('GET', this.state.resultUri, true);
       xhr.send(null);
-    });
-    const ref = fire.storage().ref().child(new Date().toISOString());
-    await ref.put(blob);
-    const url = await ref.getDownloadURL().catch((error) => {
-      throw error;
-    });
+    }
+    );
+    const ref = fire.storage().ref().child(new Date().toISOString())
+    await ref.put(blob)
+    const url = await ref.getDownloadURL().catch((error) => { throw error });
 
     this.setState({
-      downloadUri: url,
-    });
-    this.handleReport();
-  };
+      downloadUri: url
+
+    }, this._getLocation);
+  }
+
+
 
   onPickerSelect = (value) => {
     this.setState({
       Zone: value,
       zoneplaceHolder: value.toString(),
     });
-  };
-  handleGeoTag = () => {
-    //handle geo tagging here
-    alert("Your locaton was saved");
   };
 
   render() {
@@ -191,14 +268,11 @@ export default class ReportObject extends Component {
           placeholderTextColor="purple"
         />
         <View style={styles.rowView}>
-          <TouchableOpacity style={styles.card} onPress={this.handleGeoTag}>
-            <Text style={styles.text}>Geo Tag</Text>
-          </TouchableOpacity>
           <TouchableOpacity
             style={styles.card}
             onPress={this.handleImagePicker}
           >
-            <Text style={styles.text}>Image </Text>
+            <Text style={styles.text}>Add Image </Text>
           </TouchableOpacity>
         </View>
         <View style={{ alignItems: "center" }}>
@@ -208,11 +282,23 @@ export default class ReportObject extends Component {
           ></Image>
         </View>
 
+        
+        <View style={{ alignItems: 'center' }}>
+          <Image source={{ uri: this.state.resultUri }} style={{ height: 150, width: 150 }}></Image>
+        </View>
+
+
+
         <View style={{ alignItems: "center" }}>
-          <TouchableOpacity style={styles.card} onPress={this.checkEmpty}>
+          <TouchableOpacity
+            style={styles.card}
+            onPress={this.checkEmpty}
+          >
             <Text style={styles.text}>Report</Text>
           </TouchableOpacity>
+
         </View>
+
       </SafeAreaView>
     );
   }
@@ -231,9 +317,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   card: {
+
     margin: "5%",
     backgroundColor: "#ba84d1",
-    justifyContent: "center",
+    justifyContent: 'center',
     alignItems: "center",
 
     borderRadius: 20,
@@ -242,7 +329,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginTop: "2%",
-    padding: "5%",
+    padding: "5%"
+
   },
   headerText: {
     fontSize: 20,

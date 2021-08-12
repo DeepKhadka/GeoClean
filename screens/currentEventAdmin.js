@@ -57,7 +57,6 @@ export default class CurrentEvent extends Component {
                 console.log(err.toString())
             })
 
-
     }
 
 
@@ -80,10 +79,10 @@ export default class CurrentEvent extends Component {
             .catch((err) => {
                 console.log(err.toString())
             })
-
     }
 
-    handleCancel = () =>{
+
+    handleCancel = () => {
         fire
             .firestore()
             .collection("ADMIN")
@@ -102,14 +101,6 @@ export default class CurrentEvent extends Component {
             })
 
     }
-
-
-
-
-
-
-
-
 
     //gets the event ID of current/paused event
     getCurrentEvent = () => {
@@ -163,7 +154,6 @@ export default class CurrentEvent extends Component {
                         });
 
 
-
                 }
             })
             .then(() => {
@@ -179,7 +169,7 @@ export default class CurrentEvent extends Component {
         return (
             <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
                 <Text style={{ fontSize: 20, fontStyle: "italic", fontWeight: "bold" }}>
-                   No current event...
+                    No current event...
                 </Text>
             </View>
         );

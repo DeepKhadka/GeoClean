@@ -58,6 +58,11 @@ export default class JoinEvent extends Component {
                     })
 
                 }
+                else{
+                    this.setState({
+                        data:[]
+                    })
+                }
 
             })
             .then(() => {
