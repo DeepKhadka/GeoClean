@@ -197,11 +197,11 @@ export default class CurrentEvent extends Component {
             
             }
             
-            <TouchableOpacity style={styles.card}onPress={()=>{alert("Pressed");}} >
-                <Text style={styles.text}>Post Pone</Text>
+            <TouchableOpacity style={styles.card}onPress={this.handleCompleted} >
+                <Text style={styles.text}>Mark Complete</Text>
                 
             </TouchableOpacity>
-            <TouchableOpacity style={styles.card}onPress={()=>{alert("Pressed");}} >
+            <TouchableOpacity style={styles.card}onPress={this.handleCancel} >
                 <Text style={styles.text}>Cancel Event</Text>
                 
             </TouchableOpacity>
