@@ -252,19 +252,11 @@ export default class AssignVolunteer extends Component {
               >
                 <View style={{ flexDirection: 'row' }}>
                   <Text style={styles.headerText}>{item.fName} {item.lName}</Text>
+                  
 
 
                 </View>
 
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
-                >
-
-
-                </View>
               </TouchableOpacity>
             )}
             keyExtractor={(item) => item.email}
