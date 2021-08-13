@@ -26,7 +26,7 @@ import { Icon } from 'react-native-elements';
 export default class ReassignVolunteers extends Component {
   state = {
     userId: "",
-    Zone: "",
+    Zone:0,
     zoneplaceHolder: "Select Zone",
     leader: false,
     status: true,
@@ -172,6 +172,22 @@ export default class ReassignVolunteers extends Component {
       zoneplaceHolder: value.toString(),
     });
   };
+  componentDidMount(){
+    this.setState({
+      leader:this.props.route.params.leader,
+      status:this.props.route.params.status,
+     Zone:this.props.route.params.zone,
+     
+     
+    },
+    ()=>{
+      this.setState({
+        zoneplaceHolder:"Zone "+ this.state.Zone 
+      })
+    }
+    )
+    
+  }
 
   render() {
     const { navigation } = this.props;
@@ -179,6 +195,7 @@ export default class ReassignVolunteers extends Component {
     const fname = this.props.route.params.fname;
     const lname = this.props.route.params.lname;
     const email = this.props.route.params.email;
+    
 
 
     return (
