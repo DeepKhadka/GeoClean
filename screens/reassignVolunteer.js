@@ -33,7 +33,7 @@ export default class ReassignVolunteers extends Component {
     statusLabel: "Active",
 
   };
-  
+
 
   removeVolunteer = () => {
 
@@ -68,7 +68,7 @@ export default class ReassignVolunteers extends Component {
     }
     else if (this.state.leader == true) {
 
-      
+
       fire
         .firestore()
         .collection("ADMIN")
@@ -123,29 +123,29 @@ export default class ReassignVolunteers extends Component {
 
 
 
-iconPress=()=>{
+  iconPress = () => {
 
-  Alert.alert(
-    "Are you sure?",
-    "Are you sure you want do delete ?",
-    [
-      {
-        text: "Yes",
-        onPress: () => {
-         // console.log("Ask me later pressed")
+    Alert.alert(
+      "Are you sure?",
+      "Are you sure you want do delete ?",
+      [
+        {
+          text: "Yes",
+          onPress: () => {
+            // console.log("Ask me later pressed")
 
-        this.removeVolunteer();
+            this.removeVolunteer();
+          }
+        },
+        {
+          text: "No",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
         }
-      },
-      {
-        text: "No",
-        onPress: () => console.log("Cancel Pressed"),
-        style: "cancel"
-      }
-    
-    ]
-  );
-}
+
+      ]
+    );
+  }
 
   handlesignout = () => {
     fire.auth().signOut();
@@ -185,12 +185,12 @@ iconPress=()=>{
       <SafeAreaView style={styles.safeview}>
         <View style={styles.mainView}>
           <View style={styles.card}>
-            <View style={{alignItems:'center'}}>
-            <Text style={styles.headerText}>{fname}</Text>
-            <Text style={styles.headerText}>{lname}</Text>
-            <Text style={styles.text}>{email}</Text>
+            <View style={{ alignItems: 'center' }}>
+              <Text style={styles.headerText}>{fname}</Text>
+              <Text style={styles.headerText}>{lname}</Text>
+              <Text style={styles.text}>{email}</Text>
             </View>
-            <View style={{ flexDirection: "row",justifyContent:'space-between', marginTop: "5%" ,marginLeft:"2%"}}>
+            <View style={{ flexDirection: "row", justifyContent: 'space-between', marginTop: "5%", marginLeft: "2%" }}>
               <Text style={styles.headerText}>Leader</Text>
               <Switch
                 trackColor={{ false: "gray", true: "green" }}
@@ -205,7 +205,7 @@ iconPress=()=>{
                   placeholder={this.state.zoneplaceHolder}
                   placeholderTextColor="black"
                   width={150}
-                  
+
                   onValueChange={(itemValue) => this.onPickerSelect(itemValue)}
                 >
                   <Select.Item label="Zone 1" value={1} />
@@ -219,21 +219,21 @@ iconPress=()=>{
 
             </View>
             <View style={styles.rowView}>
-           <View style={styles.rowView}>
-           <Text style={styles.headerText}>Status</Text>
-              <Switch
-                placeholder="Status"
-                marginLeft="5%"
-                trackColor={{ false: "gray", true: "green" }}
-                thumbColor={this.state.status ? "white" : "white"}
-                onValueChange={this.statusSwitch.bind(this)}
-                value={this.state.status}
-              />
-           </View>
-       
-           <Icon name="delete" onPress={this.iconPress}size={50}></Icon>
-       
-              
+              <View style={styles.rowView}>
+                <Text style={styles.headerText}>Status</Text>
+                <Switch
+                  placeholder="Status"
+                  marginLeft="5%"
+                  trackColor={{ false: "gray", true: "green" }}
+                  thumbColor={this.state.status ? "white" : "white"}
+                  onValueChange={this.statusSwitch.bind(this)}
+                  value={this.state.status}
+                />
+              </View>
+
+              <Icon name="delete" onPress={this.iconPress} size={50}></Icon>
+
+
             </View>
 
           </View>
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#a09fdf",
     height: "100%",
     width: "100%",
-    flex:1,
+    flex: 1,
   },
   mainView: {
     height: "100%",
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     margin: "5%",
     backgroundColor: "lightblue",
     justifyContent: "center",
-  
+
     borderRadius: 20,
   },
   text: {
@@ -271,14 +271,14 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 20,
     fontWeight: "bold",
-    alignContent:"center"
+    alignContent: "center"
   },
-  rowView:{
-      flexDirection:"row",
-      marginVertical:"5 %",
-      justifyContent:'space-between',
-      marginLeft:"2%"
-  
+  rowView: {
+    flexDirection: "row",
+    marginVertical: "5 %",
+    justifyContent: 'space-between',
+    marginLeft: "2%"
+
 
 
   }

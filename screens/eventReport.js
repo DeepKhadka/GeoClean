@@ -7,12 +7,48 @@ export default class EventReport extends Component {
 
 
     state = {
-        data_1: null,
-        data_2: null,
-        data_3: null,
-        data_4: null,
-        data_5: null,
-        data_6: null,
+
+        data_1: [],
+        data_2: [],
+        data_3: [],
+        data_4: [],
+        data_5: [],
+        data_6: [],
+
+    }
+
+
+    changeStatus = (zone, id, eventID) => {
+
+
+
+
+
+        fire
+            .firestore()
+            .collection("ADMIN")
+            .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+            .collection("EVENT MANAGEMENT")
+            .doc(eventID)
+            .collection("ZONE " + zone)
+            .doc(id)
+            .update({
+                status: true
+            })
+            .then(() => {
+                console.log("ACKNOWLEDGED!")
+            })
+            .catch((err) => {
+                console.log(err.toString())
+            })
+
+
+
+
+
+
+
+
 
     }
 
@@ -20,7 +56,7 @@ export default class EventReport extends Component {
     getZone1 = () => {
 
 
-            fire
+        fire
             .firestore()
             .collectionGroup("ZONE 1")
             .where("status", "==", false)
@@ -32,6 +68,7 @@ export default class EventReport extends Component {
 
                         const x = doc.data();
                         x.id = doc.id;
+
                         data.push(x);
                     })
                     this.setState({
@@ -236,7 +273,7 @@ export default class EventReport extends Component {
             <SafeAreaView style={{ flex: 1 }}>
                 <View>
                     <Text>Objects</Text>
-                    <TouchableOpacity style={styles.card} onPress={() => { alert("Pressed"); }} >
+                    <TouchableOpacity style={styles.card} onPress={() => this.changeStatus(5, "VFU8xVsohmGp2TvE10FK", "FsYtafwHo5Y0bEGvKmmo")} >
                         <Text style={styles.text}>Object 1</Text>
 
                     </TouchableOpacity>
