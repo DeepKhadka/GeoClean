@@ -139,6 +139,7 @@ export default class ReportObject extends Component {
         longitude: this.state.longitude,
         latitude: this.state.latitude,
         imageUri: this.state.downloadUri,
+        status:false
 
       })
       .then(() => {
@@ -192,9 +193,7 @@ export default class ReportObject extends Component {
             this.pickImage();
 
           },
-
         }
-
       ]
     );
   }
@@ -282,14 +281,7 @@ export default class ReportObject extends Component {
           ></Image>
         </View>
 
-        
-        <View style={{ alignItems: 'center' }}>
-          <Image source={{ uri: this.state.resultUri }} style={{ height: 150, width: 150 }}></Image>
-        </View>
-
-
-
-        <View style={{ alignItems: "center" }}>
+        <View style={{ alignItems: "center", }}>
           <TouchableOpacity
             style={styles.card}
             onPress={this.checkEmpty}
