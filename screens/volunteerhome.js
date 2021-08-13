@@ -23,6 +23,11 @@ export default class VolunteerHome extends Component {
                         <Text style={styles.text}>Current Event</Text>
 
                     </TouchableOpacity>
+                    <TouchableOpacity style={styles.card} onPress={() => { navigation.navigate("ZONE"); }} >
+                        <Text style={styles.text}>View Zones</Text>
+
+                    </TouchableOpacity>
+
                     <Button title="Signout" onPress={this.handlesignout}></Button>
 
                 </View>

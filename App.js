@@ -56,11 +56,11 @@ function adminhome() {
         <Stack.Screen name="AssignVolunteer" component={AsssignVolunteer} />
         <Stack.Screen name="RemoveVolunteer" component={RemoveVolunteer} />
         <Stack.Screen name="ZoneDetail" component={ZoneDetail} />
-        <Stack.Screen name="CurrentEventAdmin" component={CurrentEventAdmin}/>
-        <Stack.Screen name="ReassignVolunteers" component={ReassignVolunteers}/>
+        <Stack.Screen name="CurrentEventAdmin" component={CurrentEventAdmin} />
+        <Stack.Screen name="ReassignVolunteers" component={ReassignVolunteers} />
 
 
-     
+
 
       </Stack.Navigator>
     </NavigationContainer>
@@ -72,10 +72,12 @@ function volunteerhome() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="VolunteerHome" component={VolunteerHome} />
-        <Stack.Screen name="JoinEvent" component={JoinEvent}/>
-        <Stack.Screen name="CurrentEvent" component={CurrentEvent}/>
-        <Stack.Screen name="ReportOther" component={ReportOther}/>
-        <Stack.Screen name="ReportObject" component={ReportObject}/>
+        <Stack.Screen name="JoinEvent" component={JoinEvent} />
+        <Stack.Screen name="CurrentEvent" component={CurrentEvent} />
+        <Stack.Screen name="ReportOther" component={ReportOther} />
+        <Stack.Screen name="ReportObject" component={ReportObject} />
+        <Stack.Screen name="ZONE" component={Map} />
+
 
       </Stack.Navigator>
     </NavigationContainer>
@@ -108,11 +110,11 @@ export default class App extends Component {
     fire.firestore().collection("ADMIN").doc(fire.auth().currentUser.uid).get()
       .then(docSnapshot => {
         if (docSnapshot.exists) {
-          this.setState({ user:user,userAdmin: true })
+          this.setState({ user: user, userAdmin: true })
           console.log("This is an Admin!")
         }
         else {
-          this.setState({ user:user,userAdmin: false })
+          this.setState({ user: user, userAdmin: false })
           console.log("This is not an Admin!")
         }
       }).catch((error) => {
@@ -126,7 +128,7 @@ export default class App extends Component {
       if (user) {
 
         this.checkAdmin(user);
-        
+
       } else {
         this.setState({ user: null });
       }

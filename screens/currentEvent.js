@@ -149,7 +149,7 @@ export default class CurrentEvent extends Component {
 
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.card} onPress={this.reportArrival}>
-                            <Text style={styles.text}>Report Arrival</Text>
+                            <Text style={styles.text}>Check IN</Text>
 
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.card} onPress={this.removeVolunteer}>
