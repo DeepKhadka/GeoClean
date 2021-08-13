@@ -176,6 +176,7 @@ export default class StartEvent extends Component {
                         label="Description"
                         autoCapitalize="none"
                         placeholderTextColor="gray"
+                        
 
                         onChangeText={(val) => {
                             this.setState({ eventDescription: val });

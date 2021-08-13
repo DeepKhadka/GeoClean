@@ -1,5 +1,7 @@
+
 import React, { Component } from "react";
-import { View, StyleSheet, SafeAreaView, TouchableOpacity, Text, Button } from "react-native";
+import { View, SectionList,StyleSheet, SafeAreaView, TouchableOpacity, Text, Button } from "react-native";
+
 import fire from "../database/firebase";
 
 export default class EventStatus extends Component {
@@ -148,6 +150,7 @@ export default class EventStatus extends Component {
 
 
     }
+    
 
     componentDidMount() {
 
@@ -158,48 +161,74 @@ export default class EventStatus extends Component {
 
     render() {
         const { navigation } = this.props;
+        const DATA=[
+            {
+                title:"Arrived",
+                data:this.state.data_arrived
+
+            },
+            {
+                title:"Not Arrived",
+                data:this.state.data_unarrived
+            }
+        ];
         return (
             <SafeAreaView style={{ flex: 1 }}>
-                <View>
-                    <TouchableOpacity style={styles.card} onPress={() => { alert("Pressed"); }} >
-                        <Text style={styles.text}>Start/Pause</Text>
+                <View style={{flex:1,backgroundColor:"lightblue"}}>
+            
+                <SectionList
+          sections={DATA}
+          keyExtractor={(item, index) => item + index}
+          renderItem={({ item }) => (
+            <View style={styles.flatView} >
+                
+              <Text style={styles.text}>{item.fName} {item.lName}</Text>
+              <Text style={styles.text}>Zone {item.zoneNumber}</Text>
+              </View>
+          
+          )}
 
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.card} onPress={() => { alert("Pressed"); }} >
-                        <Text style={styles.text}>Post Pone</Text>
 
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.card} onPress={() => { alert("Pressed"); }} >
-                        <Text style={styles.text}>Cancel Event</Text>
 
-                    </TouchableOpacity>
-                </View>
+          renderSectionHeader={({ section: { title } }) => (
+              <View><Text style={styles.text}>{title}</Text></View>
+           
+          )}
+        />
+               
+               </View>
+                
             </SafeAreaView>
         )
 
     }
 }
 const styles = StyleSheet.create({
-
-
-    card: {
-        margin: "5%",
-        backgroundColor: "#D9ACEA",
-        justifyContent: "center",
-        alignItems: "center",
-        borderRadius: 20,
-
-    },
+    
+    
     text: {
-        padding: "10%",
-        fontSize: 20,
-        fontWeight: 'bold'
-
-
+      fontSize: 25,
+      fontWeight: "bold",
+      margin: "5%",
     },
-
-
-
-
-
-});
+    headerText: {
+      fontSize: 20,
+      fontWeight: "bold",
+      alignContent: "center",
+      margin: "5%",
+    },
+    rowView: {
+      flexDirection: "row",
+      marginVertical: "5 %",
+  
+      margin: "5%",
+    },
+    flatView: {
+      margin: "2%",
+      backgroundColor: "lightblue",
+      borderRadius: 20,
+      flexDirection:"row"
+    },
+  });
+  
+ 
