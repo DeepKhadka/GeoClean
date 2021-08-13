@@ -71,7 +71,7 @@ export default class AssignVolunteer extends Component {
   getCurrentEvent = () => {
     var eventID;
     this.setState({
-      eventID:""
+      eventID: ""
     })
 
     fire
@@ -86,7 +86,7 @@ export default class AssignVolunteer extends Component {
 
         if (sub.docs.length > 0) {
 
-        
+
           const data = [];
           sub.forEach((doc) => {
             eventID = doc.id.toString();
@@ -115,7 +115,7 @@ export default class AssignVolunteer extends Component {
                   eventID: eventID
                 })
               }
-              
+
             })
             .catch((err) => {
               console.log(err.toString() + " error")
@@ -126,16 +126,16 @@ export default class AssignVolunteer extends Component {
         }
       })
       .then(() => {
-        if(this.state.eventID==""){
+        if (this.state.eventID == "") {
           this.setState({
-            data:[],
-            refreshing:false
+            data: [],
+            refreshing: false
           })
 
-        }else{
+        } else {
           this.getVolunteersInfo();
         }
-      
+
 
       })
       .catch((err) => {
@@ -146,7 +146,7 @@ export default class AssignVolunteer extends Component {
 
   async getVolunteersInfo() {
 
-    
+
 
     var data = [];
 
@@ -172,6 +172,10 @@ export default class AssignVolunteer extends Component {
                 function (snap) {
                   const x = snap.data();
                   x.id = doc.id;
+                  x.leader = doc.data().leader,
+                    x.status = doc.data().status,
+                    x.zoneNumber = doc.data().zoneNumber
+
                   data.push(x);
                 },
                 function (error) {
@@ -204,12 +208,7 @@ export default class AssignVolunteer extends Component {
         console.log("Error getting documents: ", error);
       });
 
-    }
-
-
-  
-
-  
+  }
 
   emptyComponent = () => {
     return (
