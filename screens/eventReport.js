@@ -14,6 +14,7 @@ import openMap from "react-native-open-maps";
 import { NativeBaseProvider, Select } from "native-base";
 
 export default class EventReport extends Component {
+  
   state = {
     data_1: [],
     data_2: [],
@@ -268,7 +269,7 @@ export default class EventReport extends Component {
         {this.state.zone == 0 ? null : (
           <FlatList
             data={this.handleFilter(this.state.zone)}
-            renderItem={({ item }) => (
+            renderItem={({ item,key }) => (
               <View style={styles.flatView}>
                 <Text style={styles.headerText}>{item.description}</Text>
                 <View style={{ alignItems: "center" }}>

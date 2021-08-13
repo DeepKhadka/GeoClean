@@ -26,7 +26,7 @@ import { Icon } from 'react-native-elements';
 export default class ReassignVolunteers extends Component {
   state = {
     userId: "",
-    Zone:0,
+    Zone: 0,
     zoneplaceHolder: "Select Zone",
     leader: false,
     status: true,
@@ -77,6 +77,7 @@ export default class ReassignVolunteers extends Component {
         .doc(this.props.route.params.currentEventID.toString())
         .collection("VOLUNTEERS")
         .where("leader", "==", true)
+        .where("zoneNumber", "==", this.state.Zone)
         .get()
         .then((sub) => {
           if (sub.docs.length > 0) {
@@ -172,21 +173,21 @@ export default class ReassignVolunteers extends Component {
       zoneplaceHolder: value.toString(),
     });
   };
-  componentDidMount(){
+  componentDidMount() {
     this.setState({
-      leader:this.props.route.params.leader,
-      status:this.props.route.params.status,
-     Zone:this.props.route.params.zone,
-     
-     
+      leader: this.props.route.params.leader,
+      status: this.props.route.params.status,
+      Zone: this.props.route.params.zone,
+
+
     },
-    ()=>{
-      this.setState({
-        zoneplaceHolder:"Zone "+ this.state.Zone 
-      })
-    }
+      () => {
+        this.setState({
+          zoneplaceHolder: "Zone " + this.state.Zone
+        })
+      }
     )
-    
+
   }
 
   render() {
@@ -195,7 +196,7 @@ export default class ReassignVolunteers extends Component {
     const fname = this.props.route.params.fname;
     const lname = this.props.route.params.lname;
     const email = this.props.route.params.email;
-    
+
 
 
     return (

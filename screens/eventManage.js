@@ -25,10 +25,7 @@ export default class AssignVolunteer extends Component {
                             <Text style={styles.text}>Current Event</Text>
                             
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.card}onPress={()=>{navigation.navigate("EventStatus");}} >
-                            <Text style={styles.text}>Event Status</Text>
-                            
-                        </TouchableOpacity>
+    
                         <TouchableOpacity style={styles.card}onPress={()=>{navigation.navigate("EventReport");}} >
                             <Text style={styles.text}> Event Reports</Text>
                             
