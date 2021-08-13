@@ -21,9 +21,6 @@ export default class EventReport extends Component {
     changeStatus = (zone, id, eventID) => {
 
 
-
-
-
         fire
             .firestore()
             .collection("ADMIN")
