@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import {
   View,
+  Image,
   SafeAreaView,
   TouchableOpacity,
   Text,
@@ -19,7 +20,8 @@ import {
   NativeBaseProvider,
   Select,
 } from "native-base";
-import { backgroundColor } from "styled-system";
+import { backgroundColor, height } from "styled-system";
+import { Icon } from "react-native-elements";
 
 export default class AssignVolunteer extends Component {
   _isMounted = false;
@@ -71,8 +73,8 @@ export default class AssignVolunteer extends Component {
   getCurrentEvent = () => {
     var eventID;
     this.setState({
-      eventID: ""
-    })
+      eventID: "",
+    });
 
     fire
       .firestore()
@@ -82,11 +84,7 @@ export default class AssignVolunteer extends Component {
       .where("eventStatus", "==", "current")
       .get()
       .then(async (sub) => {
-
-
         if (sub.docs.length > 0) {
-
-
           const data = [];
           sub.forEach((doc) => {
             eventID = doc.id.toString();
@@ -95,7 +93,6 @@ export default class AssignVolunteer extends Component {
             eventID: eventID,
           });
         } else {
-
           await fire
             .firestore()
             .collection("ADMIN")
@@ -104,50 +101,38 @@ export default class AssignVolunteer extends Component {
             .where("eventStatus", "==", "paused")
             .get()
             .then((subdoc) => {
-
               if (subdoc.docs.length > 0) {
-                console.log("else bhitra")
-                const data_1 = []
+                console.log("else bhitra");
+                const data_1 = [];
                 subdoc.forEach((doc_1) => {
                   eventID = doc_1.id.toString();
                 });
                 this.setState({
-                  eventID: eventID
-                })
+                  eventID: eventID,
+                });
               }
-
             })
             .catch((err) => {
-              console.log(err.toString() + " error")
+              console.log(err.toString() + " error");
             });
-
-
-
         }
       })
       .then(() => {
         if (this.state.eventID == "") {
           this.setState({
             data: [],
-            refreshing: false
-          })
-
+            refreshing: false,
+          });
         } else {
           this.getVolunteersInfo();
         }
-
-
       })
       .catch((err) => {
         console.log(err.toString());
       });
   };
 
-
   async getVolunteersInfo() {
-
-
-
     var data = [];
 
     return await fire
@@ -172,9 +157,9 @@ export default class AssignVolunteer extends Component {
                 function (snap) {
                   const x = snap.data();
                   x.id = doc.id;
-                  x.leader = doc.data().leader,
-                    x.status = doc.data().status,
-                    x.zoneNumber = doc.data().zoneNumber
+                  (x.leader = doc.data().leader),
+                    (x.status = doc.data().status),
+                    (x.zoneNumber = doc.data().zoneNumber);
 
                   data.push(x);
                 },
@@ -190,7 +175,7 @@ export default class AssignVolunteer extends Component {
           return Promise.all(results);
         },
         function (val) {
-          d
+          d;
           // The Promise was rejected.
           console.log(val);
         }
@@ -207,7 +192,6 @@ export default class AssignVolunteer extends Component {
       .catch(function (error) {
         console.log("Error getting documents: ", error);
       });
-
   }
 
   emptyComponent = () => {
@@ -240,23 +224,67 @@ export default class AssignVolunteer extends Component {
             renderItem={({ item }) => (
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate("ReassignVolunteers", { itemId: item.id, fname: item.fName, lname: item.lName, email: item.email, currentEventID: this.state.eventID });
+                  navigation.navigate("ReassignVolunteers", {
+                    itemId: item.id,
+                    fname: item.fName,
+                    lname: item.lName,
+                    email: item.email,
+                    currentEventID: this.state.eventID,
+                    status:item.status,
+                    leader:item.leader,
+                    zone:item.zoneNumber
+                  });
                 }}
                 style={{
-                  margin: "4%",
+                  marginVertical: "4%",
                   backgroundColor: "lightblue",
-                  justifyContent: "space-between",
-                  borderRadius: 10,
 
+                  borderRadius: 10,
                 }}
               >
-                <View style={{ flexDirection: 'row' }}>
-                  <Text style={styles.headerText}>{item.fName} {item.lName}</Text>
-                  
+                <View>
+                  <Text style={styles.headerText}>
+                    {item.fName} {item.lName}
+                  </Text>
+                  <View style={styles.rowView}>
+                    <Text style={styles.text}>Status</Text>
 
-
+                    {item.status==true ?<Icon
+                      name="check-circle"
+                      type="font-awesome"
+                      color="green"
+                      onPress={this.iconPress}
+                      size={30}
+                      margin="2%"
+                    ></Icon> :<Icon
+                      name="times-circle"
+                      type="font-awesome"
+                      color="red"
+                      onPress={this.iconPress}
+                      size={30}
+                      margin="2%"
+                    ></Icon>}
+                    
+                    <Text style={styles.text}>Leader</Text>
+                   { item.leader==true ?<Icon
+                      name="check-circle"
+                      type="font-awesome"
+                      color="green"
+                      onPress={this.iconPress}
+                      size={30}
+                      margin="2%"
+                    ></Icon> :<Icon
+                      name="times-circle"
+                      type="font-awesome"
+                      color="red"
+                      onPress={this.iconPress}
+                      size={30}
+                      margin="2%"
+                    ></Icon>}
+                    
+                    <Text style={styles.text}>Zone {item.zoneNumber}</Text>
+                  </View>
                 </View>
-
               </TouchableOpacity>
             )}
             keyExtractor={(item) => item.email}
@@ -283,38 +311,22 @@ const styles = StyleSheet.create({
     width: "100%",
     flex: 1,
   },
-  mainView: {
-    height: "100%",
-    width: "100%",
 
-    flex: 1,
-  },
-  card: {
-    margin: "5%",
-    backgroundColor: "#D9ACEA",
-    justifyContent: "center",
-
-    borderRadius: 20,
-  },
   text: {
-    fontSize: 15,
+    fontSize: 17,
     fontWeight: "bold",
-    marginTop: "2%",
-
+    margin: "2%",
   },
   headerText: {
     fontSize: 20,
     fontWeight: "bold",
     alignContent: "center",
-    padding: "5%"
+    padding: "5%",
   },
   rowView: {
     flexDirection: "row",
     marginVertical: "5 %",
-    justifyContent: 'space-between',
-    marginLeft: "2%"
 
-
-
-  }
+    margin: "5%",
+  },
 });
