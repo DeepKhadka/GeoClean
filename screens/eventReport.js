@@ -247,13 +247,18 @@ export default class EventReport extends Component {
     const { navigation } = this.props;
 
     return (
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={styles.rowView}>
+      <SafeAreaView style={{ height:"100%",width:"100%"}}>
+        <View style={{flex:0.4,backgroundColor:"blue"}}>
           <NativeBaseProvider>
             <Select
               placeholder={this.state.zoneplaceHolder}
               placeholderTextColor="black"
-              width={150}
+              marginTop="5%"
+              mode="dropdown"
+              width="60%"
+              backgroundColor="lightblue"
+              padding="10%"
+              
               onValueChange={(itemValue) => this.onPickerSelect(itemValue)}
             >
               <Select.Item label="Zone 1" value={1} />
@@ -265,6 +270,7 @@ export default class EventReport extends Component {
             </Select>
           </NativeBaseProvider>
         </View>
+        <View style={{flex:0.8}}>
         {this.state.zone == 0 ? null : (
           <FlatList
             data={this.handleFilter(this.state.zone)}
@@ -297,6 +303,7 @@ export default class EventReport extends Component {
             keyExtractor={(item) => item.email}
           />
         )}
+        </View>
       </SafeAreaView>
     );
   }

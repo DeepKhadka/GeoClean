@@ -242,11 +242,11 @@ export default class ReportObject extends Component {
     const { navigation } = this.props;
     return (
       <SafeAreaView style={styles.safeview}>
-        <View style={styles.rowView}>
+        <View style={{height:"20%",width:"80%",backgroundColor:"red"}}>
           <NativeBaseProvider>
             <Select
               placeholder={this.state.zoneplaceHolder}
-              backgroundColor="#ba84d1"
+              backgroundColor="red"
               placeholderTextColor="black"
               width={"50%"}
               onValueChange={(itemValue) => this.onPickerSelect(itemValue)}
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#a09fdf",
     height: "100%",
     width: "100%",
-    flex: 1,
+   
   },
   mainView: {
     height: "100%",
