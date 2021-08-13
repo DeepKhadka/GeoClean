@@ -9,9 +9,6 @@ export default class AssignVolunteer extends Component {
         fire.auth().signOut();
             }
 
-          
-
-        x
             render() {
                 const { navigation } = this.props;
                 return (
