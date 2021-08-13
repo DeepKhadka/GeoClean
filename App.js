@@ -27,6 +27,7 @@ import ZoneManagement from './screens/zoneManage';
 import LastEvent from './screens/lastEvent';
 import JoinEvent from './screens/joinEvent';
 import ReassignVolunteers from './screens/reassignVolunteer';
+import Map from './screens/map';
 
 
 LogBox.ignoreLogs(["Setting a timer"]);
@@ -46,7 +47,7 @@ function adminhome() {
       <Stack.Navigator>
         <Stack.Screen name="AdminHome" component={AdminHome} />
         <Stack.Screen name="VolunteerManagement" component={VolunteerManagement} />
-        <Stack.Screen name="ZoneManagement" component={ZoneManagement} />
+        <Stack.Screen name="ZoneManagement" component={Map} />
         <Stack.Screen name="EventManagement" component={EventManagement} />
         <Stack.Screen name="StartEvent" component={StartEvent} />
         <Stack.Screen name="EventReport" component={EventReport} />

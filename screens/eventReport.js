@@ -2,11 +2,9 @@ import React, { Component } from "react";
 import {
   Image,
   View,
-
   StyleSheet,
   SafeAreaView,
   FlatList,
-
   TouchableOpacity,
   Text,
   Button,
@@ -25,7 +23,7 @@ export default class EventReport extends Component {
     data_6: [],
     data: "",
     zone: 0,
-    zoneplaceHolder:"Select a Zone"
+    zoneplaceHolder: "Select a Zone",
   };
 
   handleFilter = (val) => {
@@ -44,6 +42,25 @@ export default class EventReport extends Component {
     } else if (val == 6) {
       return this.state.data_6;
     }
+  };
+  changeStatus = (zone, id, eventID) => {
+    fire
+      .firestore()
+      .collection("ADMIN")
+      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+      .collection("EVENT MANAGEMENT")
+      .doc(eventID)
+      .collection("ZONE " + zone)
+      .doc(id)
+      .update({
+        status: true,
+      })
+      .then(() => {
+        console.log("ACKNOWLEDGED!");
+      })
+      .catch((err) => {
+        console.log(err.toString());
+      });
   };
 
   getZone1 = () => {
@@ -228,53 +245,58 @@ export default class EventReport extends Component {
   };
   render() {
     const { navigation } = this.props;
-    
 
     return (
       <SafeAreaView style={{ flex: 1 }}>
-          <View style={styles.rowView}>
-                <NativeBaseProvider>
-                  <Select
-                    placeholder={this.state.zoneplaceHolder}
-                    placeholderTextColor="black"
-                    width={150}
-                    onValueChange={(itemValue) =>
-                      this.onPickerSelect(itemValue)
-                    }
-
-                  >
-                    <Select.Item label="Zone 1" value={1} />
-                    <Select.Item label="Zone 2" value={2} />
-                    <Select.Item label="Zone 3" value={3} />
-                    <Select.Item label="Zone 4" value={4} />
-                    <Select.Item label="Zone 5" value={5} />
-                    <Select.Item label="Zone 6" value={6} />
-                  </Select>
-                </NativeBaseProvider>
-            
-              </View>
-              {this.state.zone==0 ? null:<FlatList
-          data={this.handleFilter(this.state.zone)}
-          renderItem={({ item }) => (
-            <View style={styles.flatView}>
-             
+        <View style={styles.rowView}>
+          <NativeBaseProvider>
+            <Select
+              placeholder={this.state.zoneplaceHolder}
+              placeholderTextColor="black"
+              width={150}
+              onValueChange={(itemValue) => this.onPickerSelect(itemValue)}
+            >
+              <Select.Item label="Zone 1" value={1} />
+              <Select.Item label="Zone 2" value={2} />
+              <Select.Item label="Zone 3" value={3} />
+              <Select.Item label="Zone 4" value={4} />
+              <Select.Item label="Zone 5" value={5} />
+              <Select.Item label="Zone 6" value={6} />
+            </Select>
+          </NativeBaseProvider>
+        </View>
+        {this.state.zone == 0 ? null : (
+          <FlatList
+            data={this.handleFilter(this.state.zone)}
+            renderItem={({ item }) => (
+              <View style={styles.flatView}>
                 <Text style={styles.headerText}>{item.description}</Text>
-                <View style={{alignItems:"center"}}>
-                <Image source={{uri:item.imageUri}}style={{height:200,width:200,margin:"2%"}}></Image>
+                <View style={{ alignItems: "center" }}>
+                  <Image
+                    source={{ uri: item.imageUri }}
+                    style={{ height: 200, width: 200, margin: "2%" }}
+                  ></Image>
+                </View>
+                <View style={styles.rowView}>
+                  <Button
+                    title="See on Maps"
+                    onPress={() => {
+                      this.mapper(item.longitude, item.latitude);
+                    }}
+                  ></Button>
+                  <Button
+                    title="Acknowledge "
+                    onPress={() => {
+                      this.changeStatus(item.zone, item.id, item.eventID);
+                      alert("Report Acknowledged")
+                    }}
+                  ></Button>
+                </View>
               </View>
-              <View style={styles.rowView}>
-                  <Button title="See on Maps" onPress={()=>{this.mapper(item.longitude,item.latitude)}}></Button>
-                  <Button title="Acknowledge "onPress ={()=>{this.handleAck(item.zone,item.id,item.eventID)}}></Button>
-              </View>
-              
-             
-            
-            </View>
-          )}
-          keyExtractor={(item) => item.email}
-        />}
-              
-        
+            )}
+            keyExtractor={(item) => item.email}
+          />
+        )}
       </SafeAreaView>
     );
   }
@@ -301,19 +323,17 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     alignContent: "center",
-    margin:"5%"
+    margin: "5%",
   },
   rowView: {
     flexDirection: "row",
     marginVertical: "5 %",
-   
+
     margin: "5%",
   },
-  flatView:{
-      margin:"5%",
-      backgroundColor:"lightblue",
-      borderRadius:20
-  
-      
-  }
+  flatView: {
+    margin: "5%",
+    backgroundColor: "lightblue",
+    borderRadius: 20,
+  },
 });
