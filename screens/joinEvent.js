@@ -11,6 +11,7 @@ import {
 } from "native-base";
 
 export default class JoinEvent extends Component {
+    
 
     state = {
         data: null,
@@ -19,16 +20,17 @@ export default class JoinEvent extends Component {
         eventID: ""
     }
 
+
     handleRefresh = () => {
         this.setState(
-          {
-            refreshing: true,
-          },
-          () => {
-            this.componentDidMount();
-          }
+            {
+                refreshing: true,
+            },
+            () => {
+                this.componentDidMount();
+            }
         );
-      };
+    };
 
     getCurrentEvent = () => {
 
@@ -54,13 +56,13 @@ export default class JoinEvent extends Component {
                     this.setState({
                         data: data,
                         eventID: eventID,
-                        refreshing:false
+                        refreshing: false
                     })
 
                 }
-                else{
+                else {
                     this.setState({
-                        data:[]
+                        data: []
                     })
                 }
 
@@ -111,7 +113,8 @@ export default class JoinEvent extends Component {
                             volunteerID: fire.auth().currentUser.uid.toString(),
                             status: "active",
                             leader: false,
-                            zoneNumber: 0
+                            zoneNumber: 0,
+                            arrived: false
 
                         })
                         .then(() => {
@@ -160,46 +163,46 @@ export default class JoinEvent extends Component {
 
         return (
             <SafeAreaView style={{ flex: 1 }}>
-             
 
 
-                  {
-                      this.state.data ? (
+
+                {
+                    this.state.data ? (
                         <FlatList
-                        data={this.state.data}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity style={styles.card} onPress={this.joinEvent}>
-                                <View style={{ padding: "5%" }}>
-                                    <Text style={styles.headerText} >
-                                        {item.eventName}
-                                    </Text>
+                            data={this.state.data}
+                            renderItem={({ item }) => (
+                                <TouchableOpacity style={styles.card} onPress={this.joinEvent}>
+                                    <View style={{ padding: "5%" }}>
+                                        <Text style={styles.headerText} >
+                                            {item.eventName}
+                                        </Text>
 
-                                    <Text style={styles.text}>
-                                        Time :{item.eventTime}
-                                    </Text>
-                                    <Text style={styles.text}>
-                                        Date :{item.eventDate}
-                                    </Text>
-                                    <Text style={styles.text}>
-                                        Description:  {item.eventDescription}
-                                    </Text>
-                                </View>
-                            </TouchableOpacity>
-                        )}
-                        keyExtractor={(item) => item.eventDate}
-                        ListEmptyComponent={this.emptyComponent}
-                        refreshing={this.state.refreshing}
-            onRefresh={this.handleRefresh}
+                                        <Text style={styles.text}>
+                                            Time :{item.eventTime}
+                                        </Text>
+                                        <Text style={styles.text}>
+                                            Date :{item.eventDate}
+                                        </Text>
+                                        <Text style={styles.text}>
+                                            Description:  {item.eventDescription}
+                                        </Text>
+                                    </View>
+                                </TouchableOpacity>
+                            )}
+                            keyExtractor={(item) => item.eventDate}
+                            ListEmptyComponent={this.emptyComponent}
+                            refreshing={this.state.refreshing}
+                            onRefresh={this.handleRefresh}
 
-                    />
-                      ):(
+                        />
+                    ) : (
                         <NativeBaseProvider>
-                        <Center flex={1}>
-                          <Spinner color="blue.500" />
-                        </Center>
-                      </NativeBaseProvider>
-                      )
-                  }
+                            <Center flex={1}>
+                                <Spinner color="blue.500" />
+                            </Center>
+                        </NativeBaseProvider>
+                    )
+                }
 
 
 

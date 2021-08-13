@@ -294,6 +294,7 @@ export default class Map extends Component {
               longitudeDelta: 0.02,
             }}
           >
+            
 
           {response.map(marker => (
             <MapView.Marker

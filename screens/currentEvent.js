@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, StyleSheet, SafeAreaView, TouchableOpacity, Text, Button } from "react-native";
+import { View, StyleSheet, SafeAreaView, TouchableOpacity, Text, Button, Alert } from "react-native";
 import fire from "../database/firebase";
 
 
@@ -8,6 +8,51 @@ export default class CurrentEvent extends Component {
     state = {
         eventID: ""
     }
+
+    reportArrival = () => {
+        fire
+            .firestore()
+            .collection("ADMIN")
+            .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+            .collection("EVENT MANAGEMENT")
+            .doc(this.state.eventID)
+            .collection("VOLUNTEERS")
+            .doc(fire.auth().currentUser.uid.toString())
+            .update({
+                arrived: true
+            })
+            .then(() => {
+                Alert.alert("Arrival reported!")
+            })
+            .catch((err) => {
+                console.log(err.toString())
+            })
+    }
+
+
+
+
+    removeVolunteer = () => {
+
+        fire
+            .firestore()
+            .collection("ADMIN")
+            .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+            .collection("EVENT MANAGEMENT")
+            .doc(this.state.eventID.toString())
+            .collection("VOLUNTEERS")
+            .doc(fire.auth().currentUser.uid.toString())
+            .delete()
+            .then(() => {
+                Alert.alert("You are removed as a volunteer!");
+
+            })
+            .catch((err) => {
+                console.log(err.toString())
+            })
+
+    }
+
 
 
 
@@ -103,8 +148,12 @@ export default class CurrentEvent extends Component {
                             <Text style={styles.text}>Report Object</Text>
 
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.card} onPress={() => { navigation.navigate("ReportOther"); }} >
-                            <Text style={styles.text}>Report Other</Text>
+                        <TouchableOpacity style={styles.card} onPress={this.reportArrival}>
+                            <Text style={styles.text}>Report Arrival</Text>
+
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.card} onPress={this.removeVolunteer}>
+                            <Text style={styles.text}>Remove as Volunteer</Text>
 
                         </TouchableOpacity>
 
