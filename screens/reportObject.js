@@ -134,12 +134,16 @@ export default class ReportObject extends Component {
       .collection("ZONE " + this.state.Zone)
       .doc()
       .set({
+
         zone: Number(this.state.Zone),
         description: this.state.description,
         longitude: this.state.longitude,
         latitude: this.state.latitude,
         imageUri: this.state.downloadUri,
-        status:false
+        status: false,
+        eventID:this.props.route.params.ID,
+        
+        
 
       })
       .then(() => {
