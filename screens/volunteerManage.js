@@ -10,6 +10,8 @@ export default class VolunteerManagement extends Component {
     }
 
 
+
+
     getCurrentEvent = () => {
         var eventID;
 
@@ -22,10 +24,10 @@ export default class VolunteerManagement extends Component {
             .get()
             .then(async (sub) => {
 
-               
+
                 if (sub.docs.length > 0) {
-                    
-                
+
+
                     const data = [];
                     sub.forEach((doc) => {
                         eventID = doc.id.toString();
@@ -34,8 +36,8 @@ export default class VolunteerManagement extends Component {
                         eventID: eventID,
                     });
                 } else {
-                    
-          await  fire
+
+                    await fire
                         .firestore()
                         .collection("ADMIN")
                         .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
@@ -55,8 +57,8 @@ export default class VolunteerManagement extends Component {
                                 })
                             }
                         })
-                        .catch((err)=>{
-                            console.log(err.toString()+" error")
+                        .catch((err) => {
+                            console.log(err.toString() + " error")
                         });
 
 
@@ -71,88 +73,90 @@ export default class VolunteerManagement extends Component {
                 console.log(err.toString());
             });
     };
-    handleRelease =()=>{
+    handleRelease = () => {
         Alert.alert(
             "Release",
             "Are you sure ? This will release all volunteers. ",
-      
+
             [
-              {
-                text: "No",
-                onPress: () => {
-                  console.log("No")
+                {
+                    text: "No",
+                    onPress: () => {
+                        console.log("No")
+                    },
                 },
-              },
-              {
-                text: "Yes",
-                onPress: () => {
-                  this.releaseAllVolunteers();
+                {
+                    text: "Yes",
+                    onPress: () => {
+                        this.releaseAllVolunteers();
+                    },
                 },
-              },
             ]
-          );
+        );
     }
+
+
 
 
 
     releaseAllVolunteers = async () => {
 
-        if(this.state.eventID==""){
+        if (this.state.eventID == "") {
             Alert.alert("No event in progress!")
 
-        }else{
+        } else {
             await fire
-            .firestore()
-            .collection("ADMIN")
-            .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-            .collection("EVENT MANAGEMENT")
-            .doc(this.state.eventID.toString())
-            .collection("VOLUNTEERS")
-            .get()
-            .then(
+                .firestore()
+                .collection("ADMIN")
+                .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+                .collection("EVENT MANAGEMENT")
+                .doc(this.state.eventID.toString())
+                .collection("VOLUNTEERS")
+                .get()
+                .then(
 
-                (sub) => {
-                    if (sub.docs.length > 0) {
-                        var results = []
-                        sub.forEach((doc) => {
-                            var docRef = fire
-                                .firestore()
-                                .collection("ADMIN")
-                                .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-                                .collection("EVENT MANAGEMENT")
-                                .doc(this.state.eventID.toString())
-                                .collection("VOLUNTEERS")
-                                .doc(doc.id)
-                                .update({
-                                    leader: false,
-                                    status: false
-                                })
-                                .then(
-                                    console.log("Updated - " + doc.id.toString())
-                                );
-                            results.push(docRef);
-
-
-                        })
-                        return Promise.all(results);
+                    (sub) => {
+                        if (sub.docs.length > 0) {
+                            var results = []
+                            sub.forEach((doc) => {
+                                var docRef = fire
+                                    .firestore()
+                                    .collection("ADMIN")
+                                    .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+                                    .collection("EVENT MANAGEMENT")
+                                    .doc(this.state.eventID.toString())
+                                    .collection("VOLUNTEERS")
+                                    .doc(doc.id)
+                                    .update({
+                                        leader: false,
+                                        status: false
+                                    })
+                                    .then(
+                                        console.log("Updated - " + doc.id.toString())
+                                    );
+                                results.push(docRef);
 
 
+                            })
+                            return Promise.all(results);
 
+
+
+                        }
                     }
-                }
-            )
-            .then(() => {
-                console.log("Yeta - " + this.state.data)
-                Alert.alert("All Volunteers released!")
-            })
-            .catch(function (error) {
-                console.log("Error getting documents: ", error);
-            });
+                )
+                .then(() => {
+                    console.log("Yeta - " + this.state.data)
+                    Alert.alert("All Volunteers released!")
+                })
+                .catch(function (error) {
+                    console.log("Error getting documents: ", error);
+                });
 
         }
 
 
-       
+
     }
 
 
@@ -174,6 +178,14 @@ export default class VolunteerManagement extends Component {
                 <TouchableOpacity style={styles.card} onPress={this.handleRelease} >
 
                     <Text style={styles.text}>Release All </Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.card} onPress={() => {
+                    navigation.navigate("EventStatus", {
+                        eventID: this.state.eventID
+                    })
+                }} >
+
+                    <Text style={styles.text}>Arrival Checklist </Text>
                 </TouchableOpacity>
             </SafeAreaView>
         )

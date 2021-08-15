@@ -280,19 +280,22 @@ export default class Map extends Component {
       });
     }
 
-    return (
-      <View style={styles.container}>
-        <MapView
-          provider={PROVIDER_GOOGLE}
-          style={styles.map}
-          initialRegion={{
-            latitude: 32.7165527,
-            longitude: -97.1726284,
-            latitudeDelta: 0.009,
-            longitudeDelta: 0.02,
-          }}
-        >
-          {response.map((marker) => (
+
+    return(
+        <View style={styles.container}>
+          <MapView
+            provider={PROVIDER_GOOGLE}
+            style={styles.map}
+            initialRegion={{
+              latitude: 32.7165527,
+              longitude: -97.1726284,
+              latitudeDelta: 0.009,
+              longitudeDelta: 0.02,
+            }}
+          >
+            
+
+          {response.map(marker => (
             <MapView.Marker
               key={marker.id}
               coordinate={marker.coordinates}
