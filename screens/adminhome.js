@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import {BlurView} from "@react-native-community/blur";
 import {
   View,
   StyleSheet,
@@ -6,6 +7,7 @@ import {
   TouchableOpacity,
   Text,
   Button,
+  Image,
   ImageBackground,
   Alert,
 } from "react-native";
@@ -36,7 +38,8 @@ export default class AssignHome extends Component {
     arrived_past: 0,
     notarrived_past: 0,
     loading: true,
-    switch:false
+    switch: false,
+    refreshing: false,
   };
 
   handleCancelCheck = () => {
@@ -185,10 +188,12 @@ export default class AssignHome extends Component {
           this.setState({
             unarrived: sub.docs.length,
             loading: false,
+            refreshing: false,
           });
         } else {
           this.setState({
             unarrived: 0,
+            refreshing: false,
           });
         }
       })
@@ -370,6 +375,7 @@ export default class AssignHome extends Component {
         if (this.state.currenteventID == "") {
           this.setState({
             loading: false,
+            refreshing: false,
           });
         } else {
           this.getArrived();
@@ -388,6 +394,17 @@ export default class AssignHome extends Component {
   componentWillUnmount() {
     this._isMounted = false;
   }
+
+  handleRefresh = () => {
+    this.setState(
+      {
+        refreshing: true,
+      },
+      () => {
+        this.componentDidMount();
+      }
+    );
+  };
 
   render() {
     const { navigation } = this.props;
@@ -499,10 +516,23 @@ export default class AssignHome extends Component {
                           margin: "5%",
                           padding: "2%",
                           borderRadius: 10,
-                          backgroundColor: "lightblue",
+
+                          backgroundColor: "rgba(0, 0, 0, 0.2)",
+                          shadowOffset: {
+                            width: 0,
+                            height: 2,
+                          },
+                          shadowOpacity: 0.1,
+                          shadowRadius: 2,
                         }}
                       >
-                        <View style={{ borderBottomWidth: 1, padding: "3%" }}>
+                        <View
+                          style={{
+                            borderBottomWidth: 1,
+                            padding: "3%",
+                            backgroundColor: "transparent",
+                          }}
+                        >
                           <Text style={{ fontSize: 20, fontWeight: "bold" }}>
                             COMPLETED EVENT
                           </Text>
@@ -562,10 +592,10 @@ export default class AssignHome extends Component {
                           >
                             <TouchableOpacity
                               style={{
-                                borderWidth: 1,
                                 borderRadius: 10,
                                 marginTop: "3%",
                                 alignItems: "center",
+                                backgroundColor: "#1496BB",
                               }}
                               onPress={() => {
                                 navigation.navigate("EventStatus", {
@@ -588,21 +618,27 @@ export default class AssignHome extends Component {
                       </View>
                     )}
                     keyExtractor={(item) => item.eventID}
-
-                    // refreshing={this.state.refreshing}
-                    // onRefresh={this.handleRefresh}
+                    refreshing={this.state.refreshing}
+                    onRefresh={this.handleRefresh}
                   />
                 ) : (
                   <FlatList
-                    data={ this.state.data_current}
+                    data={this.state.data_current}
                     renderItem={({ item }) => (
                       <View
                         style={{
                           margin: "5%",
                           padding: "2%",
                           borderRadius: 10,
-                          backgroundColor: "lightblue",
+                          backgroundColor: "rgba(0, 0, 0, 0.2)",
+                          shadowOffset: {
+                            width: 0,
+                            height: 2,
+                          },
+                          shadowOpacity: 0.1,
+                          shadowRadius: 2,
                         }}
+                       
                       >
                         <View style={{ borderBottomWidth: 1, padding: "3%" }}>
                           <Text style={{ fontSize: 20, fontWeight: "bold" }}>
@@ -696,14 +732,34 @@ export default class AssignHome extends Component {
                           >
                             {this.state.currenteventStatus != "current" ? (
                               <TouchableOpacity
-                                style={{ borderWidth: 1, borderRadius: 20 }}
+                                style={{
+                                  borderRadius: 20,
+                                  flexDirection: "row",
+                                  justifyContent: "space-evenly",
+                                  alignItems: "center",
+                                  backgroundColor: "rgba(0, 202, 78,0.6)",
+                                  paddingHorizontal: "2%",
+                                  shadowOffset: {
+                                    width: 0,
+                                    height: 2,
+                                  },
+                                  shadowOpacity: 0.1,
+                                  shadowRadius: 2,
+                                  elevation: 10,
+                                }}
                                 onPress={this.handleStart}
                               >
+                                <Image
+                                  source={require("../assets/start.png")}
+                                  style={{
+                                    transform: [{ scale: 1 }],
+                                  }}
+                                />
                                 <Text
                                   style={{
                                     fontSize: 20,
                                     fontWeight: "bold",
-                                    padding: "2%",
+                                    marginLeft: "3%",
                                   }}
                                 >
                                   Start
@@ -711,14 +767,36 @@ export default class AssignHome extends Component {
                               </TouchableOpacity>
                             ) : (
                               <TouchableOpacity
-                                style={{ borderWidth: 1, borderRadius: 20 }}
+                                style={{
+                                  borderRadius: 20,
+                                  flexDirection: "row",
+                                  justifyContent: "space-evenly",
+                                  alignItems: "center",
+                                  backgroundColor: "rgba(255, 189, 68,0.7)",
+                                  paddingHorizontal: "2%",
+                                  shadowOffset: {
+                                    width: 0,
+                                    height: 2,
+                                  },
+                                  shadowOpacity: 0.1,
+                                  shadowRadius: 2,
+                                  elevation: 10,
+                                }}
                                 onPress={this.handlePause}
                               >
+                                <Image
+                                  source={require("../assets/pause.png")}
+                                  style={{
+                                    opacity: 0.7,
+                                    transform: [{ scale: 1 }],
+                                  }}
+                                />
+
                                 <Text
                                   style={{
                                     fontSize: 20,
                                     fontWeight: "bold",
-                                    padding: "2%",
+                                    marginLeft: "3%",
                                   }}
                                 >
                                   Pause
@@ -727,31 +805,72 @@ export default class AssignHome extends Component {
                             )}
 
                             <TouchableOpacity
-                              style={{ borderWidth: 1, borderRadius: 20 }}
+                              style={{
+                                borderRadius: 20,
+                                flexDirection: "row",
+                                justifyContent: "space-evenly",
+                                alignItems: "center",
+                                backgroundColor: "rgba(0, 202, 78,0.6)",
+                                paddingHorizontal: "2%",
+                                shadowOffset: {
+                                  width: 0,
+                                  height: 2,
+                                },
+                                shadowOpacity: 0.1,
+                                shadowRadius: 2,
+                                elevation: 10,
+                              }}
                               onPress={this.handleCompletedCheck}
                             >
+                              <Image
+                                source={require("../assets/complete.png")}
+                                style={{
+                                  transform: [{ scale: 1 }],
+                                }}
+                              />
                               <Text
                                 style={{
                                   fontSize: 20,
                                   fontWeight: "bold",
-                                  padding: "2%",
+
+                                  marginLeft: "3%",
                                 }}
                               >
-                                Close Event
+                                Complete
                               </Text>
                             </TouchableOpacity>
                             <TouchableOpacity
-                              style={{ borderWidth: 1, borderRadius: 20 }}
+                              style={{
+                                borderRadius: 20,
+                                flexDirection: "row",
+                                justifyContent: "space-evenly",
+                                alignItems: "center",
+                                backgroundColor: "rgba(255, 96, 92,0.8)",
+                                padding: "2%",
+                                shadowOffset: {
+                                  width: 0,
+                                  height: 2,
+                                },
+                                shadowOpacity: 0.1,
+                                shadowRadius: 2,
+                                elevation: 10,
+                              }}
                               onPress={this.handleCancelCheck}
                             >
+                              <Image
+                                source={require("../assets/cancel.png")}
+                                style={{
+                                  transform: [{ scale: 1 }],
+                                }}
+                              />
                               <Text
                                 style={{
                                   fontSize: 20,
                                   fontWeight: "bold",
-                                  padding: "2%",
+                                  marginLeft: "3%",
                                 }}
                               >
-                                Cancel Event
+                                Cancel
                               </Text>
                             </TouchableOpacity>
                           </View>
@@ -763,9 +882,9 @@ export default class AssignHome extends Component {
                           >
                             <TouchableOpacity
                               style={{
-                                borderWidth: 1,
                                 borderRadius: 10,
                                 alignItems: "center",
+                                backgroundColor: "rgba(36,160,237,0.5)",
                               }}
                               onPress={() => {
                                 this.props.navigation.navigate(
@@ -785,10 +904,10 @@ export default class AssignHome extends Component {
                             </TouchableOpacity>
                             <TouchableOpacity
                               style={{
-                                borderWidth: 1,
                                 borderRadius: 10,
                                 marginTop: "3%",
                                 alignItems: "center",
+                                backgroundColor: "rgba(36,160,237,0.5)",
                               }}
                               onPress={() => {
                                 navigation.navigate("EventStatus", {
@@ -808,10 +927,10 @@ export default class AssignHome extends Component {
                             </TouchableOpacity>
                             <TouchableOpacity
                               style={{
-                                borderWidth: 1,
                                 borderRadius: 10,
                                 marginTop: "3%",
                                 alignItems: "center",
+                                backgroundColor: "rgba(36,160,237,0.5)",
                               }}
                               onPress={this.handleRelease}
                             >
@@ -830,9 +949,8 @@ export default class AssignHome extends Component {
                       </View>
                     )}
                     keyExtractor={(item) => item.eventID}
-
-                    // refreshing={this.state.refreshing}
-                    // onRefresh={this.handleRefresh}
+                    refreshing={this.state.refreshing}
+                    onRefresh={this.handleRefresh}
                   />
                 )}
               </View>

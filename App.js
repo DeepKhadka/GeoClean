@@ -81,16 +81,19 @@ function adminhome() {
           name="Drawer"
           children={drawerAdmin}
           options={{
+            
             headerShown: false,
             headerStyle: { backgroundColor: "red" },
           }}
         />
-        <Stack.Screen name="AdminHome" component={AdminHome} />
+        <Stack.Screen name="AdminHome" component={AdminHome} options={{title:"DashBoard"}}/>
         <Stack.Screen
           name="VolunteerManagement"
           component={VolunteerManagement}
         />
-        <Stack.Screen name="ZoneManagement" component={Map} />
+        <Stack.Screen name="ZoneManagement" component={Map} 
+      
+        />
         <Stack.Screen name="EventManagement" component={EventManagement} />
         <Stack.Screen name="StartEvent" component={StartEvent} />
         <Stack.Screen name="EventReport" component={EventReport} />
