@@ -15,7 +15,7 @@ export function DrawerContentV(props) {
           style={{
             width: "100%",
             height: "100%",
-            marginTop:"5%"
+            marginTop: "5%",
           }}
         />
       </View>
@@ -59,7 +59,9 @@ export function DrawerContentV(props) {
             label="View Zones"
             labelStyle={{ color: "black", fontSize: 15, fontWeight: "bold" }}
             onPress={() => {
-              props.navigation.navigate("ZONE");
+              props.navigation.navigate("ZONE", {
+                admin: false,
+              });
             }}
           />
 
@@ -113,7 +115,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginRight: 3,
   },
- 
+
   bottomDrawerSection: {
     marginBottom: 15,
     borderTopColor: "black",

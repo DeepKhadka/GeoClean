@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {BlurView} from "@react-native-community/blur";
+import { BlurView } from "@react-native-community/blur";
 import {
   View,
   StyleSheet,
@@ -9,6 +9,7 @@ import {
   Button,
   Image,
   ImageBackground,
+  ScrollView,
   Alert,
 } from "react-native";
 import fire from "../database/firebase";
@@ -437,6 +438,15 @@ export default class AssignHome extends Component {
                     backgroundColor: "lightblue",
                     margin: "2%",
                     borderRadius: 5,
+                    backgroundColor: "rgba(36,160,237,0.5)",
+                    borderBottomWidth: 2,
+                    shadowOffset: {
+                      width: 0,
+                      height: 2,
+                    },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 2,
+                    elevation: 5,
                   }}
                   onPress={() => {
                     this.props.navigation.navigate("StartEvent");
@@ -455,6 +465,15 @@ export default class AssignHome extends Component {
                       backgroundColor: "lightblue",
                       margin: "2%",
                       borderRadius: 5,
+                      backgroundColor: "rgba(36,160,237,0.5)",
+                      borderBottomWidth: 2,
+                      shadowOffset: {
+                        width: 0,
+                        height: 2,
+                      },
+                      shadowOpacity: 0.1,
+                      shadowRadius: 2,
+                      elevation: 5,
                     }}
                   >
                     <Text
@@ -474,6 +493,15 @@ export default class AssignHome extends Component {
                       backgroundColor: "lightblue",
                       margin: "2%",
                       borderRadius: 5,
+                      backgroundColor: "rgba(36,160,237,0.5)",
+                      borderBottomWidth: 2,
+                      shadowOffset: {
+                        width: 0,
+                        height: 2,
+                      },
+                      shadowOpacity: 0.1,
+                      shadowRadius: 2,
+                      elevation: 5,
                     }}
                   >
                     <Text
@@ -497,6 +525,14 @@ export default class AssignHome extends Component {
                     alignItems: "center",
                     margin: "2%",
                     width: "10%",
+                    backgroundColor: "rgba(36,160,237,0.5)",
+                    borderBottomWidth: 2,
+                    shadowOffset: {
+                      width: 0,
+                      height: 2,
+                    },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 2,
                   }}
                   onPress={() => {
                     this.componentDidMount();
@@ -512,6 +548,7 @@ export default class AssignHome extends Component {
                     data={this.state.data_completed}
                     renderItem={({ item }) => (
                       <View
+                        horizontal={true}
                         style={{
                           margin: "5%",
                           padding: "2%",
@@ -595,7 +632,16 @@ export default class AssignHome extends Component {
                                 borderRadius: 10,
                                 marginTop: "3%",
                                 alignItems: "center",
-                                backgroundColor: "#1496BB",
+                                backgroundColor: "rgba(36,160,237,0.5)",
+                                borderBottomWidth: 1,
+                                borderLeftWidth: 1,
+                                borderRightWidth: 1,
+                                shadowOffset: {
+                                  width: 0,
+                                  height: 2,
+                                },
+                                shadowOpacity: 0.1,
+                                shadowRadius: 5,
                               }}
                               onPress={() => {
                                 navigation.navigate("EventStatus", {
@@ -631,6 +677,7 @@ export default class AssignHome extends Component {
                           padding: "2%",
                           borderRadius: 10,
                           backgroundColor: "rgba(0, 0, 0, 0.2)",
+
                           shadowOffset: {
                             width: 0,
                             height: 2,
@@ -638,7 +685,6 @@ export default class AssignHome extends Component {
                           shadowOpacity: 0.1,
                           shadowRadius: 2,
                         }}
-                       
                       >
                         <View style={{ borderBottomWidth: 1, padding: "3%" }}>
                           <Text style={{ fontSize: 20, fontWeight: "bold" }}>
@@ -832,7 +878,6 @@ export default class AssignHome extends Component {
                                 style={{
                                   fontSize: 20,
                                   fontWeight: "bold",
-
                                   marginLeft: "3%",
                                 }}
                               >
@@ -885,6 +930,15 @@ export default class AssignHome extends Component {
                                 borderRadius: 10,
                                 alignItems: "center",
                                 backgroundColor: "rgba(36,160,237,0.5)",
+                                borderBottomWidth: 1,
+                                borderLeftWidth: 1,
+                                borderRightWidth: 1,
+                                shadowOffset: {
+                                  width: 0,
+                                  height: 2,
+                                },
+                                shadowOpacity: 0.1,
+                                shadowRadius: 5,
                               }}
                               onPress={() => {
                                 this.props.navigation.navigate(
@@ -908,6 +962,15 @@ export default class AssignHome extends Component {
                                 marginTop: "3%",
                                 alignItems: "center",
                                 backgroundColor: "rgba(36,160,237,0.5)",
+                                borderBottomWidth: 1,
+                                borderLeftWidth: 1,
+                                borderRightWidth: 1,
+                                shadowOffset: {
+                                  width: 0,
+                                  height: 2,
+                                },
+                                shadowOpacity: 0.1,
+                                shadowRadius: 5,
                               }}
                               onPress={() => {
                                 navigation.navigate("EventStatus", {
@@ -931,6 +994,15 @@ export default class AssignHome extends Component {
                                 marginTop: "3%",
                                 alignItems: "center",
                                 backgroundColor: "rgba(36,160,237,0.5)",
+                                borderBottomWidth: 1,
+                                borderLeftWidth: 1,
+                                borderRightWidth: 1,
+                                shadowOffset: {
+                                  width: 0,
+                                  height: 2,
+                                },
+                                shadowOpacity: 0.1,
+                                shadowRadius: 5,
                               }}
                               onPress={this.handleRelease}
                             >

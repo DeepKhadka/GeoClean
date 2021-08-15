@@ -7,7 +7,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 export function DrawerContent(props) {
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "lightblue" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "rgba(36,160,237,0.5)" }}>
       <View style={{ flex: 3 }}>
         <Image
           source={require("../assets/logo_geoclean.png")}
@@ -15,6 +15,7 @@ export function DrawerContent(props) {
             width: "100%",
             height: "100%",
             marginTop: "5%",
+            transform: [{ scale: 0.9 }],
           }}
         />
       </View>
@@ -48,7 +49,9 @@ export function DrawerContent(props) {
             label="View Zones"
             labelStyle={{ color: "black", fontSize: 15, fontWeight: "bold" }}
             onPress={() => {
-              props.navigation.navigate("ZoneManagement");
+              props.navigation.navigate("ZoneManagement", {
+                admin: true,
+              });
             }}
           />
 
