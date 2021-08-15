@@ -21,7 +21,7 @@ import {
 } from "native-base";
 import { Icon } from 'react-native-elements';
 
-
+import ModalSelector from 'react-native-modal-selector'
 
 export default class ReassignVolunteers extends Component {
   state = {
@@ -170,7 +170,7 @@ export default class ReassignVolunteers extends Component {
   onPickerSelect = (value) => {
     this.setState({
       Zone: value,
-      zoneplaceHolder: value.toString(),
+      zoneplaceHolder: 'Zone '+value,
     });
   };
   componentDidMount() {
@@ -196,6 +196,14 @@ export default class ReassignVolunteers extends Component {
     const fname = this.props.route.params.fname;
     const lname = this.props.route.params.lname;
     const email = this.props.route.params.email;
+    const data = [
+      { key: 1, section: true, label: 'Zone 1' },
+      { key: 2, label: 'Zone 2' },
+      { key: 3, label: 'Zone 3' },
+      { key: 4, label: 'Zone 4'},
+      { key: 5, label: 'Zone 5'},
+      { key: 6, label: 'Zone 6'},
+    ]
 
 
 
@@ -218,22 +226,12 @@ export default class ReassignVolunteers extends Component {
               />
             </View>
             <View style={styles.rowView}>
-              <NativeBaseProvider>
-                <Select
-                  placeholder={this.state.zoneplaceHolder}
-                  placeholderTextColor="black"
-                  width={150}
-
-                  onValueChange={(itemValue) => this.onPickerSelect(itemValue)}
-                >
-                  <Select.Item label="Zone 1" value={1} />
-                  <Select.Item label="Zone 2" value={2} />
-                  <Select.Item label="Zone 3" value={3} />
-                  <Select.Item label="Zone 4" value={4} />
-                  <Select.Item label="Zone 5" value={5} />
-                  <Select.Item label="Zone 6" value={6} />
-                </Select>
-              </NativeBaseProvider>
+            <ModalSelector
+                    data={data}
+                    initValue={this.state.zoneplaceHolder}
+                    style={{width:"50%"}}
+                    initValueTextStyle={{color:"black"}}
+                    onChange={(option)=>{ this.onPickerSelect(option.key) }} />
 
             </View>
             <View style={styles.rowView}>

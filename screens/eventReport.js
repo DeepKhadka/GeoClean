@@ -11,7 +11,9 @@ import {
 } from "react-native";
 import fire from "../database/firebase";
 import openMap from "react-native-open-maps";
-import { NativeBaseProvider, Select } from "native-base";
+
+
+import ModalSelector from 'react-native-modal-selector';
 
 export default class EventReport extends Component {
   
@@ -238,40 +240,40 @@ export default class EventReport extends Component {
     this.getZone1();
   }
 
-  onPickerSelect = (value) => {
+  onPickerSelect = (value,key) => {
     this.setState({
       zone: value,
-      zoneplaceHolder: value.toString(),
-    });
+      zoneplaceHolder: "Zone " +value,
+      
+    },
+    console.log(value));
   };
   render() {
     const { navigation } = this.props;
+    const data = [
+      { key: 1, section: true, label: 'Zone 1' },
+      { key: 2, label: 'Zone 2' },
+      { key: 3, label: 'Zone 3' },
+      { key: 4, label: 'Zone 4'},
+      { key: 5, label: 'Zone 5'},
+      { key: 6, label: 'Zone 6'},
+
+      
+  ];
+
 
     return (
       <SafeAreaView style={{ height:"100%",width:"100%"}}>
-        <View style={{flex:0.4,backgroundColor:"blue"}}>
-          <NativeBaseProvider>
-            <Select
-              placeholder={this.state.zoneplaceHolder}
-              placeholderTextColor="black"
-              marginTop="5%"
-              mode="dropdown"
-              width="60%"
-              backgroundColor="lightblue"
-              padding="10%"
-              
-              onValueChange={(itemValue) => this.onPickerSelect(itemValue)}
-            >
-              <Select.Item label="Zone 1" value={1} />
-              <Select.Item label="Zone 2" value={2} />
-              <Select.Item label="Zone 3" value={3} />
-              <Select.Item label="Zone 4" value={4} />
-              <Select.Item label="Zone 5" value={5} />
-              <Select.Item label="Zone 6" value={6} />
-            </Select>
-          </NativeBaseProvider>
+        <View  style={{flex:1}}>
+         
+          <ModalSelector
+                    data={data}
+                    initValue={this.state.zoneplaceHolder}
+                    style={{width:"50%",margin:"2%"}}
+                    initValueTextStyle={{color:"gray",padding:"2%"}}
+                    onChange={(option)=>{ this.onPickerSelect(option.key) }} />
         </View>
-        <View style={{flex:0.8}}>
+        <View style={{flex:12}}>
         {this.state.zone == 0 ? null : (
           <FlatList
             data={this.handleFilter(this.state.zone)}
@@ -297,6 +299,7 @@ export default class EventReport extends Component {
                       this.changeStatus(item.zone, item.id, item.eventID);
                       alert("Report Acknowledged")
                     }}
+                    
                   ></Button>
                 </View>
               </View>
@@ -336,6 +339,7 @@ const styles = StyleSheet.create({
   rowView: {
     flexDirection: "row",
     marginVertical: "5 %",
+    justifyContent:"space-between",
 
     margin: "5%",
   },

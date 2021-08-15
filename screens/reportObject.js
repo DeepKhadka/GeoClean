@@ -19,6 +19,7 @@ import { Icon } from "react-native-elements";
 import * as Location from "expo-location";
 import FloatingTextBox from "../assets/textEntry";
 import Constants from "expo-constants";
+import ModalSelector from 'react-native-modal-selector';
 
 
 export default class ReportObject extends Component {
@@ -234,32 +235,32 @@ export default class ReportObject extends Component {
   onPickerSelect = (value) => {
     this.setState({
       Zone: value,
-      zoneplaceHolder: value.toString(),
+      zoneplaceHolder: "Zone "+value ,
     });
   };
 
   render() {
     const { navigation } = this.props;
+    const data = [
+      { key: 1, section: true, label: 'Zone 1' },
+      { key: 2, label: 'Zone 2' },
+      { key: 3, label: 'Zone 3' },
+      { key: 4, label: 'Zone 4'},
+      { key: 5, label: 'Zone 5'},
+      { key: 6, label: 'Zone 6'},
+    ]
     return (
       <SafeAreaView style={styles.safeview}>
-        <View style={{height:"20%",width:"80%",backgroundColor:"red"}}>
-          <NativeBaseProvider>
-            <Select
-              placeholder={this.state.zoneplaceHolder}
-              backgroundColor="red"
-              placeholderTextColor="black"
-              width={"50%"}
-              onValueChange={(itemValue) => this.onPickerSelect(itemValue)}
-            >
-              <Select.Item label="Zone 1" value={1} />
-              <Select.Item label="Zone 2" value={2} />
-              <Select.Item label="Zone 3" value={3} />
-              <Select.Item label="Zone 4" value={4} />
-              <Select.Item label="Zone 5" value={5} />
-              <Select.Item label="Zone 6" value={6} />
-            </Select>
-          </NativeBaseProvider>
+        <View style={{flex:1}}>
+        <ModalSelector
+                    data={data}
+                    initValue={this.state.zoneplaceHolder}
+                    style={{width:"50%"}}
+                    initValueTextStyle={{color:"black"}}
+                    onChange={(option)=>{ this.onPickerSelect(option.key) }} />
+
         </View>
+        <View style={{flex:13}}>
 
         <TextInput
           style={styles.input}
@@ -293,6 +294,7 @@ export default class ReportObject extends Component {
             <Text style={styles.text}>Report</Text>
           </TouchableOpacity>
 
+        </View>
         </View>
 
       </SafeAreaView>
