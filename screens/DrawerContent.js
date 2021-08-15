@@ -7,7 +7,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 export function DrawerContent(props) {
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "black" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "lightblue" }}>
       <View style={{ flex: 3 }}>
         <Image
           source={require("../assets/logo_geoclean.png")}
