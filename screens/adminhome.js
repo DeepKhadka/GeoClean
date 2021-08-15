@@ -297,15 +297,30 @@ export default class AssignHome extends Component {
                   Start an Event
                 </Text>
               </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  justifyContent: "center",
+                  backgroundColor: "lightblue",
+                  margin: "2%",
+                  borderRadius: 5,
+                }}
+              >
+                <Text
+                  style={{ fontSize: 15, fontWeight: "bold", padding: "2%" }}
+                >
+                  View Completed Events
+                </Text>
+              </TouchableOpacity>
 
               <TouchableOpacity
                 style={{
                   backgroundColor: "lightblue",
-                  padding: "2%",
+
                   borderRadius: 5,
-                  flexDirection: "row",
-                  alignContent: "center",
-                  marginRight: "2%",
+                  justifyContent:"center",
+                  alignItems:"center",
+                  margin: "2%",
+                  width: "10%",
                 }}
                 onPress={() => {
                   this.componentDidMount();
