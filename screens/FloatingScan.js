@@ -53,7 +53,7 @@ export default class FloatingTitleTextInputField extends Component {
     return this.props.label != "Description" ? (
       <View
         style={{
-          backgroundColor: "#272727",
+          backgroundColor: "white",
           width: "80%",
           borderTopEndRadius: 5,
           borderTopStartRadius: 5,
@@ -70,7 +70,7 @@ export default class FloatingTitleTextInputField extends Component {
             borderBottomWidth: 2,
             paddingLeft: 5,
             borderBottomColor:
-              isFocused || this.props.test !== "" ? "#BB86FC" : "gray",
+              isFocused || this.props.test !== "" ? "blue" : "gray",
           }}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}
