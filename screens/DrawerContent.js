@@ -1,26 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Image } from "react-native";
+import { View, StyleSheet, Image, SafeAreaView } from "react-native";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
-
 import { Drawer } from "react-native-paper";
 import FontAwesome from "react-native-vector-icons/FontAwesome5";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 export function DrawerContent(props) {
   return (
-    <View style={{ flex: 1, backgroundColor: "white" }}>
-      <DrawerContentScrollView {...props}>
-        <View>
-          <Image
-            source={require("../assets/logo_geoclean.png")}
-            style={{
-              width: "100%",
-              height:"100%"
-             
-            }}
-          />
-        </View>
-
+    <SafeAreaView style={{ flex: 1, backgroundColor: "black" }}>
+      <View style={{ flex: 3 }}>
+        <Image
+          source={require("../assets/logo_geoclean.png")}
+          style={{
+            width: "100%",
+            height: "100%",
+            marginTop: "5%",
+          }}
+        />
+      </View>
+      <View style={{ flex: 7}}>
         <Drawer.Section style={styles.drawerSection}>
           <DrawerItem
             icon={({ color, size }) => (
@@ -34,7 +32,7 @@ export function DrawerContent(props) {
           />
           <DrawerItem
             icon={({ color, size }) => (
-              <FontAwesome name="calendar" color="gray" size={size} />
+              <Icon name="calendar" color="gray" size={size} />
             )}
             label="Manage Events"
             labelStyle={{ color: "black", fontSize: 15, fontWeight: "bold" }}
@@ -62,32 +60,28 @@ export function DrawerContent(props) {
               props.navigation.navigate("ZoneManagement");
             }}
           />
-         
-        </Drawer.Section>
-      </DrawerContentScrollView>
-      <Drawer.Section style={styles.bottomDrawerSection}>
-        <DrawerItem
-          icon={({ color, size }) => (
-            <Icon name="exit-to-app" color="gray" size={size} />
-          )}
-          label="Sign Out"
-          labelStyle={{ color: "black", fontSize: 15, fontWeight: "bold" }}
+
+          <DrawerItem
+            icon={({ color, size }) => (
+              <Icon name="exit-to-app" color="gray" size={size} />
+            )}
+            label="Sign Out"
+            labelStyle={{ color: "black", fontSize: 15, fontWeight: "bold" }}
             onPress={handleSignout}
-        />
-       
-      </Drawer.Section>
-    </View>
+          />
+        </Drawer.Section>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   drawerContent: {
     flex: 1,
-    backgroundColor:"black"
+    backgroundColor: "black",
   },
   userInfoSection: {
     paddingLeft: 20,
-    
   },
   title: {
     fontSize: 30,
@@ -112,16 +106,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginRight: 15,
-    
   },
   paragraph: {
     fontWeight: "bold",
     marginRight: 3,
   },
-  drawerSection: {
-    marginTop: 15,
-    
-  },
+
   bottomDrawerSection: {
     marginBottom: 15,
     borderTopColor: "black",

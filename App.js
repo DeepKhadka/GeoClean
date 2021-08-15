@@ -73,7 +73,6 @@ function drawerVolunteer() {
   );
 }
 
-
 function adminhome() {
   return (
     <NavigationContainer>
@@ -114,7 +113,7 @@ function volunteerhome() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-      <Stack.Screen
+        <Stack.Screen
           name="DrawerVolunteer"
           children={drawerVolunteer}
           options={{
