@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Text,
   Button,
+  ImageBackground,
 } from "react-native";
 import fire from "../database/firebase";
 import openMap from "react-native-open-maps";
@@ -263,7 +264,9 @@ export default class EventReport extends Component {
 
 
     return (
-      <SafeAreaView style={{ height:"100%",width:"100%"}}>
+      <SafeAreaView style={{flex:1}}>
+       
+
         <View  style={{flex:1}}>
          
           <ModalSelector
@@ -308,6 +311,7 @@ export default class EventReport extends Component {
           />
         )}
         </View>
+ 
       </SafeAreaView>
     );
   }
@@ -348,4 +352,8 @@ const styles = StyleSheet.create({
     backgroundColor: "lightblue",
     borderRadius: 20,
   },
+  backgroundStyle :{
+    height:"100%",
+    width:"100%"
+  }
 });

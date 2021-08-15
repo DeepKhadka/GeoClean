@@ -7,7 +7,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 export function DrawerContent(props) {
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "lightblue" }}>
       <View style={{ flex: 3 }}>
         <Image
           source={require("../assets/logo_geoclean.png")}
@@ -18,7 +18,7 @@ export function DrawerContent(props) {
           }}
         />
       </View>
-      <View style={{ flex: 7}}>
+      <View style={{ flex: 7 }}>
         <Drawer.Section style={styles.drawerSection}>
           <DrawerItem
             icon={({ color, size }) => (
@@ -34,22 +34,13 @@ export function DrawerContent(props) {
             icon={({ color, size }) => (
               <Icon name="calendar" color="gray" size={size} />
             )}
-            label="Manage Events"
+            label="View Reports"
             labelStyle={{ color: "black", fontSize: 15, fontWeight: "bold" }}
             onPress={() => {
-              props.navigation.navigate("EventManagement");
+              props.navigation.navigate("EventReport");
             }}
           />
-          <DrawerItem
-            icon={({ color, size }) => (
-              <Icon name="account-group" color="gray" size={size} />
-            )}
-            label="Manage Volunteers"
-            labelStyle={{ color: "black", fontSize: 15, fontWeight: "bold" }}
-            onPress={() => {
-              props.navigation.navigate("VolunteerManagement");
-            }}
-          />
+
           <DrawerItem
             icon={({ color, size }) => (
               <Icon name="map-search" color="gray" size={size} />
