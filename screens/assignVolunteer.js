@@ -10,6 +10,7 @@ import {
   FlatList,
   Switch,
   TextInput,
+  ImageBackground
 } from "react-native";
 import fire from "../database/firebase";
 import {
@@ -217,7 +218,16 @@ export default class AssignVolunteer extends Component {
     const { navigation } = this.props;
 
     return (
+      <ImageBackground
+      source={{
+        uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
+      }}
+      style={styles.backgroundStyle}
+    >
       <SafeAreaView style={{ flex: 1 }}>
+        <View style={{flexDirection:'row'}}>
+          <Text style={styles.headerText}>{this.props.route.params.eventName}</Text>
+        </View>
         {this.state.data ? (
           <FlatList
             data={this.state.data}
@@ -236,10 +246,13 @@ export default class AssignVolunteer extends Component {
                   });
                 }}
                 style={{
-                  marginVertical: "4%",
-                  backgroundColor: "lightblue",
-
+                  margin: "5%",
+                  padding: "2%",
                   borderRadius: 10,
+
+                  backgroundColor: "rgba(0, 0, 0, 0.1)",
+            
+                
                 }}
               >
                 <View>
@@ -300,6 +313,7 @@ export default class AssignVolunteer extends Component {
           </NativeBaseProvider>
         )}
       </SafeAreaView>
+      </ImageBackground>
     );
   }
 }
@@ -328,5 +342,9 @@ const styles = StyleSheet.create({
     marginVertical: "5 %",
 
     margin: "5%",
+  },
+  backgroundStyle: {
+    height: "100%",
+    width: "100%",
   },
 });

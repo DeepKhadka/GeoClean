@@ -10,11 +10,14 @@ import {
   Button,
   Alert,
 } from "react-native";
+import * as AddCalendarEvent from 'react-native-add-calendar-event';
+import moment from 'moment';
 
 import fire from "../database/firebase";
 import DefaultCard from "../assets/Defaultcardview";
 import { Icon } from "react-native-elements";
-import RNRestart from "react-native-restart";
+
+const TIME_NOW_IN_UTC = moment.utc();
 
 export default class VolunteerHome extends Component {
   _isMounted = false;
@@ -24,10 +27,28 @@ export default class VolunteerHome extends Component {
     status: false,
     arrivalStatus: false,
     volunteerCompletedEvents: [],
+  eventName:""
   };
   componentWillUnmount() {
     this._isMounted = false;
   }
+ addEventToCalendar(title,description,date) {
+    const eventConfig = {
+      title: title,
+      startDate: date,
+      endDate: date,
+      notes: description
+    };
+  
+    AddCalendarEvent.presentEventCreatingDialog(eventConfig)
+      .then(eventInfo => {
+        alert(JSON.stringify(eventInfo));
+      })
+      .catch(error => {
+        alert('Error ', error);
+      });
+  }
+  
 
   handleDelete = () => {
     Alert.alert(
@@ -196,6 +217,7 @@ export default class VolunteerHome extends Component {
           });
           this.setState({
             eventID: eventID,
+
             data: data,
             refreshing: false,
           });
@@ -360,13 +382,17 @@ export default class VolunteerHome extends Component {
                             <Text style={styles.headerText}>Join</Text>
                           </TouchableOpacity>
                         ) : (
-                          <TouchableOpacity
+                          
+                            <TouchableOpacity
                             style={styles.button}
-                            style={styles.button}
+                    
                             onPress={this.reportArrival}
                           >
                             <Text style={styles.headerText}>Check In</Text>
                           </TouchableOpacity>
+                         
+                          
+                       
                         )}
                       </View>
                     )}
@@ -416,6 +442,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.1,
     shadowRadius: 2,
+    borderRadius:10
   },
   reportButton: {
     margin: "2%",
