@@ -7,10 +7,15 @@ import {
   Text,
   Button,
   Alert,
+  ImageBackground,
+  TextInput,
 } from "react-native";
 import fire from "../database/firebase";
-import FloatingTextBox from "../assets/textEntry";
+import { Icon } from "react-native-elements";
+import FloatingTextBox from "./FloatingScan";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { Directions } from "react-native-gesture-handler";
+import { alignContent, marginLeft } from "styled-system";
 
 function formatDate(date) {
   var MM = date.getMonth() + 1;
@@ -138,88 +143,121 @@ export default class StartEvent extends Component {
   render() {
     const { navigation } = this.props;
     return (
-      <SafeAreaView style={styles.safeview}>
-        <View style={{ alignItems: "center", justifyContent: "space-between" }}>
-          <FloatingTextBox
-            label="Event Name"
-            autoCapitalize="none"
-            placeholderTextColor="gray"
-            onChangeText={(val) => {
-              this.setState({ eventName: val });
-            }}
-            test={this.state.eventName}
-          ></FloatingTextBox>
-
-          <DateTimePickerModal
-            isVisible={this.state.visibility}
-            mode="datetime"
-            onConfirm={this.handleConfirm}
-            onCancel={this.hideDatePicker}
-            minimumDate={new Date()}
-          />
-
-          <FloatingTextBox
-            label="Event Address"
-            autoCapitalize="none"
-            placeholderTextColor="gray"
-            onChangeText={(val) => {
-              this.setState({ eventAddress: val });
-            }}
-            test={this.state.eventAddress}
-          ></FloatingTextBox>
-          <FloatingTextBox
-            label="No.of Volunteers"
-            autoCapitalize="none"
-            placeholderTextColor="gray"
-            keyboardType="number-pad"
-            onChangeText={(val) => {
-              this.setState({ volunteers: val });
-            }}
-            test={this.state.volunteers}
-          ></FloatingTextBox>
-          <FloatingTextBox
-            label="Description"
-            autoCapitalize="none"
-            placeholderTextColor="gray"
-            onChangeText={(val) => {
-              this.setState({ eventDescription: val });
-            }}
-            test={this.state.eventDescription}
-          ></FloatingTextBox>
-
-          <TouchableOpacity
-            onPress={this.showDatePicker}
+      <ImageBackground
+        source={{
+          uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
+        }}
+        style={styles.backgroundStyle}
+      >
+        <SafeAreaView style={styles.safeview}>
+          <View
             style={{
-              width: "30%",
-              marginTop: "10%",
-              backgroundColor: "lightblue",
-              borderRadius: 10,
-              padding: "2%",
+              flex: 1,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginTop: "2%",
+              marginLeft: "2%",
             }}
           >
-            <Text>Date and Time</Text>
-          </TouchableOpacity>
-          {this.state.eventDate != "" ? (
-            <Text style={{ marginTop: "10%", fontWeight: "bold" }}>
-              {this.state.eventDate.toString()} {" " + this.state.eventTime}
+            <Text
+              style={{ fontSize: 25, fontWeight: "bold", alignSelf: "center" }}
+            >
+              Event Information{" "}
             </Text>
-          ) : null}
-          <TouchableOpacity
-            style={styles.button}
-            onPress={this.checkCurrentEvent}
-          >
-            <Text style={{ padding: 10, fontSize: 20, fontWeight: "bold" }}>
-              Finish
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+            <TouchableOpacity
+              style={{
+                margin: "5%",
+                padding: "2%",
+                borderRadius: 10,
+                justifyContent: "center",
+
+                backgroundColor: " rgba(0, 115, 189, 0.3)",
+                borderBottom: 2,
+              }}
+              onPress={this.checkCurrentEvent}
+            >
+              <Text style={{ fontWeight: "bold", fontSize: 18 }}>Finish</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{ alignItems: "center", flex: 9 }}>
+            <View style={styles.defaultPlace}>
+              <Icon name="id-card" type="font-awesome" size={30}></Icon>
+              <TextInput
+                placeholder="Event Name"
+                style={styles.textInput}
+                placeholderTextColor="black"
+                onChangeText={(val) => {
+                  this.setState({ eventName: val });
+                }}
+                test={this.state.eventName}
+              />
+            </View>
+            <DateTimePickerModal
+              isVisible={this.state.visibility}
+              mode="datetime"
+              backgroundColor=" rgba(0, 115, 189, 0.3)"
+              onConfirm={this.handleConfirm}
+              onCancel={this.hideDatePicker}
+              minimumDate={new Date()}
+            />
+            <View style={styles.defaultPlace}>
+              <Icon name="map-marker" type="font-awesome" size={30}></Icon>
+              <TextInput
+                placeholder="Event Address"
+                style={styles.textInput}
+                placeholderTextColor="black"
+                onChangeText={(val) => {
+                  this.setState({ eventAdress: val });
+                }}
+                test={this.state.eventName}
+              />
+            </View>
+            <View style={styles.defaultPlace}>
+              <Icon name="users" type="font-awesome" size={30}></Icon>
+              <TextInput
+                placeholder="No of Volunteers"
+                keyboardType="number-pad"
+                style={styles.textInput}
+                placeholderTextColor="black"
+                onChangeText={(val) => {
+                  this.setState({ volunteers: val });
+                }}
+                test={this.state.eventName}
+              />
+            </View>
+            <View style={styles.desInput}>
+              <Icon name="users" type="font-awesome" size={30}></Icon>
+              <TextInput
+                placeholder="Event Description"
+                style={styles.textInput}
+                placeholderTextColor="black"
+                onChangeText={(val) => {
+                  this.setState({ eventDescription: val });
+                }}
+                test={this.state.eventName}
+              />
+            </View>
+            <TouchableOpacity
+              style={styles.defaultPlace}
+              onPress={this.showDatePicker}
+            >
+              <Icon name="calendar" type="font-awesome" size={30}></Icon>
+              <Text style={{ marginLeft: "5%" }}>Date and Time</Text>
+            </TouchableOpacity>
+
+            {this.state.eventDate != "" ? (
+              <Text style={{ marginTop: "10%", fontWeight: "bold" }}>
+                {this.state.eventDate.toString()} {" " + this.state.eventTime}
+              </Text>
+            ) : null}
+          </View>
+        </SafeAreaView>
+      </ImageBackground>
     );
   }
 }
 const styles = StyleSheet.create({
   safeview: {
-    backgroundColor: "lightblue",
     height: "100%",
     width: "100%",
     flex: 1,
@@ -231,5 +269,48 @@ const styles = StyleSheet.create({
     width: "40%",
     alignItems: "center",
     borderRadius: 10,
+  },
+  backgroundStyle: {
+    height: "100%",
+    width: "100%",
+  },
+  textInput: {
+    height: "100%",
+    width: "80%",
+
+    justifyContent: "center",
+    borderRadius: 20,
+    alignContent: "center",
+    marginLeft: "5%",
+    fontWeight: "bold",
+    fontSize: 15,
+  },
+  desInput: {
+    flexDirection: "row",
+
+    backgroundColor: " rgba(0, 115, 189, 0.3);",
+    height: "15%",
+    marginTop: "10%",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: "2%",
+    borderRadius: 10,
+  },
+  defaultPlace: {
+    flexDirection: "row",
+    backgroundColor: " rgba(0, 115, 189, 0.3);",
+    height: "10%",
+    marginTop: "5%",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: "2%",
+    borderRadius: 10,
+  },
+  headerView: {
+    flexDirection: "row",
+    backgroundColor: " rgba(0, 115, 189, 0.3);",
+    height: "10%",
+    marginTop: "5%",
+    justifyContent: "space-between",
   },
 });

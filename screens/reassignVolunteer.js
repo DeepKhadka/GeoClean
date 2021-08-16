@@ -9,6 +9,7 @@ import {
   Button,
   Switch,
   Alert,
+  ImageBackground
 } from "react-native";
 import fire from "../database/firebase";
 import {
@@ -22,6 +23,7 @@ import {
 import { Icon } from 'react-native-elements';
 
 import ModalSelector from 'react-native-modal-selector'
+import { borderBottom, typography } from "styled-system";
 
 export default class ReassignVolunteers extends Component {
   state = {
@@ -208,9 +210,22 @@ export default class ReassignVolunteers extends Component {
 
 
     return (
+      <ImageBackground
+      source={{
+        uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
+      }}
+      style={styles.backgroundStyle}
+    >
       <SafeAreaView style={styles.safeview}>
-        <View style={styles.mainView}>
-          <View style={styles.card}>
+
+      
+          <View style={{
+            margin: "5%",
+            padding: "2%",
+            borderRadius: 10,
+
+            backgroundColor: "rgba(0, 0, 0, 0.3)",
+          }}>
             <View style={{ alignItems: 'center' }}>
               <Text style={styles.headerText}>{fname}</Text>
               <Text style={styles.headerText}>{lname}</Text>
@@ -253,15 +268,32 @@ export default class ReassignVolunteers extends Component {
             </View>
 
           </View>
-          <Button title="Update" onPress={this.checkLeaderStatus}></Button>
-        </View>
+          
+          <View style={{alignItems:"center"}}>
+          <TouchableOpacity style={{
+            width:"50%",
+            margin: "5%",
+            padding: "2%",
+            borderRadius: 10,
+            justifyContent:"center",
+            alignItems:'center',
+            backgroundColor: "rgba(0, 202, 78,0.7)",
+            borderBottom:2,
+          }}
+          onPress={this.checkLeaderStatus}>
+            <Text style={{fontWeight:'bold',fontSize:20}}>Update</Text>
+          </TouchableOpacity>
+          </View>
+        
+     
       </SafeAreaView>
+      </ImageBackground>
     );
   }
 }
 const styles = StyleSheet.create({
   safeview: {
-    backgroundColor: "#a09fdf",
+
     height: "100%",
     width: "100%",
     flex: 1,
@@ -297,5 +329,9 @@ const styles = StyleSheet.create({
 
 
 
-  }
+  },
+  backgroundStyle: {
+    height: "100%",
+    width: "100%",
+  },
 });

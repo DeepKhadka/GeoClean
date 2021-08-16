@@ -18,11 +18,14 @@ import {
   Button,
   Alert,
 } from "react-native";
+import * as AddCalendarEvent from 'react-native-add-calendar-event';
+import moment from 'moment';
 
 import fire from "../database/firebase";
 import DefaultCard from "../assets/Defaultcardview";
 import { Icon } from "react-native-elements";
-import RNRestart from "react-native-restart";
+
+const TIME_NOW_IN_UTC = moment.utc();
 
 export default class VolunteerHome extends Component {
   _isMounted = false;
@@ -35,10 +38,13 @@ export default class VolunteerHome extends Component {
     refreshing: false,
     loading: true,
     past_pressed: false,
+  eventName:""
   };
   componentWillUnmount() {
     this._isMounted = false;
   }
+ 
+  
 
   handleDelete = () => {
     Alert.alert(
@@ -231,6 +237,7 @@ export default class VolunteerHome extends Component {
           });
           this.setState({
             eventID: eventID,
+
             data: data,
           });
         } else {
@@ -700,6 +707,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.1,
     shadowRadius: 2,
+    borderRadius:10
   },
   reportButton: {
     margin: "2%",
