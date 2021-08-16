@@ -2,6 +2,14 @@ import React, { Component } from "react";
 import { ImageBackground } from "react-native";
 import { FlatList } from "react-native";
 import {
+  Spinner,
+  HStack,
+  useColorModeValue,
+  Center,
+  NativeBaseProvider,
+  Select,
+} from "native-base";
+import {
   View,
   StyleSheet,
   SafeAreaView,
@@ -24,6 +32,9 @@ export default class VolunteerHome extends Component {
     status: false,
     arrivalStatus: false,
     volunteerCompletedEvents: [],
+    refreshing: false,
+    loading: true,
+    past_pressed: false,
   };
   componentWillUnmount() {
     this._isMounted = false;
@@ -65,6 +76,10 @@ export default class VolunteerHome extends Component {
       })
       .then(() => {
         Alert.alert("Arrival reported!");
+        this.setState({
+          arrivalStatus: true,
+        });
+        this.componentDidMount();
       })
       .catch((err) => {
         console.log(err.toString());
@@ -101,6 +116,14 @@ export default class VolunteerHome extends Component {
             })
             .then(() => {
               Alert.alert("Event Joined Successfully!");
+              this.setState({
+                status: true,
+                arrivalStatus: false,
+
+                refreshing: false,
+              });
+
+              this.componentDidMount();
             })
             .catch((err) => {
               console.log(err.toString());
@@ -124,6 +147,15 @@ export default class VolunteerHome extends Component {
       .delete()
       .then(() => {
         Alert.alert("You are removed as a volunteer!");
+        this.setState({
+          data: [],
+          eventID: "",
+          status: false,
+          arrivalStatus: false,
+          volunteerCompletedEvents: [],
+          refreshing: false,
+        });
+        this.componentDidMount();
       })
       .catch((err) => {
         console.log(err.toString());
@@ -168,7 +200,10 @@ export default class VolunteerHome extends Component {
       })
 
       .then(() => {
-        console.log(this.state.volunteerCompletedEvents);
+        this.setState({
+          refreshing: false,
+          loading: false,
+        });
       })
       .catch(function (error) {
         console.log("Error getting documents: ", error);
@@ -197,7 +232,6 @@ export default class VolunteerHome extends Component {
           this.setState({
             eventID: eventID,
             data: data,
-            refreshing: false,
           });
         } else {
           await fire
@@ -242,6 +276,16 @@ export default class VolunteerHome extends Component {
       });
   };
 
+  emptyComponent = () => {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <Text style={{ fontSize: 20, fontStyle: "italic", fontWeight: "bold" }}>
+          No events...
+        </Text>
+      </View>
+    );
+  };
+
   statusCheck = () => {
     fire
       .firestore()
@@ -262,7 +306,6 @@ export default class VolunteerHome extends Component {
           this.setState({
             status: true,
             arrivalStatus: arrived,
-            refreshing: false,
           });
         }
       })
@@ -275,6 +318,21 @@ export default class VolunteerHome extends Component {
       });
   };
 
+  handleRefresh = () => {
+    this.setState(
+      {
+        data: [],
+        volunteerCompletedEvents: [],
+        refreshing: true,
+        eventID: "",
+        past_pressed: false,
+      },
+      () => {
+        this.componentDidMount();
+      }
+    );
+  };
+
   componentDidMount() {
     this._isMounted = true;
     this.getCurrentEvent();
@@ -283,100 +341,326 @@ export default class VolunteerHome extends Component {
   render() {
     const { navigation } = this.props;
     return (
-      <ImageBackground
-        source={{
-          uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
-        }}
-        style={styles.backgroundStyle}
-      >
-        <SafeAreaView style={{ flex: 1 }}>
-          <View style={{ justifyContent: "center", alignItems: "center" }}>
-            <Text style={styles.headerText}>Ongoing Event</Text>
-          </View>
-          <View style={{ flex: 1, padding: 10 }}>
-            <FlatList
-              data={this.state.data}
-              ListEmptyComponent={this.emptyComponent}
-              renderItem={({ item, key }) => (
-                <TouchableOpacity style={styles.flatView}>
-                  <View style={styles.rowView}>
-                    <Text style={styles.headerText}>{item.eventDate}</Text>
-                    <Text style={styles.headerText}>{item.eventTime}</Text>
-                  </View>
-                  <View>
-                    <Text style={styles.headerText}>{item.address}</Text>
-                  </View>
-                  <View>
-                    <Text style={styles.headerText}>{item.eventName}</Text>
-                  </View>
-                  <View style={{ marginLeft: 20, marginBottom: 15 }}>
-                    <Text>{item.eventDescription}</Text>
-                  </View>
+      <SafeAreaView style={{ flex: 1 }}>
+        <ImageBackground
+          source={{
+            uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
+          }}
+          style={{ flex: 1 }}
+        >
+          {this.state.loading ? (
+            <NativeBaseProvider>
+              <Center flex={1}>
+                <Spinner color="blue.500" />
+              </Center>
+            </NativeBaseProvider>
+          ) : (
+            <View style={{ flex: 1 }}>
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                {this.state.eventID == "" ? null : (
+                  <TouchableOpacity
+                    style={{
+                      justifyContent: "center",
+                      backgroundColor: "lightblue",
+                      margin: "2%",
+                      borderRadius: 5,
+                    }}
+                    onPress={() => {
+                      this.setState({
+                        eventID: "",
+                        past_pressed: true,
+                      });
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 15,
+                        fontWeight: "bold",
+                        padding: "2%",
+                      }}
+                    >
+                      Past Events
+                    </Text>
+                  </TouchableOpacity>
+                )}
 
-                  <View>
-                    {this.state.arrivalStatus && this.state.status ? (
-                      <View style={{ margin: "5%", flexDirection: "row" }}>
+                {!this.state.past_pressed ? null : (
+                  <TouchableOpacity
+                    style={{
+                      justifyContent: "center",
+                      backgroundColor: "lightblue",
+                      margin: "2%",
+                      borderRadius: 5,
+                    }}
+                    onPress={this.handleRefresh}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 15,
+                        fontWeight: "bold",
+                        padding: "2%",
+                      }}
+                    >
+                      Show Ongoing Event
+                    </Text>
+                  </TouchableOpacity>
+                )}
+
+                <Text
+                  style={{
+                    fontSize: 15,
+                    color: "gray",
+                    alignSelf: "flex-end",
+                    margin: "2%",
+                  }}
+                >
+                  Pull to Refresh
+                </Text>
+              </View>
+
+              <View style={{ flex: 14 }}>
+                {this.state.eventID == "" ? (
+                  <FlatList
+                    data={this.state.volunteerCompletedEvents}
+                    renderItem={({ item }) => (
+                      <View
+                        style={{
+                          margin: "5%",
+                          padding: "2%",
+                          borderRadius: 10,
+
+                          backgroundColor: "rgba(0, 0, 0, 0.2)",
+                          shadowOffset: {
+                            width: 0,
+                            height: 2,
+                          },
+                          shadowOpacity: 0.1,
+                          shadowRadius: 2,
+                        }}
+                      >
                         <View
-                          style={{ flexDirection: "row", marginLeft: "5%" }}
-                        >
-                          <Text style={styles.headerText}>Checked In</Text>
-                          <Icon
-                            name="check-circle"
-                            type="font-awesome"
-                            color="green"
-                            onPress={this.iconPress}
-                            size={30}
-                            margin="2%"
-                          ></Icon>
-                        </View>
-                        <TouchableOpacity
-                          style={styles.reportButton}
-                          onPress={() => {
-                            navigation.navigate("ReportObject", {
-                              ID: this.state.eventID,
-                            });
+                          style={{
+                            borderBottomWidth: 1,
+                            padding: "3%",
+                            backgroundColor: "transparent",
                           }}
                         >
-                          <Text style={styles.headerText}>Report</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          style={{ marginLeft: "10%" }}
-                          onPress={this.handleDelete}
-                        >
-                          <Icon
-                            name="delete"
-                            color="rgba(255, 96, 92,0.9)"
-                            size={50}
-                          ></Icon>
-                        </TouchableOpacity>
-                      </View>
-                    ) : (
-                      <View>
-                        {!this.state.status ? (
-                          <TouchableOpacity
-                            style={styles.button}
-                            onPress={this.joinEvent}
+                          <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+                            COMPLETED EVENT
+                          </Text>
+                        </View>
+                        <View style={{ padding: "2%" }}>
+                          <View style={{ marginTop: "1%" }}>
+                            <Text style={{ fontSize: 25, fontWeight: "bold" }}>
+                              {item.eventName}
+                            </Text>
+                          </View>
+                          <View style={{ marginTop: "2%" }}>
+                            <Text style={{ fontSize: 16, opacity: 0.6 }}>
+                              {item.eventDescription}
+                            </Text>
+                          </View>
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              marginTop: "2%",
+                            }}
                           >
-                            <Text style={styles.headerText}>Join</Text>
-                          </TouchableOpacity>
-                        ) : (
-                          <TouchableOpacity
-                            style={styles.button}
-                            style={styles.button}
-                            onPress={this.reportArrival}
-                          >
-                            <Text style={styles.headerText}>Check In</Text>
-                          </TouchableOpacity>
-                        )}
+                            <View style={{ flexDirection: "row" }}>
+                              <Text
+                                style={{ fontSize: 20, fontWeight: "bold" }}
+                              >
+                                Date :{" "}
+                              </Text>
+                              <Text
+                                style={{ fontSize: 20, fontWeight: "bold" }}
+                              >
+                                {item.eventDate}
+                              </Text>
+                            </View>
+                            <View
+                              style={{ flexDirection: "row", marginLeft: "5%" }}
+                            >
+                              <Text
+                                style={{ fontSize: 20, fontWeight: "bold" }}
+                              >
+                                Time :{" "}
+                              </Text>
+                              <Text
+                                style={{ fontSize: 20, fontWeight: "bold" }}
+                              >
+                                {item.eventTime}
+                              </Text>
+                            </View>
+                          </View>
+                        </View>
                       </View>
                     )}
-                  </View>
-                </TouchableOpacity>
-              )}
-            ></FlatList>
-          </View>
-        </SafeAreaView>
-      </ImageBackground>
+                    keyExtractor={(item) => item.eventName}
+                    refreshing={this.state.refreshing}
+                    onRefresh={this.handleRefresh}
+                    ListEmptyComponent={this.emptyComponent}
+                  ></FlatList>
+                ) : (
+                  <FlatList
+                    data={this.state.data}
+                    renderItem={({ item, key }) => (
+                      <View
+                        style={{
+                          margin: "5%",
+                          padding: "2%",
+                          borderRadius: 10,
+                          backgroundColor: "rgba(0, 0, 0, 0.2)",
+                          shadowOffset: {
+                            width: 0,
+                            height: 2,
+                          },
+                          shadowOpacity: 0.1,
+                          shadowRadius: 2,
+                        }}
+                      >
+                        <View style={{ borderBottomWidth: 1, padding: "3%" }}>
+                          <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+                            ONGOING EVENT
+                          </Text>
+                        </View>
+                        <View style={{ padding: "2%" }}>
+                          <View style={{ marginTop: "1%" }}>
+                            <Text style={{ fontSize: 25, fontWeight: "bold" }}>
+                              {item.eventName}
+                            </Text>
+                          </View>
+                          <View style={{ marginTop: "2%" }}>
+                            <Text style={{ fontSize: 16, opacity: 0.6 }}>
+                              {item.eventDescription}
+                            </Text>
+                          </View>
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              marginTop: "2%",
+                            }}
+                          >
+                            <View style={{ flexDirection: "row" }}>
+                              <Text
+                                style={{ fontSize: 20, fontWeight: "bold" }}
+                              >
+                                Date :{" "}
+                              </Text>
+                              <Text
+                                style={{ fontSize: 20, fontWeight: "bold" }}
+                              >
+                                {item.eventDate}
+                              </Text>
+                            </View>
+                            <View
+                              style={{ flexDirection: "row", marginLeft: "5%" }}
+                            >
+                              <Text
+                                style={{ fontSize: 20, fontWeight: "bold" }}
+                              >
+                                Time :{" "}
+                              </Text>
+                              <Text
+                                style={{ fontSize: 20, fontWeight: "bold" }}
+                              >
+                                {item.eventTime}
+                              </Text>
+                            </View>
+                          </View>
+
+                          <View
+                            style={{
+                              justifyContent: "space-between",
+                              marginTop: "5%",
+                            }}
+                          >
+                            {this.state.arrivalStatus && this.state.status ? (
+                              <View
+                                style={{ margin: "5%", flexDirection: "row" }}
+                              >
+                                <View
+                                  style={{
+                                    flexDirection: "row",
+                                    marginLeft: "5%",
+                                  }}
+                                >
+                                  <Text style={styles.headerText}>
+                                    Checked In
+                                  </Text>
+                                  <Icon
+                                    name="check-circle"
+                                    type="font-awesome"
+                                    color="green"
+                                    onPress={this.iconPress}
+                                    size={30}
+                                    margin="2%"
+                                  ></Icon>
+                                </View>
+                                <TouchableOpacity
+                                  style={styles.reportButton}
+                                  onPress={() => {
+                                    navigation.navigate("ReportObject", {
+                                      ID: this.state.eventID,
+                                    });
+                                  }}
+                                >
+                                  <Text style={styles.headerText}>Report</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                  style={{ marginLeft: "10%" }}
+                                  onPress={this.handleDelete}
+                                >
+                                  <Icon
+                                    name="delete"
+                                    color="rgba(255, 96, 92,0.9)"
+                                    size={50}
+                                  ></Icon>
+                                </TouchableOpacity>
+                              </View>
+                            ) : (
+                              <View>
+                                {!this.state.status ? (
+                                  <TouchableOpacity
+                                    style={styles.button}
+                                    onPress={this.joinEvent}
+                                  >
+                                    <Text style={styles.headerText}>Join</Text>
+                                  </TouchableOpacity>
+                                ) : (
+                                  <TouchableOpacity
+                                    style={styles.button}
+                                    style={styles.button}
+                                    onPress={this.reportArrival}
+                                  >
+                                    <Text style={styles.headerText}>
+                                      Check In
+                                    </Text>
+                                  </TouchableOpacity>
+                                )}
+                              </View>
+                            )}
+                          </View>
+                        </View>
+                      </View>
+                    )}
+                    keyExtractor={(item) => item.eventName}
+                    refreshing={this.state.refreshing}
+                    onRefresh={this.handleRefresh}
+                    ListEmptyComponent={this.emptyComponent}
+                  ></FlatList>
+                )}
+              </View>
+            </View>
+          )}
+        </ImageBackground>
+      </SafeAreaView>
     );
   }
 }

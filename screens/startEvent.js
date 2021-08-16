@@ -16,7 +16,6 @@ function formatDate(date) {
   var MM = date.getMonth() + 1;
   var DD = date.getDate();
   var YYYY = date.getFullYear();
-
   return MM + "-" + DD + "-" + YYYY;
 }
 function formateTime(date) {
