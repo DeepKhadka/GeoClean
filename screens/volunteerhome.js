@@ -16,12 +16,17 @@ import DefaultCard from "../assets/Defaultcardview";
 import { Icon } from "react-native-elements";
 
 export default class VolunteerHome extends Component {
+  _isMounted = false;
   state = {
     data: null,
     eventID: "",
     status: false,
     arrivalStatus: false,
+    volunteerCompletedEvents: [],
   };
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
 
   reportArrival = () => {
     fire
@@ -102,6 +107,51 @@ export default class VolunteerHome extends Component {
       });
   };
 
+  getCompletedEvents = async () => {
+    await fire
+      .firestore()
+      .collection("ADMIN")
+      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+      .collection("EVENT MANAGEMENT")
+      .where("eventStatus", "==", "completed")
+      .get()
+      .then((querySnapshot) => {
+        if (querySnapshot.docs.length > 0) {
+          var results = [];
+          var data = [];
+          querySnapshot.forEach((doc) => {
+            var docRef = fire
+              .firestore()
+              .collection("ADMIN")
+              .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+              .collection("EVENT MANAGEMENT")
+              .doc(doc.id)
+              .collection("VOLUNTEERS")
+              .doc(fire.auth().currentUser.uid.toString())
+              .get()
+              .then((doc_1) => {
+                if (doc_1.exists) {
+                  data.push(doc.data());
+                }
+              });
+            results.push(docRef);
+          });
+
+          this.setState({
+            volunteerCompletedEvents: data,
+          });
+          return Promise.all(results);
+        }
+      })
+
+      .then(() => {
+        console.log(this.state.volunteerCompletedEvents);
+      })
+      .catch(function (error) {
+        console.log("Error getting documents: ", error);
+      });
+  };
+
   getCurrentEvent = () => {
     var eventID = "";
 
@@ -155,9 +205,11 @@ export default class VolunteerHome extends Component {
         }
       })
       .then(() => {
-        console.log(this.state.eventID);
+        // console.log(this.state.eventID);
         if (this.state.eventID != "") {
           this.statusCheck();
+        } else {
+          this.getCompletedEvents();
         }
       })
 
@@ -165,8 +217,6 @@ export default class VolunteerHome extends Component {
         console.log(err.toString());
       });
   };
-
-  
 
   statusCheck = () => {
     fire
@@ -192,7 +242,7 @@ export default class VolunteerHome extends Component {
         }
       })
       .then(() => {
-        console.log(this.state.zone_info);
+        this.getCompletedEvents();
       })
 
       .catch((err) => {
@@ -201,6 +251,7 @@ export default class VolunteerHome extends Component {
   };
 
   componentDidMount() {
+    this._isMounted = true;
     this.getCurrentEvent();
   }
 
