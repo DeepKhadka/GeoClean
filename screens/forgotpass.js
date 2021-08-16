@@ -10,9 +10,12 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   ToastAndroid,
+  TextInput,
+  ImageBackground
 } from "react-native";
 import fire from "../database/firebase";
-import FloatingTextBox from "./FloatingScan";
+
+import { Icon } from "react-native-elements";
 
 export default class ForgotPassword extends Component {
   state = {
@@ -37,54 +40,65 @@ export default class ForgotPassword extends Component {
 
   render() {
     return (
+      <ImageBackground
+      source={{
+        uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
+      }}
+      style={styles.backgroundStyle}
+    >
       <KeyboardAvoidingView
         style={{
           flex: 1,
-          backgroundColor: "black",
+          
         }}
         enabled={true}
       >
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1 }}
-          style={{ flex: 1 }}
-          enabled={true}
-        >
-          <View style={{ flex: 1, alignItems: "center" }}>
-            <View style={{ height: 30 }}></View>
-            <View style={{ width: "80%" }}>
-              <Text style={{ fontSize: 17, color: "white" }}>
-                Please enter the email associated with your account
-              </Text>
-            </View>
-            <View style={{ height: 30 }}></View>
-            <FloatingTextBox
-              label="Email Address"
-              placeholderTextColor="gray"
-              keyboardType="email-address"
+        <View style={{flex:1,alignItems:"center"}}>
+        <View style={styles.defaultPlace}>
+            <Icon
+              name="envelope"
+              type="font-awesome"
+              size={30}
+      
+            ></Icon>
+            <TextInput
+              placeholder="Email Address"
+             
+              style={styles.textInput}
+              placeholderTextColor="black"
+              autoCapitalize="none"
               onChangeText={(val) => {
                 this.setState({ email: val });
               }}
-              autoCapitalize="none"
-              test={this.state.email}
-            ></FloatingTextBox>
-            <View style={{ height: 30 }}></View>
-            <TouchableOpacity
-              style={{
-                backgroundColor: "#BB86FC",
-                borderRadius: 5,
-                height: 50,
-                width: "80%",
-                justifyContent: "center",
-                alignItems: "center",
-                marginVertical: "5%",
-              }}
-              onPress={this.handleReset}
-            >
-              <Text style={{ fontSize: 20, fontWeight: "bold" }}>SUBMIT</Text>
-            </TouchableOpacity>
+              test={this.state.eventName}
+            />
           </View>
-        </ScrollView>
+          <TouchableOpacity
+                        style={{
+                          margin: "5%",
+                          padding: "2%",
+                          borderRadius: 10,
+                          justifyContent: "center",
+                          alignItems:'center',
+                          width:"50%",
+
+                          backgroundColor: " rgba(0, 100, 0, 0.8)",
+                          borderBottom: 2,
+                        }}
+                        onPress={this.handleReset}
+                      >
+
+                        <Text style={{ fontWeight: "bold", fontSize: 18 }}>
+                         Reset
+                        </Text>
+                      </TouchableOpacity>
+       
+          
+          
+        </View>
+       
       </KeyboardAvoidingView>
+      </ImageBackground>
     );
   }
   1;
@@ -94,5 +108,32 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "black",
+  },
+  backgroundStyle:{
+    height:"100%",
+    width:"100%"
+  },
+  textInput: {
+    height: "100%",
+    width: "80%",
+   
+
+    justifyContent: "center",
+    borderRadius: 20,
+    alignContent: "center",
+    marginLeft: "5%",
+    fontWeight:'bold',
+    fontSize:15
+  },
+  
+  defaultPlace: {
+    flexDirection: "row",
+    backgroundColor: " rgba(0, 115, 189, 0.3);",
+    height: "10%",
+    marginTop: "5%",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: "2%",
+    borderRadius: 10,
   },
 });
