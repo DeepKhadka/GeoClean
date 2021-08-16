@@ -8,23 +8,19 @@ import {
   TouchableOpacity,
   Text,
   Button,
-  Alert
+  Alert,
 } from "react-native";
 
 import fire from "../database/firebase";
 import DefaultCard from "../assets/Defaultcardview";
-;
 import { Icon } from "react-native-elements";
-
-
-
 
 export default class VolunteerHome extends Component {
   state = {
     data: null,
     eventID: "",
     status: false,
-    arrivalStatus: true,
+    arrivalStatus: false,
   };
 
   reportArrival = () => {
@@ -159,7 +155,7 @@ export default class VolunteerHome extends Component {
         }
       })
       .then(() => {
-        console.log(this.state.data);
+        console.log(this.state.eventID);
         if (this.state.eventID != "") {
           this.statusCheck();
         }
@@ -169,27 +165,8 @@ export default class VolunteerHome extends Component {
         console.log(err.toString());
       });
   };
-  getArrival = () => {
-    fire.firestore.collection(
-      "VOLUNTEER"
-        .doc(fire.auth().currentUser.uid.toString())
-        .get()
-        .then((sub) => {
-          if (sub) {
-            this.setState({
-              arrivalStatus: true,
-            });
-          }
-        })
-        .then(() => {
-          console.log(this.state.status);
-        })
 
-        .catch((err) => {
-          console.log(err.toString());
-        })
-    );
-  };
+  
 
   statusCheck = () => {
     fire
@@ -203,13 +180,19 @@ export default class VolunteerHome extends Component {
       .get()
       .then((sub) => {
         if (sub.docs.length > 0) {
+          var arrived = false;
+          sub.forEach((doc) => {
+            arrived = doc.data().arrived;
+          });
+
           this.setState({
             status: true,
+            arrivalStatus: arrived,
           });
         }
       })
       .then(() => {
-        console.log(this.state.status);
+        console.log(this.state.zone_info);
       })
 
       .catch((err) => {
@@ -231,61 +214,75 @@ export default class VolunteerHome extends Component {
           }}
           style={styles.backgroundStyle}
         >
-          <View style={{justifyContent:"center",alignItems:"center"}}><Text style={styles.headerText}>Ongoing Event</Text></View>
-              <View style={{ padding: 10 }}>
-                <FlatList
-                  data={this.state.data}
-                  renderItem={({ item, key }) => (
-                    <TouchableOpacity
-                      style={styles.flatView}
-                      onPress={this.joinEvent}
-                    >
-                      <View style={styles.rowView}>
-                        <Text style={styles.headerText}>{item.eventDate}</Text>
-                        <Text style={styles.headerText}>{item.eventTime}</Text>
-                      </View>
-                      <View>
-                        <Text style={styles.headerText}>{item.eventName}</Text>
-                      </View>
-                      <View style={{ marginLeft: 20, marginBottom: 15 }}>
-                        <Text>{item.eventDescription}</Text>
-                      </View>
-                   
-                      <View>
-                        {this.state.arrivalStatus && this.state.status ?
-                        <View style={{margin:"5%",flexDirection:'row'}}>
-                          <View style={{flexDirection:'row',marginLeft:"5%"}}>
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <Text style={styles.headerText}>Ongoing Event</Text>
+          </View>
+          <View style={{ padding: 10 }}>
+            <FlatList
+              data={this.state.data}
+              renderItem={({ item, key }) => (
+                <TouchableOpacity
+                  style={styles.flatView}
+                  onPress={this.joinEvent}
+                >
+                  <View style={styles.rowView}>
+                    <Text style={styles.headerText}>{item.eventDate}</Text>
+                    <Text style={styles.headerText}>{item.eventTime}</Text>
+                  </View>
+                  <View>
+                    <Text style={styles.headerText}>{item.eventName}</Text>
+                  </View>
+                  <View style={{ marginLeft: 20, marginBottom: 15 }}>
+                    <Text>{item.eventDescription}</Text>
+                  </View>
+
+                  <View>
+                    {this.state.arrivalStatus && this.state.status ? (
+                      <View style={{ margin: "5%", flexDirection: "row" }}>
+                        <View
+                          style={{ flexDirection: "row", marginLeft: "5%" }}
+                        >
                           <Text style={styles.headerText}>Checked In</Text>
                           <Icon
-                      name="check-circle"
-                      type="font-awesome"
-                      color="green"
-                      onPress={this.iconPress}
-                      size={30}
-                      margin="2%"
-                    ></Icon>
-                          </View>
-                         <Button title="Report" onPress={()=>{
-                           navigation.navigate("ReportObject"),{
-                             ID:item.eventID
-                           }
-                         }}></Button>
-
-                          
-                        </View>: 
-                        
-                        <View>
-                          {!this.state.status ? <Button title="Join" style={styles.button} onPress={this.joinEvent}></Button>:<Button title="Check In" style={styles.button} onPress={()=>{this.reportArrival}}></Button>}
-         
-
-                          </View>}
+                            name="check-circle"
+                            type="font-awesome"
+                            color="green"
+                            onPress={this.iconPress}
+                            size={30}
+                            margin="2%"
+                          ></Icon>
+                        </View>
+                        <Button
+                          title="Report"
+                          onPress={() => {
+                            navigation.navigate("ReportObject", {
+                              ID: this.state.eventID,
+                            });
+                          }}
+                        ></Button>
                       </View>
-                    </TouchableOpacity>
-                  )}
-                ></FlatList>
-              </View>
-          
-         
+                    ) : (
+                      <View>
+                        {!this.state.status ? (
+                          <Button
+                            title="Join"
+                            style={styles.button}
+                            onPress={this.joinEvent}
+                          ></Button>
+                        ) : (
+                          <Button
+                            title="Check In"
+                            style={styles.button}
+                            onPress={this.reportArrival}
+                          ></Button>
+                        )}
+                      </View>
+                    )}
+                  </View>
+                </TouchableOpacity>
+              )}
+            ></FlatList>
+          </View>
         </ImageBackground>
       </SafeAreaView>
     );
@@ -315,8 +312,8 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
   },
-  button:{
-    height:"30%",
-    width:"50%"
-  }
+  button: {
+    height: "30%",
+    width: "50%",
+  },
 });

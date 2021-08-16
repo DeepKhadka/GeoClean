@@ -5,10 +5,11 @@ import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import { Drawer } from "react-native-paper";
 import FontAwesome from "react-native-vector-icons/FontAwesome5";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { State } from "react-native-gesture-handler";
 
 export function DrawerContentV(props) {
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "lightblue" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "rgba(36,160,237,0.5)" }}>
       <View style={{ flex: 3 }}>
         <Image
           source={require("../assets/logo_geoclean.png")}
@@ -16,6 +17,7 @@ export function DrawerContentV(props) {
             width: "100%",
             height: "100%",
             marginTop: "5%",
+            transform: [{ scale: 0.8 }],
           }}
         />
       </View>
@@ -61,6 +63,7 @@ export function DrawerContentV(props) {
             onPress={() => {
               props.navigation.navigate("ZONE", {
                 admin: false,
+                volunteer:true
               });
             }}
           />

@@ -14,6 +14,7 @@ import {
   locations5,
   locations6,
 } from "./data";
+import { width } from "styled-system";
 
 const response = [
   {
@@ -84,6 +85,8 @@ const response = [
 ];
 
 export default class Map extends Component {
+  _isMounted = false;
+
   state = {
     location: {},
     errorMessage: "",
@@ -96,11 +99,117 @@ export default class Map extends Component {
     data_5: [],
     data_6: [],
     dataCheck: false,
+    eventID: "",
+    volunteer_info: [],
+  };
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
+  getCurrentEvent = () => {
+    var eventID = "";
+
+    fire
+      .firestore()
+      .collection("ADMIN")
+      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+      .collection("EVENT MANAGEMENT")
+      .where("eventStatus", "==", "current")
+      .get()
+      .then(async (sub) => {
+        if (sub.docs.length > 0) {
+          const data = [];
+          sub.forEach((doc) => {
+            const x = doc.data();
+            x.id = doc.id;
+            eventID = doc.id.toString();
+            data.push(x);
+          });
+          this.setState({
+            eventID: eventID,
+          });
+        } else {
+          await fire
+            .firestore()
+            .collection("ADMIN")
+            .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+            .collection("EVENT MANAGEMENT")
+            .where("eventStatus", "==", "paused")
+            .get()
+            .then((subdoc) => {
+              if (subdoc.docs.length > 0) {
+                console.log("else bhitra");
+                const data_1 = [];
+                subdoc.forEach((doc_1) => {
+                  const x = doc_1.data();
+                  x.id = doc_1.id;
+                  eventID = doc_1.id.toString();
+                  data_1.push(x);
+                });
+                this.setState({
+                  eventID: eventID,
+                });
+              }
+            })
+            .catch((err) => {
+              console.log(err.toString() + " error");
+            });
+        }
+      })
+      .then(() => {
+        console.log(this.state.eventID);
+        if (this.state.eventID != "") {
+          this.statusCheck();
+        }
+      })
+
+      .catch((err) => {
+        console.log(err.toString());
+      });
+  };
+
+  statusCheck = () => {
+    fire
+      .firestore()
+      .collection("ADMIN")
+      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+      .collection("EVENT MANAGEMENT")
+      .doc(this.state.eventID)
+      .collection("VOLUNTEERS")
+      .where("volunteerID", "==", fire.auth().currentUser.uid.toString())
+      .get()
+      .then((sub) => {
+        if (sub.docs.length > 0) {
+          const data = [];
+          sub.forEach((doc) => {
+            const x = doc.data();
+            data.push(x);
+          });
+
+          this.setState({
+            volunteer_info: data,
+          });
+        }
+      })
+      .then(() => {
+        console.log(this.state.volunteer_info);
+        this._getLocation();
+      })
+
+      .catch((err) => {
+        console.log(err.toString());
+      });
   };
 
   componentDidMount() {
+    this._isMounted = true;
     if (this.props.route.params.admin && this.state.dataCheck == false) {
       this.getZone1();
+    } else if (
+      this.props.route.params.volunteer &&
+      this.state.dataCheck == false
+    ) {
+      this.getCurrentEvent();
     } else {
       this._getLocation();
     }
@@ -267,7 +376,7 @@ export default class Map extends Component {
       })
       .then(() => {
         console.log(this.state.data_6);
-        if (this.state.dataCheck) this._getLocation();
+        this._getLocation();
       })
       .catch((err) => {
         console.log(err.toString());
@@ -484,13 +593,19 @@ export default class Map extends Component {
 
           {squarez.map((polygon, index) => (
             <View key={index}>
-              <Polygon coordinates={polygon.coordinates} tappable={true} />
+              <Polygon
+                coordinates={polygon.coordinates}
+                strokeColor="rgba(255,0,0,0.4)"
+                strokeWidth={6}
+                tappable={true}
+              />
               <Marker
                 coordinate={{
                   latitude: Number(this.state.latitude),
                   longitude: Number(this.state.longitude),
                 }}
                 pinColor="#0000FF"
+                title="You are here"
                 image=""
               />
             </View>
@@ -498,40 +613,80 @@ export default class Map extends Component {
 
           {squarez2.map((polygon, index) => (
             <View key={index}>
-              <Polygon coordinates={polygon.coordinates} tappable={true} />
+              <Polygon
+                coordinates={polygon.coordinates}
+                strokeColor="rgba(0,0,255,0.4)"
+                strokeWidth={6}
+                tappable={true}
+              />
             </View>
           ))}
 
           {squarez3.map((polygon, index) => (
             <View key={index}>
-              <Polygon coordinates={polygon.coordinates} tappable={true} />
+              <Polygon
+                coordinates={polygon.coordinates}
+                // strokeColor="rgba(255,0,0,0.4)"
+                strokeColor="rgba(237, 142, 242, 1)"
+                strokeWidth={6}
+                tappable={true}
+              />
             </View>
           ))}
 
           {squarez4.map((polygon, index) => (
             <View key={index}>
-              <Polygon coordinates={polygon.coordinates} tappable={true} />
+              <Polygon
+                coordinates={polygon.coordinates}
+                strokeColor="rgba(255,255,0,1)"
+                strokeWidth={6}
+                tappable={true}
+              />
             </View>
           ))}
 
           {squarez4.map((polygon, index) => (
             <View key={index}>
-              <Polygon coordinates={polygon.coordinates} tappable={true} />
+              <Polygon
+                coordinates={polygon.coordinates}
+                strokeColor="#FF00FF"
+                strokeWidth={6}
+                tappable={true}
+              />
             </View>
           ))}
 
           {squarez5.map((polygon, index) => (
             <View key={index}>
-              <Polygon coordinates={polygon.coordinates} tappable={true} />
+              <Polygon
+                coordinates={polygon.coordinates}
+                strokeColor="#00ff00"
+                strokeWidth={6}
+                tappable={true}
+              />
             </View>
           ))}
 
           {squarez6.map((polygon, index) => (
             <View key={index}>
-              <Polygon coordinates={polygon.coordinates} tappable={true} />
+              <Polygon
+                coordinates={polygon.coordinates}
+                strokeColor="#0AFFFF"
+                strokeWidth={6}
+                tappable={true}
+              />
             </View>
           ))}
         </MapView>
+
+        <View style={styles.legendContainer}>
+          <Text style={styles.guide}>GUIDE</Text>
+          <Image
+            source={require("../assets/whitelegend.png")}
+            style={styles.legend}
+            resizeMode="contain"
+          />
+        </View>
       </View>
     );
   }
@@ -542,6 +697,37 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "red",
   },
+
+  legendContainer: {
+    position: "absolute",
+    left: 200,
+    right: 0,
+    bottom: 0,
+    height: 65,
+    width: 210,
+    flex: 1,
+    alignItems: "center",
+    flexDirection: "column",
+    justifyContent: "center",
+    backgroundColor: "transparent",
+  },
+
+  legend: {
+    height: "400%",
+    width: "400%",
+    position: "absolute",
+    top: -200,
+    opacity: 0.7,
+  },
+
+  guide: {
+    fontSize: 20,
+    fontWeight: "bold",
+    position: "absolute",
+    top: -230,
+    opacity: 0.7,
+  },
+
   map: {
     flex: 1,
   },

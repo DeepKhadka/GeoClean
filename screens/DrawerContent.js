@@ -51,6 +51,7 @@ export function DrawerContent(props) {
             onPress={() => {
               props.navigation.navigate("ZoneManagement", {
                 admin: true,
+                volunteer: false,
               });
             }}
           />
