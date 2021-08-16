@@ -3,8 +3,9 @@ import { Platform } from "react-native";
 import * as Permissions from "expo-permissions";
 import Constants from "expo-constants";
 import * as Location from "expo-location";
-import { StyleSheet, SafeAreaView, View, Text, Image } from "react-native";
+import { StyleSheet, View, Text, Image } from "react-native";
 import MapView, { PROVIDER_GOOGLE, Marker, Polygon } from "react-native-maps";
+import fire from "../database/firebase";
 import {
   locations1,
   locations2,
@@ -22,7 +23,6 @@ const response = [
       latitude: 32.7243643,
       longitude: -97.1724442,
     },
-
     title: "ZONE-1",
     description: "",
     icon: require("../assets/zone.png"),
@@ -85,16 +85,303 @@ const response = [
 ];
 
 export default class Map extends Component {
+  _isMounted = false;
+
   state = {
     location: {},
     errorMessage: "",
     longitude: "",
     latitude: "",
+    data_1: [],
+    data_2: [],
+    data_3: [],
+    data_4: [],
+    data_5: [],
+    data_6: [],
+    dataCheck: false,
+    eventID: "",
+    volunteer_info: [],
+  };
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
+  getCurrentEvent = () => {
+    var eventID = "";
+
+    fire
+      .firestore()
+      .collection("ADMIN")
+      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+      .collection("EVENT MANAGEMENT")
+      .where("eventStatus", "==", "current")
+      .get()
+      .then(async (sub) => {
+        if (sub.docs.length > 0) {
+          const data = [];
+          sub.forEach((doc) => {
+            const x = doc.data();
+            x.id = doc.id;
+            eventID = doc.id.toString();
+            data.push(x);
+          });
+          this.setState({
+            eventID: eventID,
+          });
+        } else {
+          await fire
+            .firestore()
+            .collection("ADMIN")
+            .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+            .collection("EVENT MANAGEMENT")
+            .where("eventStatus", "==", "paused")
+            .get()
+            .then((subdoc) => {
+              if (subdoc.docs.length > 0) {
+                console.log("else bhitra");
+                const data_1 = [];
+                subdoc.forEach((doc_1) => {
+                  const x = doc_1.data();
+                  x.id = doc_1.id;
+                  eventID = doc_1.id.toString();
+                  data_1.push(x);
+                });
+                this.setState({
+                  eventID: eventID,
+                });
+              }
+            })
+            .catch((err) => {
+              console.log(err.toString() + " error");
+            });
+        }
+      })
+      .then(() => {
+        console.log(this.state.eventID);
+        if (this.state.eventID != "") {
+          this.statusCheck();
+        }
+      })
+
+      .catch((err) => {
+        console.log(err.toString());
+      });
+  };
+
+  statusCheck = () => {
+    fire
+      .firestore()
+      .collection("ADMIN")
+      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+      .collection("EVENT MANAGEMENT")
+      .doc(this.state.eventID)
+      .collection("VOLUNTEERS")
+      .where("volunteerID", "==", fire.auth().currentUser.uid.toString())
+      .get()
+      .then((sub) => {
+        if (sub.docs.length > 0) {
+          const data = [];
+          sub.forEach((doc) => {
+            const x = doc.data();
+            data.push(x);
+          });
+
+          this.setState({
+            volunteer_info: data,
+          });
+        }
+      })
+      .then(() => {
+        console.log(this.state.volunteer_info);
+        this._getLocation();
+      })
+
+      .catch((err) => {
+        console.log(err.toString());
+      });
   };
 
   componentDidMount() {
-    this._getLocation();
+    this._isMounted = true;
+    if (this.props.route.params.admin && this.state.dataCheck == false) {
+      this.getZone1();
+    } else if (
+      this.props.route.params.volunteer &&
+      this.state.dataCheck == false
+    ) {
+      this.getCurrentEvent();
+    } else {
+      this._getLocation();
+    }
   }
+
+  getZone1 = () => {
+    fire
+      .firestore()
+      .collectionGroup("ZONE 1")
+      .where("status", "==", false)
+      .get()
+      .then((querySnapshot) => {
+        if (!querySnapshot.empty) {
+          const data = [];
+          querySnapshot.forEach((doc) => {
+            const x = doc.data();
+            x.id = doc.id;
+            data.push(x);
+          });
+          this.setState({
+            data_1: data,
+          });
+        }
+      })
+      .then(() => {
+        console.log(this.state.data_1);
+        this.getZone2();
+      })
+      .catch((err) => {
+        console.log(err.toString());
+      });
+  };
+
+  getZone2 = () => {
+    fire
+      .firestore()
+      .collectionGroup("ZONE 2")
+      .where("status", "==", false)
+      .get()
+      .then((querySnapshot) => {
+        if (!querySnapshot.empty) {
+          const data = [];
+          querySnapshot.forEach((doc) => {
+            const x = doc.data();
+            x.id = doc.id;
+            data.push(x);
+          });
+          this.setState({
+            data_2: data,
+          });
+        }
+      })
+      .then(() => {
+        console.log(this.state.data_2);
+        this.getZone3();
+      })
+      .catch((err) => {
+        console.log(err.toString());
+      });
+  };
+
+  getZone3 = () => {
+    fire
+      .firestore()
+      .collectionGroup("ZONE 3")
+      .where("status", "==", false)
+      .get()
+      .then((querySnapshot) => {
+        if (!querySnapshot.empty) {
+          const data = [];
+          querySnapshot.forEach((doc) => {
+            const x = doc.data();
+            x.id = doc.id;
+            data.push(x);
+          });
+          this.setState({
+            data_3: data,
+          });
+        }
+      })
+      .then(() => {
+        console.log(this.state.data_3);
+        this.getZone4();
+      })
+      .catch((err) => {
+        console.log(err.toString());
+      });
+  };
+
+  getZone4 = () => {
+    fire
+      .firestore()
+      .collectionGroup("ZONE 4")
+      .where("status", "==", false)
+      .get()
+      .then((querySnapshot) => {
+        if (!querySnapshot.empty) {
+          const data = [];
+          querySnapshot.forEach((doc) => {
+            const x = doc.data();
+            x.id = doc.id;
+            data.push(x);
+          });
+          this.setState({
+            data_4: data,
+          });
+        }
+      })
+      .then(() => {
+        console.log(this.state.data_4);
+        this.getZone5();
+      })
+      .catch((err) => {
+        console.log(err.toString());
+      });
+  };
+
+  getZone5 = () => {
+    fire
+      .firestore()
+      .collectionGroup("ZONE 5")
+      .where("status", "==", false)
+      .get()
+      .then((querySnapshot) => {
+        if (!querySnapshot.empty) {
+          const data = [];
+          querySnapshot.forEach((doc) => {
+            const x = doc.data();
+            x.id = doc.id;
+            data.push(x);
+          });
+          this.setState({
+            data_5: data,
+          });
+        }
+      })
+      .then(() => {
+        console.log(this.state.data_5);
+        this.getZone6();
+      })
+      .catch((err) => {
+        console.log(err.toString());
+      });
+  };
+
+  getZone6 = () => {
+    fire
+      .firestore()
+      .collectionGroup("ZONE 6")
+      .where("status", "==", false)
+      .get()
+      .then((querySnapshot) => {
+        if (!querySnapshot.empty) {
+          const data = [];
+          querySnapshot.forEach((doc) => {
+            const x = doc.data();
+            x.id = doc.id;
+            data.push(x);
+          });
+          this.setState({
+            data_6: data,
+          });
+        }
+      })
+      .then(() => {
+        console.log(this.state.data_6);
+        this._getLocation();
+      })
+      .catch((err) => {
+        console.log(err.toString());
+      });
+  };
 
   _getLocation = async () => {
     (async () => {
@@ -121,6 +408,7 @@ export default class Map extends Component {
           location: location,
           latitude: location.coords.latitude.toString(),
           longitude: location.coords.longitude.toString(),
+          dataCheck: true,
         },
         () => {
           this.componentDidMount();
@@ -280,22 +568,19 @@ export default class Map extends Component {
       });
     }
 
-
-    return(
-        <View style={styles.container}>
-          <MapView
-            provider={PROVIDER_GOOGLE}
-            style={styles.map}
-            initialRegion={{
-              latitude: 32.7165527,
-              longitude: -97.1726284,
-              latitudeDelta: 0.009,
-              longitudeDelta: 0.02,
-            }}
-          >
-            
-
-          {response.map(marker => (
+    return (
+      <View style={styles.container}>
+        <MapView
+          provider={PROVIDER_GOOGLE}
+          style={styles.map}
+          initialRegion={{
+            latitude: 32.7165527,
+            longitude: -97.1726284,
+            latitudeDelta: 0.009,
+            longitudeDelta: 0.02,
+          }}
+        >
+          {response.map((marker) => (
             <MapView.Marker
               key={marker.id}
               coordinate={marker.coordinates}
@@ -343,7 +628,6 @@ export default class Map extends Component {
                 coordinates={polygon.coordinates}
                 // strokeColor="rgba(255,0,0,0.4)"
                 strokeColor="rgba(237, 142, 242, 1)"
-
                 strokeWidth={6}
                 tappable={true}
               />
@@ -365,7 +649,6 @@ export default class Map extends Component {
             <View key={index}>
               <Polygon
                 coordinates={polygon.coordinates}
-
                 strokeColor="#FF00FF"
                 strokeWidth={6}
                 tappable={true}
@@ -395,9 +678,9 @@ export default class Map extends Component {
             </View>
           ))}
         </MapView>
-      
+
         <View style={styles.legendContainer}>
-        <Text style={styles.guide}>GUIDE</Text>
+          <Text style={styles.guide}>GUIDE</Text>
           <Image
             source={require("../assets/whitelegend.png")}
             style={styles.legend}
@@ -432,19 +715,17 @@ const styles = StyleSheet.create({
   legend: {
     height: "400%",
     width: "400%",
-    position:"absolute",
-    top:-200,
-    opacity:0.7
-
+    position: "absolute",
+    top: -200,
+    opacity: 0.7,
   },
 
   guide: {
-    fontSize:20,
-    fontWeight:'bold',
-    position:"absolute",
-    top:-230,
-    opacity:0.7
-
+    fontSize: 20,
+    fontWeight: "bold",
+    position: "absolute",
+    top: -230,
+    opacity: 0.7,
   },
 
   map: {

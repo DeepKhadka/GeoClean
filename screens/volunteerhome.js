@@ -14,17 +14,41 @@ import {
 import fire from "../database/firebase";
 import DefaultCard from "../assets/Defaultcardview";
 import { Icon } from "react-native-elements";
-
+import RNRestart from 'react-native-restart';
 
 export default class VolunteerHome extends Component {
   state = {
-    data: null,
+    data: [],
     eventID: "",
     status: false,
     arrivalStatus: false,
+    refreshing:false
   };
+  handleDelete = () => {
+    Alert.alert(
+      "Remove",
+      "Are you sure ? This will remove you from this event ",
 
+      [
+        {
+          text: "No",
+          onPress: () => {
+            console.log("No");
+          },
+        },
+        {
+          text: "Yes",
+          onPress: () => {
+            this.removeVolunteer();
+          },
+        },
+      ]
+    );
+  };
+  
   reportArrival = () => {
+
+    
     fire
       .firestore()
       .collection("ADMIN")
@@ -125,6 +149,7 @@ export default class VolunteerHome extends Component {
           this.setState({
             eventID: eventID,
             data: data,
+            refreshing:false
           });
         } else {
           await fire
@@ -156,7 +181,8 @@ export default class VolunteerHome extends Component {
         }
       })
       .then(() => {
-        console.log(this.state.data);
+        console.log(this.state.eventID);
+        console.log(this.state.data)
         if (this.state.eventID != "") {
           this.statusCheck();
         }
@@ -166,27 +192,8 @@ export default class VolunteerHome extends Component {
         console.log(err.toString());
       });
   };
-  getArrival = () => {
-    fire.firestore.collection(
-      "VOLUNTEER"
-        .doc(fire.auth().currentUser.uid.toString())
-        .get()
-        .then((sub) => {
-          if (sub) {
-            this.setState({
-              arrivalStatus: true,
-            });
-          }
-        })
-        .then(() => {
-          console.log(this.state.status);
-        })
 
-        .catch((err) => {
-          console.log(err.toString());
-        })
-    );
-  };
+  
 
   statusCheck = () => {
     fire
@@ -200,48 +207,64 @@ export default class VolunteerHome extends Component {
       .get()
       .then((sub) => {
         if (sub.docs.length > 0) {
+          var arrived = false;
+          sub.forEach((doc) => {
+            arrived = doc.data().arrived;
+          });
+
           this.setState({
             status: true,
+            arrivalStatus: arrived,
+            refreshing:false
           });
         }
       })
       .then(() => {
-        console.log(this.state.status);
+        console.log(this.state.zone_info);
       })
 
       .catch((err) => {
         console.log(err.toString());
       });
   };
+  onLoad = () => {
+    }
 
   componentDidMount() {
+  
+ 
     this.getCurrentEvent();
   }
 
   render() {
     const { navigation } = this.props;
     return (
+      <ImageBackground
+      source={{
+        uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
+      }}
+      style={styles.backgroundStyle}
+    >
       <SafeAreaView style={{ flex: 1 }}>
-        <ImageBackground
-          source={{
-            uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
-          }}
-          style={styles.backgroundStyle}
-        >
+       
           <View style={{ justifyContent: "center", alignItems: "center" }}>
             <Text style={styles.headerText}>Ongoing Event</Text>
           </View>
-          <View style={{ padding: 10 }}>
+          <View style={{ flex:1,padding: 10}}>
             <FlatList
               data={this.state.data}
+             ListEmptyComponent={this.emptyComponent}
               renderItem={({ item, key }) => (
                 <TouchableOpacity
                   style={styles.flatView}
-                  onPress={this.joinEvent}
+                  
                 >
                   <View style={styles.rowView}>
                     <Text style={styles.headerText}>{item.eventDate}</Text>
                     <Text style={styles.headerText}>{item.eventTime}</Text>
+                  </View>
+                  <View>
+                    <Text style={styles.headerText}>{item.address}</Text>
                   </View>
                   <View>
                     <Text style={styles.headerText}>{item.eventName}</Text>
@@ -249,6 +272,7 @@ export default class VolunteerHome extends Component {
                   <View style={{ marginLeft: 20, marginBottom: 15 }}>
                     <Text>{item.eventDescription}</Text>
                   </View>
+                 
 
                   <View>
                     {this.state.arrivalStatus && this.state.status ? (
@@ -266,14 +290,23 @@ export default class VolunteerHome extends Component {
                             margin="2%"
                           ></Icon>
                         </View>
-                        <Button
-                          title="Report"
-                          onPress={() => {
-                            navigation.navigate("ReportObject", {
-                              ID: this.state.eventID,
-                            });
-                          }}
-                        ></Button>
+                        <TouchableOpacity
+                            style={styles.reportButton}
+                            onPress={() => {
+                              navigation.navigate("ReportObject", {
+                                ID: this.state.eventID,
+                              });
+                            }}
+                          >
+                            <Text style={styles.headerText}>Report</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            style={{marginLeft:"10%"}}
+                            onPress={this.handleDelete}
+                          >
+                        <Icon name="delete" color="rgba(255, 96, 92,0.9)"size={50}></Icon>
+                          </TouchableOpacity>
+                         
                       </View>
                     ) : (
                       <View>
@@ -288,9 +321,9 @@ export default class VolunteerHome extends Component {
                           <TouchableOpacity style={styles.button}
                             
                             style={styles.button}
-                            onPress={() => {
-                              this.reportArrival;
-                            }}
+                            onPress={
+                              this.reportArrival
+                            }
                           >
                             <Text style={styles.headerText}>Check In</Text>
                           </TouchableOpacity>
@@ -302,8 +335,9 @@ export default class VolunteerHome extends Component {
               )}
             ></FlatList>
           </View>
-        </ImageBackground>
+    
       </SafeAreaView>
+      </ImageBackground>
     );
   }
 }
@@ -344,4 +378,20 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
   },
+  reportButton :{
+    margin: "2%",
+
+    alignItems: "center",
+    backgroundColor: "rgba(255, 189, 68,0.7)",
+
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    borderRadius:10
+    
+
+  }
 });
