@@ -14,11 +14,12 @@ import {
 import fire from "../database/firebase";
 import DefaultCard from "../assets/Defaultcardview";
 import { Icon } from "react-native-elements";
+import RNRestart from "react-native-restart";
 
 export default class VolunteerHome extends Component {
   _isMounted = false;
   state = {
-    data: null,
+    data: [],
     eventID: "",
     status: false,
     arrivalStatus: false,
@@ -27,6 +28,28 @@ export default class VolunteerHome extends Component {
   componentWillUnmount() {
     this._isMounted = false;
   }
+
+  handleDelete = () => {
+    Alert.alert(
+      "Remove",
+      "Are you sure ? This will remove you from this event ",
+
+      [
+        {
+          text: "No",
+          onPress: () => {
+            console.log("No");
+          },
+        },
+        {
+          text: "Yes",
+          onPress: () => {
+            this.removeVolunteer();
+          },
+        },
+      ]
+    );
+  };
 
   reportArrival = () => {
     fire
@@ -174,6 +197,7 @@ export default class VolunteerHome extends Component {
           this.setState({
             eventID: eventID,
             data: data,
+            refreshing: false,
           });
         } else {
           await fire
@@ -238,6 +262,7 @@ export default class VolunteerHome extends Component {
           this.setState({
             status: true,
             arrivalStatus: arrived,
+            refreshing: false,
           });
         }
       })
@@ -258,27 +283,28 @@ export default class VolunteerHome extends Component {
   render() {
     const { navigation } = this.props;
     return (
-      <SafeAreaView style={{ flex: 1 }}>
-        <ImageBackground
-          source={{
-            uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
-          }}
-          style={styles.backgroundStyle}
-        >
+      <ImageBackground
+        source={{
+          uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
+        }}
+        style={styles.backgroundStyle}
+      >
+        <SafeAreaView style={{ flex: 1 }}>
           <View style={{ justifyContent: "center", alignItems: "center" }}>
             <Text style={styles.headerText}>Ongoing Event</Text>
           </View>
-          <View style={{ padding: 10 }}>
+          <View style={{ flex: 1, padding: 10 }}>
             <FlatList
               data={this.state.data}
+              ListEmptyComponent={this.emptyComponent}
               renderItem={({ item, key }) => (
-                <TouchableOpacity
-                  style={styles.flatView}
-                  onPress={this.joinEvent}
-                >
+                <TouchableOpacity style={styles.flatView}>
                   <View style={styles.rowView}>
                     <Text style={styles.headerText}>{item.eventDate}</Text>
                     <Text style={styles.headerText}>{item.eventTime}</Text>
+                  </View>
+                  <View>
+                    <Text style={styles.headerText}>{item.address}</Text>
                   </View>
                   <View>
                     <Text style={styles.headerText}>{item.eventName}</Text>
@@ -303,29 +329,44 @@ export default class VolunteerHome extends Component {
                             margin="2%"
                           ></Icon>
                         </View>
-                        <Button
-                          title="Report"
+                        <TouchableOpacity
+                          style={styles.reportButton}
                           onPress={() => {
                             navigation.navigate("ReportObject", {
                               ID: this.state.eventID,
                             });
                           }}
-                        ></Button>
+                        >
+                          <Text style={styles.headerText}>Report</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={{ marginLeft: "10%" }}
+                          onPress={this.handleDelete}
+                        >
+                          <Icon
+                            name="delete"
+                            color="rgba(255, 96, 92,0.9)"
+                            size={50}
+                          ></Icon>
+                        </TouchableOpacity>
                       </View>
                     ) : (
                       <View>
                         {!this.state.status ? (
-                          <Button
-                            title="Join"
+                          <TouchableOpacity
                             style={styles.button}
                             onPress={this.joinEvent}
-                          ></Button>
+                          >
+                            <Text style={styles.headerText}>Join</Text>
+                          </TouchableOpacity>
                         ) : (
-                          <Button
-                            title="Check In"
+                          <TouchableOpacity
+                            style={styles.button}
                             style={styles.button}
                             onPress={this.reportArrival}
-                          ></Button>
+                          >
+                            <Text style={styles.headerText}>Check In</Text>
+                          </TouchableOpacity>
                         )}
                       </View>
                     )}
@@ -334,8 +375,8 @@ export default class VolunteerHome extends Component {
               )}
             ></FlatList>
           </View>
-        </ImageBackground>
-      </SafeAreaView>
+        </SafeAreaView>
+      </ImageBackground>
     );
   }
 }
@@ -364,7 +405,30 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   button: {
-    height: "30%",
-    width: "50%",
+    margin: "2%",
+
+    alignItems: "center",
+    backgroundColor: "rgba(0, 202, 78,0.8)",
+
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  reportButton: {
+    margin: "2%",
+
+    alignItems: "center",
+    backgroundColor: "rgba(255, 189, 68,0.7)",
+
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    borderRadius: 10,
   },
 });

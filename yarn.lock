@@ -2173,6 +2173,13 @@
   "resolved" "https://registry.npmjs.org/@react-native-aria/utils/-/utils-0.2.7.tgz"
   "version" "0.2.7"
 
+"@react-native-community/blur@^3.6.0":
+  "integrity" "sha512-GtDBhpX2pQcjl4VopOC8FktrVufrEfYRwVeMQ2WWckqKIv2BdwvlvWvj88L1WmEdBr9UNcm3rtgz+d+YXkmirA=="
+  "resolved" "https://registry.npmjs.org/@react-native-community/blur/-/blur-3.6.0.tgz"
+  "version" "3.6.0"
+  dependencies:
+    "prop-types" "^15.5.10"
+
 "@react-native-community/cli-debugger-ui@^4.13.1":
   "integrity" "sha512-UFnkg5RTq3s2X15fSkrWY9+5BKOFjihNSnJjTV2H5PtTUFbd55qnxxPw8CxSfK0bXb1IrSvCESprk2LEpqr5cg=="
   "resolved" "https://registry.npmjs.org/@react-native-community/cli-debugger-ui/-/cli-debugger-ui-4.13.1.tgz"
@@ -6626,6 +6633,11 @@
     "fbjs" "^3.0.0"
     "mockdate" "^3.0.2"
     "string-hash-64" "^1.0.3"
+
+"react-native-restart@^0.0.22":
+  "integrity" "sha512-XwCqAMAKsO8yCM3xACPFKvkDQZe41lcavOuO0gUEu803IuTLtciualCq/qs83ryRDCDh1jkXYRqFjsGjLMCN3Q=="
+  "resolved" "https://registry.npmjs.org/react-native-restart/-/react-native-restart-0.0.22.tgz"
+  "version" "0.0.22"
 
 "react-native-safe-area-context@*", "react-native-safe-area-context@^3.1.9", "react-native-safe-area-context@>= 3.0.0", "react-native-safe-area-context@3.2.0":
   "integrity" "sha512-k2Nty4PwSnrg9HwrYeeE+EYqViYJoOFwEy9LxL5RIRfoqxAq/uQXNGwpUg2/u4gnKpBbEPa9eRh15KKMe/VHkA=="

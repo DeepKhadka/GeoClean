@@ -10,12 +10,15 @@ import {
   Button,
   StyleSheet,
   TextInputComponent,
+  ImageBackground,
   Alert,
+  KeyboardAvoidingView,
 } from "react-native";
+import { Icon } from "react-native-elements";
 
 import fire from "../database/firebase";
 import { NativeBaseProvider, Select } from "native-base";
-import { Icon } from "react-native-elements";
+
 import * as Location from "expo-location";
 import FloatingTextBox from "../assets/textEntry";
 import Constants from "expo-constants";
@@ -61,9 +64,7 @@ export default class ReportObject extends Component {
     })();
   };
 
-  componentDidMount = () => {
-    console.log(this.props.route.params.ID);
-  };
+  componentDidMount = () => {console.log(this.props.route.params.ID)};
 
   pickImage = async () => {
     if (Platform.OS !== "web") {
@@ -230,56 +231,96 @@ export default class ReportObject extends Component {
       { key: 6, label: "Zone 6" },
     ];
     return (
-      <SafeAreaView style={styles.safeview}>
-        <View style={{ flex: 1 }}>
-          <ModalSelector
-            data={data}
-            initValue={this.state.zoneplaceHolder}
-            style={{ width: "50%" }}
-            initValueTextStyle={{ color: "black" }}
-            onChange={(option) => {
-              this.onPickerSelect(option.key);
+      <KeyboardAvoidingView style={{ flex: 1 }} enabled={true}>
+      <ImageBackground
+        source={{
+          uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
+        }}
+        style={styles.backgroundStyle}
+      >
+       
+        <SafeAreaView style={styles.safeview}>
+          <View
+            style={{
+              flex: 1,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              backgroundColor:"rgba(36,160,237,0.4)"
             }}
-          />
-        </View>
-        <View style={{ flex: 13 }}>
-          <TextInput
-            style={styles.input}
-            onChangeText={(val) => {
-              this.setState({ description: val });
-            }}
-            value={this.state.description}
-            placeholder="Description"
-            placeholderTextColor="purple"
-          />
-          <View style={styles.rowView}>
-            <TouchableOpacity
-              style={styles.card}
-              onPress={this.handleImagePicker}
-            >
-              <Text style={styles.text}>Add Image </Text>
+          >
+            <ModalSelector
+              data={data}
+              initValue={this.state.zoneplaceHolder}
+              style={{
+              
+              
+                marginTop: "2%",
+                marginLeft: "5%",
+                borderRadius: 5,
+            borderBottomWidth:2              }}
+              initValueTextStyle={{ color: "black" ,fontWeight:"bold"}}
+              onChange={(option) => {
+                this.onPickerSelect(option.key);
+              }}
+            />
+            <TouchableOpacity style={{margin:"2%",backgroundColor:"rgba(36,160,237,0.8)",borderRadius:10,borderBottomWidth:2}} onPress={this.handleImagePicker}>
+            <View style={{flexDirection:"row",justifyContent:"center",alignItems:"center"}} >
+            <Icon
+                      name="photo"
+                      color="green"
+                      onPress={this.iconPress}
+                      size={40}
+                      
+
+            
+                    ></Icon>
+              <Text style={styles.headerText}>Add Image </Text>
+            </View>
             </TouchableOpacity>
-          </View>
-          <View style={{ alignItems: "center" }}>
-            <Image
-              source={{ uri: this.state.resultUri }}
-              style={{ height: 150, width: 150 }}
-            ></Image>
+            
           </View>
 
-          <View style={{ alignItems: "center" }}>
-            <TouchableOpacity style={styles.card} onPress={this.checkEmpty}>
-              <Text style={styles.text}>Report</Text>
-            </TouchableOpacity>
+          <View style={{ flex: 13 }}>
+            <TextInput
+              style={styles.input}
+              onChangeText={(val) => {
+                this.setState({ description: val });
+              }}
+              value={this.state.description}
+              placeholder="Description"
+              placeholderTextColor="purple"
+            />
+
+            <View style={{ alignItems: "center" }}>
+              {this.state.resultUri==" "? <View style={{ alignItems: "center" }}>
+              <TouchableOpacity style={{margin:"2%",backgroundColor:"rgba(36,160,237,0.8)",borderRadius:10,borderBottomWidth:2}} onPress={this.checkEmpty}>
+                <Text style={styles.text}>Report</Text>
+              </TouchableOpacity>
+            </View> : 
+                    <View style={{ alignItems: "center" }}>
+                      <Image
+                source={{ uri: this.state.resultUri }}
+                style={styles.imageStyle}
+              ></Image>
+              <TouchableOpacity style={{margin:"2%",backgroundColor:"rgba(36,160,237,0.8)",borderRadius:20,borderBottomWidth:2}} onPress={this.checkEmpty}>
+                <Text style={styles.text}>Report</Text>
+              </TouchableOpacity>
+                      </View>
+            }
+              
+            </View>
+
+            
           </View>
-        </View>
-      </SafeAreaView>
+        </SafeAreaView>
+       
+      </ImageBackground>
+      </KeyboardAvoidingView>
     );
   }
 }
 const styles = StyleSheet.create({
   safeview: {
-    backgroundColor: "#a09fdf",
     height: "100%",
     width: "100%",
   },
@@ -290,11 +331,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   card: {
-    margin: "5%",
-    backgroundColor: "#ba84d1",
-    justifyContent: "center",
-    alignItems: "center",
-
+  
+    backgroundColor: "lightblue",
+    margin:"2%",
+    opacity: 0.6,
     borderRadius: 20,
   },
   text: {
@@ -316,10 +356,22 @@ const styles = StyleSheet.create({
   },
   input: {
     height: "20%",
-    margin: "2%",
+    margin: "5%",
     borderWidth: 1,
     borderRadius: 12,
     borderColor: "blue",
     padding: "5%",
+    backgroundColor: "lightblue",
+    opacity: 0.6,
+  },
+  backgroundStyle: {
+    height: "100%",
+    width: "100%",
+  },
+  imageStyle:{
+    height:300,
+    width:300
+    
+
   },
 });

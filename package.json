@@ -38,6 +38,7 @@
     "react-native-open-maps": "^0.3.6",
     "react-native-paper": "^4.9.2",
     "react-native-reanimated": "~2.2.0",
+    "react-native-restart": "^0.0.22",
     "react-native-safe-area-context": "3.2.0",
     "react-native-screens": "~3.4.0",
     "react-native-send-intent": "^1.2.3",

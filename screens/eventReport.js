@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import fire from "../database/firebase";
 import openMap from "react-native-open-maps";
+import DefaultCard  from "../assets/Defaultcardview";
 
 
 import ModalSelector from 'react-native-modal-selector';
@@ -248,6 +249,15 @@ export default class EventReport extends Component {
       
     },
     console.log(value));
+  };
+  emptyComponent = () => {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <Text style={{ fontSize: 20, fontStyle: "italic", fontWeight: "bold" }}>
+          No Volunteers Signed Up Yet...
+        </Text>
+      </View>
+    );
   };
   render() {
     const { navigation } = this.props;

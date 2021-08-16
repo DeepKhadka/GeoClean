@@ -21,17 +21,22 @@ function formatDate(date) {
 }
 function formateTime(date) {
   var HH = date.getHours();
-
   var MM = date.getMinutes();
-  if (HH >= 12 && MM < 10) {
-    HH = HH - 12;
-    return HH + ":" + "0" + MM + " PM";
-  } else if (HH >= 12) {
-    HH = HH - 12;
-    return HH + ":" + MM + " PM";
+  if (HH > 12) {
+    if (MM < 10) {
+      HH = HH - 12;
+      return HH + ":" + "0" + MM + " PM";
+    } else {
+      HH = HH - 12;
+      return HH + ":" + MM + " PM";
+    }
+  } else if (HH <= 12) {
+    if (MM < 10) {
+      return HH + ":" + "0" + MM + " AM";
+    } else {
+      return HH + ":" + MM + " AM";
+    }
   }
-
-  return HH + ":" + MM + "AM";
 }
 
 export default class StartEvent extends Component {
