@@ -226,7 +226,7 @@ export default class StartEvent extends Component {
               />
             </View>
             <View style={styles.desInput}>
-              <Icon name="users" type="font-awesome" size={30}></Icon>
+              <Icon name="sticky-note" type="font-awesome" size={30}></Icon>
               <TextInput
                 placeholder="Event Description"
                 style={styles.textInput}

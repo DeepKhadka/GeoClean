@@ -193,7 +193,7 @@ this.setState({
           </View>
           <View style={styles.defaultPlace}>
             <Icon
-              name="key"
+              name="lock"
               type="font-awesome"
               size={30}
               
@@ -218,7 +218,7 @@ this.setState({
           </View>
           <View style={styles.defaultPlace}>
             <Icon
-              name="key"
+              name="lock"
               type="font-awesome"
               size={30}
               
