@@ -21,7 +21,6 @@ function formatDate(date) {
   var MM = date.getMonth() + 1;
   var DD = date.getDate();
   var YYYY = date.getFullYear();
-
   return MM + "-" + DD + "-" + YYYY;
 }
 function formateTime(date) {
@@ -151,125 +150,106 @@ export default class StartEvent extends Component {
         style={styles.backgroundStyle}
       >
         <SafeAreaView style={styles.safeview}>
-          <View style={{flex:1,flexDirection:'row',justifyContent:"space-between",marginTop:"2%",marginLeft:"2%"}}>
-            <Text style={{fontSize:20,fontWeight:"bold"}}>Event Information </Text>
-            <TouchableOpacity
-                        style={{
-                          margin: "5%",
-                          padding: "2%",
-                          borderRadius: 10,
-                          justifyContent: "center",
-
-                          backgroundColor: " rgba(0, 115, 189, 0.3)",
-                          borderBottom: 2,
-                        }}
-                        onPress={this.checkCurrentEvent}
-                      >
-
-                        <Text style={{ fontWeight: "bold", fontSize: 18 }}>
-                         Finish
-                        </Text>
-                      </TouchableOpacity>
-          </View>
-          <View style={{alignItems:'center',flex:9}}>
-          <View style={styles.defaultPlace}>
-            <Icon
-              name="id-card"
-              type="font-awesome"
-              size={30}
-              
-            ></Icon>
-            <TextInput
-              placeholder="Event Name"
-             
-              style={styles.textInput}
-              placeholderTextColor="black"
-              onChangeText={(val) => {
-                this.setState({ eventName: val });
-              }}
-              test={this.state.eventName}
-            />
-          </View>
-          <DateTimePickerModal
-            isVisible={this.state.visibility}
-            mode="datetime"
-            backgroundColor= " rgba(0, 115, 189, 0.3)"
-            onConfirm={this.handleConfirm}
-            onCancel={this.hideDatePicker}
-            minimumDate={new Date()}
-          />
-              <View style={styles.defaultPlace}>
-            <Icon
-              name="map-marker"
-              type="font-awesome"
-              size={30}
-      
-            ></Icon>
-            <TextInput
-              placeholder="Event Address"
-             
-              style={styles.textInput}
-              placeholderTextColor="black"
-              onChangeText={(val) => {
-                this.setState({ eventAdress: val });
-              }}
-              test={this.state.eventName}
-            />
-          </View>
-          <View style={styles.defaultPlace}>
-            <Icon
-              name="users"
-              type="font-awesome"
-              size={30}
-           
-            ></Icon>
-            <TextInput
-              placeholder="No of Volunteers"
-              keyboardType="number-pad"
-              style={styles.textInput}
-              placeholderTextColor="black"
-              onChangeText={(val) => {
-                this.setState({ volunteers: val });
-              }}
-              test={this.state.eventName}
-            />
-          </View>
-          <View style={styles.desInput}>
-            <Icon
-              name="users"
-              type="font-awesome"
-              size={30}
-             
-            ></Icon>
-            <TextInput
-              placeholder="Event Description"
-           
-              style={styles.textInput}
-              placeholderTextColor="black"
-              onChangeText={(val) => {
-                this.setState({ eventDescription: val });
-              }}
-              test={this.state.eventName}
-            />
-          </View>
-          <TouchableOpacity style={styles.defaultPlace}    onPress={this.showDatePicker}>
-          <Icon
-              name="calendar"
-              type="font-awesome"
-              size={30}
-             
-            ></Icon>
-         <Text style={{marginLeft:"5%"}}>Date and Time</Text>
-
-          </TouchableOpacity>
-          
-          {this.state.eventDate != "" ? (
-            <Text style={{ marginTop: "10%", fontWeight: "bold" }}>
-              {this.state.eventDate.toString()} {" " + this.state.eventTime}
+          <View
+            style={{
+              flex: 1,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginTop: "2%",
+              marginLeft: "2%",
+            }}
+          >
+            <Text
+              style={{ fontSize: 25, fontWeight: "bold", alignSelf: "center" }}
+            >
+              Event Information{" "}
             </Text>
-          ) : null}
+            <TouchableOpacity
+              style={{
+                margin: "5%",
+                padding: "2%",
+                borderRadius: 10,
+                justifyContent: "center",
 
-         
+                backgroundColor: " rgba(0, 115, 189, 0.3)",
+                borderBottom: 2,
+              }}
+              onPress={this.checkCurrentEvent}
+            >
+              <Text style={{ fontWeight: "bold", fontSize: 18 }}>Finish</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{ alignItems: "center", flex: 9 }}>
+            <View style={styles.defaultPlace}>
+              <Icon name="id-card" type="font-awesome" size={30}></Icon>
+              <TextInput
+                placeholder="Event Name"
+                style={styles.textInput}
+                placeholderTextColor="black"
+                onChangeText={(val) => {
+                  this.setState({ eventName: val });
+                }}
+                test={this.state.eventName}
+              />
+            </View>
+            <DateTimePickerModal
+              isVisible={this.state.visibility}
+              mode="datetime"
+              backgroundColor=" rgba(0, 115, 189, 0.3)"
+              onConfirm={this.handleConfirm}
+              onCancel={this.hideDatePicker}
+              minimumDate={new Date()}
+            />
+            <View style={styles.defaultPlace}>
+              <Icon name="map-marker" type="font-awesome" size={30}></Icon>
+              <TextInput
+                placeholder="Event Address"
+                style={styles.textInput}
+                placeholderTextColor="black"
+                onChangeText={(val) => {
+                  this.setState({ eventAdress: val });
+                }}
+                test={this.state.eventName}
+              />
+            </View>
+            <View style={styles.defaultPlace}>
+              <Icon name="users" type="font-awesome" size={30}></Icon>
+              <TextInput
+                placeholder="No of Volunteers"
+                keyboardType="number-pad"
+                style={styles.textInput}
+                placeholderTextColor="black"
+                onChangeText={(val) => {
+                  this.setState({ volunteers: val });
+                }}
+                test={this.state.eventName}
+              />
+            </View>
+            <View style={styles.desInput}>
+              <Icon name="users" type="font-awesome" size={30}></Icon>
+              <TextInput
+                placeholder="Event Description"
+                style={styles.textInput}
+                placeholderTextColor="black"
+                onChangeText={(val) => {
+                  this.setState({ eventDescription: val });
+                }}
+                test={this.state.eventName}
+              />
+            </View>
+            <TouchableOpacity
+              style={styles.defaultPlace}
+              onPress={this.showDatePicker}
+            >
+              <Icon name="calendar" type="font-awesome" size={30}></Icon>
+              <Text style={{ marginLeft: "5%" }}>Date and Time</Text>
+            </TouchableOpacity>
+
+            {this.state.eventDate != "" ? (
+              <Text style={{ marginTop: "10%", fontWeight: "bold" }}>
+                {this.state.eventDate.toString()} {" " + this.state.eventTime}
+              </Text>
+            ) : null}
           </View>
         </SafeAreaView>
       </ImageBackground>
@@ -281,7 +261,6 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
     flex: 1,
- 
   },
   button: {
     backgroundColor: "lightyellow",
@@ -298,18 +277,17 @@ const styles = StyleSheet.create({
   textInput: {
     height: "100%",
     width: "80%",
-   
 
     justifyContent: "center",
     borderRadius: 20,
     alignContent: "center",
     marginLeft: "5%",
-    fontWeight:'bold',
-    fontSize:15
+    fontWeight: "bold",
+    fontSize: 15,
   },
   desInput: {
-    flexDirection:"row",
-    
+    flexDirection: "row",
+
     backgroundColor: " rgba(0, 115, 189, 0.3);",
     height: "15%",
     marginTop: "10%",
@@ -317,7 +295,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: "2%",
     borderRadius: 10,
-   
   },
   defaultPlace: {
     flexDirection: "row",
@@ -329,15 +306,11 @@ const styles = StyleSheet.create({
     padding: "2%",
     borderRadius: 10,
   },
-  headerView:{
+  headerView: {
     flexDirection: "row",
     backgroundColor: " rgba(0, 115, 189, 0.3);",
     height: "10%",
     marginTop: "5%",
     justifyContent: "space-between",
-    
- 
-    
-    
-  }
+  },
 });

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {BlurView} from "@react-native-community/blur";
+import { BlurView } from "@react-native-community/blur";
 import {
   View,
   StyleSheet,
@@ -40,6 +40,7 @@ export default class AssignHome extends Component {
     loading: true,
     switch: false,
     refreshing: false,
+    past_pressed: false,
   };
 
   handleCancelCheck = () => {
@@ -218,6 +219,10 @@ export default class AssignHome extends Component {
       })
       .then(() => {
         Alert.alert("Event started!");
+        this.setState({
+          currenteventStatus: "current",
+        });
+        this.componentDidMount();
       })
       .catch((err) => {
         console.log(err.toString());
@@ -237,6 +242,10 @@ export default class AssignHome extends Component {
       })
       .then(() => {
         Alert.alert("Event Paused!");
+        this.setState({
+          currenteventStatus: "paused",
+        });
+        this.componentDidMount();
       })
       .catch((err) => {
         console.log(err.toString());
@@ -256,6 +265,17 @@ export default class AssignHome extends Component {
       })
       .then(() => {
         Alert.alert("Event completed!");
+        this.setState({
+          data_current: null,
+          data_completed: null,
+          currenteventStatus: "",
+          currenteventID: "",
+          arrived: 0,
+          notarrived: 0,
+          arrived_past: 0,
+          notarrived_past: 0,
+        });
+        this.componentDidMount();
       })
       .catch((err) => {
         console.log(err.toString());
@@ -274,6 +294,20 @@ export default class AssignHome extends Component {
       })
       .then(() => {
         Alert.alert("Event canceled!");
+        this.setState({
+          data_current: null,
+          data_completed: null,
+          currenteventStatus: "",
+          currenteventID: "",
+          arrived: 0,
+          notarrived: 0,
+          arrived_past: 0,
+          notarrived_past: 0,
+          loading: true,
+          switch: false,
+          refreshing: false,
+        });
+        this.componentDidMount();
       })
       .catch((err) => {
         console.log(err.toString());
@@ -386,6 +420,16 @@ export default class AssignHome extends Component {
       });
   }
 
+  emptyComponent = () => {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <Text style={{ fontSize: 20, fontStyle: "italic", fontWeight: "bold" }}>
+          No events...
+        </Text>
+      </View>
+    );
+  };
+
   componentDidMount() {
     this._isMounted = true;
     this.getCurrentEvent();
@@ -399,6 +443,16 @@ export default class AssignHome extends Component {
     this.setState(
       {
         refreshing: true,
+
+        data_current: null,
+        data_completed: null,
+        currenteventStatus: "",
+        currenteventID: "",
+        arrived: 0,
+        notarrived: 0,
+        arrived_past: 0,
+        notarrived_past: 0,
+        past_pressed: false,
       },
       () => {
         this.componentDidMount();
@@ -448,7 +502,7 @@ export default class AssignHome extends Component {
                     Start an Event
                   </Text>
                 </TouchableOpacity>
-                {this.state.currenteventID == "" ? (
+                {this.state.currenteventID == "" ? null : (
                   <TouchableOpacity
                     style={{
                       justifyContent: "center",
@@ -456,24 +510,11 @@ export default class AssignHome extends Component {
                       margin: "2%",
                       borderRadius: 5,
                     }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 15,
-                        fontWeight: "bold",
-                        padding: "2%",
-                      }}
-                    >
-                      Ongoing Event
-                    </Text>
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity
-                    style={{
-                      justifyContent: "center",
-                      backgroundColor: "lightblue",
-                      margin: "2%",
-                      borderRadius: 5,
+                    onPress={() => {
+                      this.setState({
+                        currenteventID: "",
+                        past_pressed: true,
+                      });
                     }}
                   >
                     <Text
@@ -488,23 +529,38 @@ export default class AssignHome extends Component {
                   </TouchableOpacity>
                 )}
 
-                <TouchableOpacity
-                  style={{
-                    backgroundColor: "lightblue",
-
-                    borderRadius: 5,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    margin: "2%",
-                    width: "10%",
-                  }}
-                  onPress={() => {
-                    this.componentDidMount();
-                  }}
-                >
-                  <Icon name="refresh" size={25}></Icon>
-                </TouchableOpacity>
+                {!this.state.past_pressed ? null : (
+                  <TouchableOpacity
+                    style={{
+                      justifyContent: "center",
+                      backgroundColor: "lightblue",
+                      margin: "2%",
+                      borderRadius: 5,
+                    }}
+                    onPress={this.handleRefresh}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 15,
+                        fontWeight: "bold",
+                        padding: "2%",
+                      }}
+                    >
+                      Show Ongoing Events
+                    </Text>
+                  </TouchableOpacity>
+                )}
               </View>
+              <Text
+                style={{
+                  fontSize: 15,
+                  color: "gray",
+                  alignSelf: "center",
+                  margin: "2%",
+                }}
+              >
+                Pull to Refresh
+              </Text>
 
               <View style={{ flex: 14 }}>
                 {this.state.currenteventID == "" ? (
@@ -620,6 +676,7 @@ export default class AssignHome extends Component {
                     keyExtractor={(item) => item.eventID}
                     refreshing={this.state.refreshing}
                     onRefresh={this.handleRefresh}
+                    ListEmptyComponent={this.emptyComponent}
                   />
                 ) : (
                   <FlatList
@@ -638,7 +695,6 @@ export default class AssignHome extends Component {
                           shadowOpacity: 0.1,
                           shadowRadius: 2,
                         }}
-                       
                       >
                         <View style={{ borderBottomWidth: 1, padding: "3%" }}>
                           <Text style={{ fontSize: 20, fontWeight: "bold" }}>
@@ -953,6 +1009,7 @@ export default class AssignHome extends Component {
                     keyExtractor={(item) => item.eventID}
                     refreshing={this.state.refreshing}
                     onRefresh={this.handleRefresh}
+                    ListEmptyComponent={this.emptyComponent}
                   />
                 )}
               </View>
