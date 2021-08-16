@@ -269,68 +269,7 @@ export default class StartEvent extends Component {
             </Text>
           ) : null}
 
-          {/* <DateTimePickerModal
-            isVisible={this.state.visibility}
-            mode="datetime"
-            onConfirm={this.handleConfirm}
-            onCancel={this.hideDatePicker}
-            minimumDate={new Date()}
-          />
-
-          <FloatingTextBox
-            label="Event Address"
-            autoCapitalize="none"
-            placeholderTextColor="gray"
-            onChangeText={(val) => {
-              this.setState({ eventAddress: val });
-            }}
-            test={this.state.eventAddress}
-          ></FloatingTextBox>
-          <FloatingTextBox
-            label="No.of Volunteers"
-            autoCapitalize="none"
-            placeholderTextColor="gray"
-            keyboardType="number-pad"
-            onChangeText={(val) => {
-              this.setState({ volunteers: val });
-            }}
-            test={this.state.volunteers}
-          ></FloatingTextBox>
-          <FloatingTextBox
-            label="Description"
-            autoCapitalize="none"
-            placeholderTextColor="gray"
-            onChangeText={(val) => {
-              this.setState({ eventDescription: val });
-            }}
-            test={this.state.eventDescription}
-          ></FloatingTextBox>
-
-          <TouchableOpacity
-            onPress={this.showDatePicker}
-            style={{
-              width: "30%",
-              marginTop: "10%",
-              backgroundColor: "lightblue",
-              borderRadius: 10,
-              padding: "2%",
-            }}
-          >
-            <Text>Date and Time</Text>
-          </TouchableOpacity>
-          {this.state.eventDate != "" ? (
-            <Text style={{ marginTop: "10%", fontWeight: "bold" }}>
-              {this.state.eventDate.toString()} {" " + this.state.eventTime}
-            </Text>
-          ) : null}
-          <TouchableOpacity
-            style={styles.button}
-            onPress={this.checkCurrentEvent}
-          >
-            <Text style={{ padding: 10, fontSize: 20, fontWeight: "bold" }}>
-              Finish
-            </Text>
-          </TouchableOpacity> */}
+         
           </View>
         </SafeAreaView>
       </ImageBackground>
