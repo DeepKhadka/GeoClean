@@ -60,6 +60,15 @@ export default class EventReport extends Component {
       })
       .then(() => {
         console.log("ACKNOWLEDGED!");
+        this.setState({
+          data_6: [],
+          data_1: [],
+          data_2: [],
+          data_3: [],
+          data_4: [],
+          data_5: [],
+        });
+        this.componentDidMount();
       })
       .catch((err) => {
         console.log(err.toString());
@@ -281,8 +290,16 @@ export default class EventReport extends Component {
             <ModalSelector
               data={data}
               initValue={this.state.zoneplaceHolder}
-              style={{ width: "50%", margin: "2%",     backgroundColor: "rgba(0, 0, 0, 0.2)",}}
-              initValueTextStyle={{fontWeight:'bold', color: "blue", padding: "2%" }}
+              style={{
+                width: "50%",
+                margin: "2%",
+                backgroundColor: "rgba(0, 0, 0, 0.2)",
+              }}
+              initValueTextStyle={{
+                fontWeight: "bold",
+                color: "blue",
+                padding: "2%",
+              }}
               onChange={(option) => {
                 this.onPickerSelect(option.key);
               }}
@@ -343,7 +360,7 @@ export default class EventReport extends Component {
                     </View>
                   </View>
                 )}
-                keyExtractor={(item) => item.email}
+                keyExtractor={(item) => item.id}
               />
             )}
           </View>

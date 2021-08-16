@@ -944,10 +944,11 @@ export default class AssignHome extends Component {
                               }}
                               onPress={() => {
                                 this.props.navigation.navigate(
-                                  "AssignVolunteer"
-                                ,{
-                                  eventName: item.eventName
-                                });
+                                  "AssignVolunteer",
+                                  {
+                                    eventName: item.eventName,
+                                  }
+                                );
                               }}
                             >
                               <Text

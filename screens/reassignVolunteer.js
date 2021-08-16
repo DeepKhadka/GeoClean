@@ -9,7 +9,7 @@ import {
   Button,
   Switch,
   Alert,
-  ImageBackground
+  ImageBackground,
 } from "react-native";
 import fire from "../database/firebase";
 import {
@@ -20,9 +20,9 @@ import {
   NativeBaseProvider,
   Select,
 } from "native-base";
-import { Icon } from 'react-native-elements';
+import { Icon } from "react-native-elements";
 
-import ModalSelector from 'react-native-modal-selector'
+import ModalSelector from "react-native-modal-selector";
 import { borderBottom, typography } from "styled-system";
 
 export default class ReassignVolunteers extends Component {
@@ -33,12 +33,9 @@ export default class ReassignVolunteers extends Component {
     leader: false,
     status: true,
     statusLabel: "Active",
-
   };
 
-
   removeVolunteer = () => {
-
     fire
       .firestore()
       .collection("ADMIN")
@@ -53,24 +50,16 @@ export default class ReassignVolunteers extends Component {
         this.props.navigation.goBack();
       })
       .catch((err) => {
-        console.log(err.toString())
-      })
-
-  }
+        console.log(err.toString());
+      });
+  };
 
   checkLeaderStatus = () => {
-
     if (this.state.Zone == "") {
       Alert.alert("Please asign a Zone to the Volunteer!");
-
     } else if (this.state.status == false && this.state.leader == true) {
-
-      Alert.alert("A leader cannot be inactive!")
-
-    }
-    else if (this.state.leader == true) {
-
-
+      Alert.alert("A leader cannot be inactive!");
+    } else if (this.state.leader == true) {
       fire
         .firestore()
         .collection("ADMIN")
@@ -85,18 +74,16 @@ export default class ReassignVolunteers extends Component {
           if (sub.docs.length > 0) {
             Alert.alert("Leader already assigned!");
           } else {
-            this.onPressUpdate()
+            this.onPressUpdate();
           }
         })
         .catch((err) => {
-          console.log(err.toString())
-        })
-
-
+          console.log(err.toString());
+        });
     } else {
-      this.onPressUpdate()
+      this.onPressUpdate();
     }
-  }
+  };
 
   onPressUpdate = () => {
     fire
@@ -110,45 +97,34 @@ export default class ReassignVolunteers extends Component {
       .update({
         leader: this.state.leader,
         status: this.state.status,
-        zoneNumber: this.state.Zone
+        zoneNumber: this.state.Zone,
       })
       .then(() => {
-        Alert.alert("Assignment completed!")
+        Alert.alert("Assignment completed!");
+        this.props.navigation.goBack({ refresh: true });
       })
       .catch((err) => {
-        console.log(err.toString())
-      })
-
-  }
-
-
-
-
-
+        console.log(err.toString());
+      });
+  };
 
   iconPress = () => {
+    Alert.alert("Are you sure?", "Are you sure you want do delete ?", [
+      {
+        text: "Yes",
+        onPress: () => {
+          // console.log("Ask me later pressed")
 
-    Alert.alert(
-      "Are you sure?",
-      "Are you sure you want do delete ?",
-      [
-        {
-          text: "Yes",
-          onPress: () => {
-            // console.log("Ask me later pressed")
-
-            this.removeVolunteer();
-          }
+          this.removeVolunteer();
         },
-        {
-          text: "No",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel"
-        }
-
-      ]
-    );
-  }
+      },
+      {
+        text: "No",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "cancel",
+      },
+    ]);
+  };
 
   handlesignout = () => {
     fire.auth().signOut();
@@ -157,39 +133,34 @@ export default class ReassignVolunteers extends Component {
   toggleSwitch() {
     this.setState({
       leader: !this.state.leader,
-
     });
   }
 
   statusSwitch = () => {
     this.setState({
       status: !this.state.status,
-    })
-
-  }
-
+    });
+  };
 
   onPickerSelect = (value) => {
     this.setState({
       Zone: value,
-      zoneplaceHolder: 'Zone '+value,
+      zoneplaceHolder: "Zone " + value,
     });
   };
   componentDidMount() {
-    this.setState({
-      leader: this.props.route.params.leader,
-      status: this.props.route.params.status,
-      Zone: this.props.route.params.zone,
-
-
-    },
+    this.setState(
+      {
+        leader: this.props.route.params.leader,
+        status: this.props.route.params.status,
+        Zone: this.props.route.params.zone,
+      },
       () => {
         this.setState({
-          zoneplaceHolder: "Zone " + this.state.Zone
-        })
+          zoneplaceHolder: "Zone " + this.state.Zone,
+        });
       }
-    )
-
+    );
   }
 
   render() {
@@ -199,39 +170,44 @@ export default class ReassignVolunteers extends Component {
     const lname = this.props.route.params.lname;
     const email = this.props.route.params.email;
     const data = [
-      { key: 1, section: true, label: 'Zone 1' },
-      { key: 2, label: 'Zone 2' },
-      { key: 3, label: 'Zone 3' },
-      { key: 4, label: 'Zone 4'},
-      { key: 5, label: 'Zone 5'},
-      { key: 6, label: 'Zone 6'},
-    ]
-
-
+      { key: 1, section: true, label: "Zone 1" },
+      { key: 2, label: "Zone 2" },
+      { key: 3, label: "Zone 3" },
+      { key: 4, label: "Zone 4" },
+      { key: 5, label: "Zone 5" },
+      { key: 6, label: "Zone 6" },
+    ];
 
     return (
       <ImageBackground
-      source={{
-        uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
-      }}
-      style={styles.backgroundStyle}
-    >
-      <SafeAreaView style={styles.safeview}>
+        source={{
+          uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
+        }}
+        style={styles.backgroundStyle}
+      >
+        <SafeAreaView style={styles.safeview}>
+          <View
+            style={{
+              margin: "5%",
+              padding: "2%",
+              borderRadius: 10,
 
-      
-          <View style={{
-            margin: "5%",
-            padding: "2%",
-            borderRadius: 10,
-
-            backgroundColor: "rgba(0, 0, 0, 0.3)",
-          }}>
-            <View style={{ alignItems: 'center' }}>
+              backgroundColor: "rgba(0, 0, 0, 0.3)",
+            }}
+          >
+            <View style={{ alignItems: "center" }}>
               <Text style={styles.headerText}>{fname}</Text>
               <Text style={styles.headerText}>{lname}</Text>
               <Text style={styles.text}>{email}</Text>
             </View>
-            <View style={{ flexDirection: "row", justifyContent: 'space-between', marginTop: "5%", marginLeft: "2%" }}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginTop: "5%",
+                marginLeft: "2%",
+              }}
+            >
               <Text style={styles.headerText}>Leader</Text>
               <Switch
                 trackColor={{ false: "gray", true: "green" }}
@@ -241,13 +217,15 @@ export default class ReassignVolunteers extends Component {
               />
             </View>
             <View style={styles.rowView}>
-            <ModalSelector
-                    data={data}
-                    initValue={this.state.zoneplaceHolder}
-                    style={{width:"50%"}}
-                    initValueTextStyle={{color:"black"}}
-                    onChange={(option)=>{ this.onPickerSelect(option.key) }} />
-
+              <ModalSelector
+                data={data}
+                initValue={this.state.zoneplaceHolder}
+                style={{ width: "50%" }}
+                initValueTextStyle={{ color: "black" }}
+                onChange={(option) => {
+                  this.onPickerSelect(option.key);
+                }}
+              />
             </View>
             <View style={styles.rowView}>
               <View style={styles.rowView}>
@@ -263,37 +241,33 @@ export default class ReassignVolunteers extends Component {
               </View>
 
               <Icon name="delete" onPress={this.iconPress} size={50}></Icon>
-
-
             </View>
+          </View>
 
+          <View style={{ alignItems: "center" }}>
+            <TouchableOpacity
+              style={{
+                width: "50%",
+                margin: "5%",
+                padding: "2%",
+                borderRadius: 10,
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "rgba(0, 202, 78,0.7)",
+                borderBottom: 2,
+              }}
+              onPress={this.checkLeaderStatus}
+            >
+              <Text style={{ fontWeight: "bold", fontSize: 20 }}>Update</Text>
+            </TouchableOpacity>
           </View>
-          
-          <View style={{alignItems:"center"}}>
-          <TouchableOpacity style={{
-            width:"50%",
-            margin: "5%",
-            padding: "2%",
-            borderRadius: 10,
-            justifyContent:"center",
-            alignItems:'center',
-            backgroundColor: "rgba(0, 202, 78,0.7)",
-            borderBottom:2,
-          }}
-          onPress={this.checkLeaderStatus}>
-            <Text style={{fontWeight:'bold',fontSize:20}}>Update</Text>
-          </TouchableOpacity>
-          </View>
-        
-     
-      </SafeAreaView>
+        </SafeAreaView>
       </ImageBackground>
     );
   }
 }
 const styles = StyleSheet.create({
   safeview: {
-
     height: "100%",
     width: "100%",
     flex: 1,
@@ -319,16 +293,13 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 20,
     fontWeight: "bold",
-    alignContent: "center"
+    alignContent: "center",
   },
   rowView: {
     flexDirection: "row",
     marginVertical: "5 %",
-    justifyContent: 'space-between',
-    marginLeft: "2%"
-
-
-
+    justifyContent: "space-between",
+    marginLeft: "2%",
   },
   backgroundStyle: {
     height: "100%",

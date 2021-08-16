@@ -17,9 +17,10 @@ import {
   Text,
   Button,
   Alert,
+  Image,
 } from "react-native";
-import * as AddCalendarEvent from 'react-native-add-calendar-event';
-import moment from 'moment';
+import * as AddCalendarEvent from "react-native-add-calendar-event";
+import moment from "moment";
 
 import fire from "../database/firebase";
 import DefaultCard from "../assets/Defaultcardview";
@@ -38,13 +39,12 @@ export default class VolunteerHome extends Component {
     refreshing: false,
     loading: true,
     past_pressed: false,
-  eventName:""
+    eventName: "",
+    volunteer_info: [],
   };
   componentWillUnmount() {
     this._isMounted = false;
   }
- 
-  
 
   handleDelete = () => {
     Alert.alert(
@@ -270,7 +270,7 @@ export default class VolunteerHome extends Component {
         }
       })
       .then(() => {
-        // console.log(this.state.eventID);
+        console.log(this.state.data);
         if (this.state.eventID != "") {
           this.statusCheck();
         } else {
@@ -305,18 +305,23 @@ export default class VolunteerHome extends Component {
       .get()
       .then((sub) => {
         if (sub.docs.length > 0) {
+          const data = [];
           var arrived = false;
           sub.forEach((doc) => {
+            const x = doc.data();
+            data.push(x);
             arrived = doc.data().arrived;
           });
 
           this.setState({
+            volunteer_info: data,
             status: true,
             arrivalStatus: arrived,
           });
         }
       })
       .then(() => {
+        console.log(this.state.volunteer_info);
         this.getCompletedEvents();
       })
 
@@ -581,6 +586,89 @@ export default class VolunteerHome extends Component {
                               </Text>
                             </View>
                           </View>
+                          {this.state.status
+                            ? this.state.volunteer_info.map((item) => {
+                                return (
+                                  <View
+                                    style={{
+                                      flexDirection: "row",
+                                      marginTop: "3%",
+                                      justifyContent: "space-between",
+                                    }}
+                                    key={item.volunteerID}
+                                  >
+                                    <View style={{ flexDirection: "row" }}>
+                                      <Text
+                                        style={{
+                                          fontSize: 20,
+                                          fontWeight: "bold",
+                                        }}
+                                      >
+                                        Leader
+                                      </Text>
+                                      {item.leader ? (
+                                        <Icon
+                                          name="check-circle"
+                                          type="font-awesome"
+                                          color="green"
+                                          size={30}
+                                          margin="2%"
+                                        ></Icon>
+                                      ) : (
+                                        <Icon
+                                          name="check-circle"
+                                          type="font-awesome"
+                                          color="red"
+                                          size={30}
+                                          margin="2%"
+                                        ></Icon>
+                                      )}
+                                    </View>
+                                    <View style={{ flexDirection: "row" }}>
+                                      <Text
+                                        style={{
+                                          fontSize: 20,
+                                          fontWeight: "bold",
+                                        }}
+                                      >
+                                        Status
+                                      </Text>
+
+                                      {item.status ? (
+                                        <Icon
+                                          name="check-circle"
+                                          type="font-awesome"
+                                          color="green"
+                                          size={30}
+                                          margin="2%"
+                                        ></Icon>
+                                      ) : (
+                                        <Icon
+                                          name="check-circle"
+                                          type="font-awesome"
+                                          color="red"
+                                          size={30}
+                                          margin="2%"
+                                        ></Icon>
+                                      )}
+                                    </View>
+                                    <View>
+                                      <Text
+                                        style={{
+                                          fontSize: 20,
+                                          fontWeight: "bold",
+                                        }}
+                                      >
+                                        Zone -{" "}
+                                        {item.zoneNumber != 0
+                                          ? item.zoneNumber
+                                          : "None"}
+                                      </Text>
+                                    </View>
+                                  </View>
+                                );
+                              })
+                            : null}
 
                           <View
                             style={{
@@ -707,7 +795,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.1,
     shadowRadius: 2,
-    borderRadius:10
+    borderRadius: 10,
   },
   reportButton: {
     margin: "2%",

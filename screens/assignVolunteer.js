@@ -207,6 +207,7 @@ export default class AssignVolunteer extends Component {
 
   componentDidMount() {
     this._isMounted = true;
+    console.log(this.props.route.params.refresh)
     this.getCurrentEvent();
   }
 
