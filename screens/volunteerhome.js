@@ -8,15 +8,12 @@ import {
   TouchableOpacity,
   Text,
   Button,
-  Alert
+  Alert,
 } from "react-native";
 
 import fire from "../database/firebase";
 import DefaultCard from "../assets/Defaultcardview";
-;
 import { Icon } from "react-native-elements";
-
-
 
 
 export default class VolunteerHome extends Component {
@@ -24,7 +21,7 @@ export default class VolunteerHome extends Component {
     data: null,
     eventID: "",
     status: false,
-    arrivalStatus: true,
+    arrivalStatus: false,
   };
 
   reportArrival = () => {
@@ -231,61 +228,80 @@ export default class VolunteerHome extends Component {
           }}
           style={styles.backgroundStyle}
         >
-          <View style={{justifyContent:"center",alignItems:"center"}}><Text style={styles.headerText}>Ongoing Event</Text></View>
-              <View style={{ padding: 10 }}>
-                <FlatList
-                  data={this.state.data}
-                  renderItem={({ item, key }) => (
-                    <TouchableOpacity
-                      style={styles.flatView}
-                      onPress={this.joinEvent}
-                    >
-                      <View style={styles.rowView}>
-                        <Text style={styles.headerText}>{item.eventDate}</Text>
-                        <Text style={styles.headerText}>{item.eventTime}</Text>
-                      </View>
-                      <View>
-                        <Text style={styles.headerText}>{item.eventName}</Text>
-                      </View>
-                      <View style={{ marginLeft: 20, marginBottom: 15 }}>
-                        <Text>{item.eventDescription}</Text>
-                      </View>
-                   
-                      <View>
-                        {this.state.arrivalStatus && this.state.status ?
-                        <View style={{margin:"5%",flexDirection:'row'}}>
-                          <View style={{flexDirection:'row',marginLeft:"5%"}}>
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <Text style={styles.headerText}>Ongoing Event</Text>
+          </View>
+          <View style={{ padding: 10 }}>
+            <FlatList
+              data={this.state.data}
+              renderItem={({ item, key }) => (
+                <TouchableOpacity
+                  style={styles.flatView}
+                  onPress={this.joinEvent}
+                >
+                  <View style={styles.rowView}>
+                    <Text style={styles.headerText}>{item.eventDate}</Text>
+                    <Text style={styles.headerText}>{item.eventTime}</Text>
+                  </View>
+                  <View>
+                    <Text style={styles.headerText}>{item.eventName}</Text>
+                  </View>
+                  <View style={{ marginLeft: 20, marginBottom: 15 }}>
+                    <Text>{item.eventDescription}</Text>
+                  </View>
+
+                  <View>
+                    {this.state.arrivalStatus && this.state.status ? (
+                      <View style={{ margin: "5%", flexDirection: "row" }}>
+                        <View
+                          style={{ flexDirection: "row", marginLeft: "5%" }}
+                        >
                           <Text style={styles.headerText}>Checked In</Text>
                           <Icon
-                      name="check-circle"
-                      type="font-awesome"
-                      color="green"
-                      onPress={this.iconPress}
-                      size={30}
-                      margin="2%"
-                    ></Icon>
-                          </View>
-                         <Button title="Report" onPress={()=>{
-                           navigation.navigate("ReportObject"),{
-                             ID:item.eventID
-                           }
-                         }}></Button>
-
-                          
-                        </View>: 
-                        
-                        <View>
-                          {!this.state.status ? <Button title="Join" style={styles.button} onPress={this.joinEvent}></Button>:<Button title="Check In" style={styles.button} onPress={()=>{this.reportArrival}}></Button>}
-         
-
-                          </View>}
+                            name="check-circle"
+                            type="font-awesome"
+                            color="green"
+                            onPress={this.iconPress}
+                            size={30}
+                            margin="2%"
+                          ></Icon>
+                        </View>
+                        <Button
+                          title="Report"
+                          onPress={() => {
+                            navigation.navigate("ReportObject", {
+                              ID: this.state.eventID,
+                            });
+                          }}
+                        ></Button>
                       </View>
-                    </TouchableOpacity>
-                  )}
-                ></FlatList>
-              </View>
-          
-         
+                    ) : (
+                      <View>
+                        {!this.state.status ? (
+                          <TouchableOpacity
+                            style={styles.button}
+                            onPress={this.joinEvent}
+                          >
+                            <Text style={styles.headerText}>Join</Text>
+                          </TouchableOpacity>
+                        ) : (
+                          <TouchableOpacity style={styles.button}
+                            
+                            style={styles.button}
+                            onPress={() => {
+                              this.reportArrival;
+                            }}
+                          >
+                            <Text style={styles.headerText}>Check In</Text>
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                    )}
+                  </View>
+                </TouchableOpacity>
+              )}
+            ></FlatList>
+          </View>
         </ImageBackground>
       </SafeAreaView>
     );
@@ -315,8 +331,17 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
   },
-  button:{
-    height:"30%",
-    width:"50%"
-  }
+  button: {
+    margin: "2%",
+
+    alignItems: "center",
+    backgroundColor: "rgba(0, 202, 78,0.8)",
+
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
 });
