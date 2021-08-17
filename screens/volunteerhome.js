@@ -803,6 +803,7 @@ export default class VolunteerHome extends Component {
                                   onPress={() => {
                                     navigation.navigate("ReportObject", {
                                       ID: this.state.eventID,
+                                      eventName: item.eventName,
                                     });
                                   }}
                                 >

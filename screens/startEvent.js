@@ -16,6 +16,8 @@ import FloatingTextBox from "./FloatingScan";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Directions } from "react-native-gesture-handler";
 import { alignContent, marginLeft } from "styled-system";
+import DatePicker from 'react-native-date-picker'
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 function formatDate(date) {
   var MM = date.getMonth() + 1;
@@ -45,7 +47,7 @@ function formateTime(date) {
 
 export default class StartEvent extends Component {
   _isMounted = false;
-
+  
   componentWillUnmount() {
     this._isMounted = false;
   }
@@ -62,6 +64,7 @@ export default class StartEvent extends Component {
     eventTime: "",
     eventDescription: "",
     visibility: false,
+    
   };
   showDatePicker = () => {
     this._isMounted && this.setState({ visibility: true });
@@ -78,6 +81,11 @@ export default class StartEvent extends Component {
     console.log(this.state.eventDate);
     console.log(this.state.eventTime);
   };
+  handleDatePick=(date)=>{
+    this.setState({
+        eventDate:date
+    });
+  }
 
   startevent = () => {
     console.log("Got here!");
@@ -207,6 +215,14 @@ export default class StartEvent extends Component {
               onCancel={this.hideDatePicker}
               minimumDate={new Date()}
             />
+           {/* <DateTimePicker
+          testID="dateTimePicker"
+          value={this.state.eventTimeDate}
+          mode="date"
+          is24Hour={true}
+          display="default"
+          onChange={this.handleDatePick}
+        /> */}
             <View style={styles.defaultPlace}>
               <Icon name="map-marker" type="font-awesome" size={30}></Icon>
               <TextInput
@@ -305,7 +321,7 @@ const styles = StyleSheet.create({
   },
   defaultPlace: {
     flexDirection: "row",
-    backgroundColor: " rgba(0, 115, 189, 0.3);",
+    backgroundColor: " rgba(0, 115, 189, 0.3)",
     height: "10%",
     marginTop: "5%",
     justifyContent: "center",

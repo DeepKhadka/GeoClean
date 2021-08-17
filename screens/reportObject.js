@@ -24,6 +24,7 @@ import * as Location from "expo-location";
 import FloatingTextBox from "../assets/textEntry";
 import Constants from "expo-constants";
 import ModalSelector from "react-native-modal-selector";
+import DatePicker from "react-native-date-picker";
 
 export default class ReportObject extends Component {
   _isMounted = false;
@@ -140,6 +141,7 @@ export default class ReportObject extends Component {
         imageUri: this.state.downloadUri,
         status: false,
         eventID: this.props.route.params.ID,
+        eventName: this.props.route.params.eventName,
       })
       .then(() => {
         this._isMounted &&
@@ -254,7 +256,7 @@ export default class ReportObject extends Component {
     return (
       <KeyboardAvoidingView style={{ flex: 1 }} enabled={true}>
         <ImageBackground
-         source={require("../assets/background.png")}
+          source={require("../assets/background.png")}
           style={styles.backgroundStyle}
         >
           {this.state.loading && this._isMounted ? (
@@ -317,6 +319,7 @@ export default class ReportObject extends Component {
                   this.onPickerSelect(option.key);
                 }}
               />
+              {/* <DatePicker date={date} onDateChange={setDate} /> */}
               <TouchableOpacity
                 style={{
                   margin: "2%",
