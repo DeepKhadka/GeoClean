@@ -54,8 +54,8 @@ export default class Login extends Component {
               <View style={{ flex: 2, alignItems: "center", padding: "8%" }}>
                 <Text
                   style={{
-                    color: "white",
-                    fontSize: 25,
+                    color: "rgba(0,0,100,0.3)",
+                    fontSize: 30,
                     fontWeight: "bold",
                     marginTop: "5%",
                     marginBottom: "5%",
@@ -77,7 +77,7 @@ export default class Login extends Component {
                 <FloatingTextBox
                   label="Password"
                   autoCapitalize="none"
-                  placeholderTextColor="gray"
+                  placeholderTextColor="black"
                   secureTextEntry={true}
                   onChangeText={(val) => {
                     this.setState({ password: val });
@@ -88,12 +88,12 @@ export default class Login extends Component {
 
                 <TouchableOpacity
                   style={{
-                    width: "80%",
-                    height: 50,
-                    backgroundColor: "#BB86FC",
+                    width: "60%",
+                   padding:"2%",
+                    backgroundColor: "rgba(0,0,0,0.2)",
                     alignItems: "center",
                     justifyContent: "center",
-                    borderRadius: 3,
+                    borderRadius: 12,
                   }}
                   onPress={this.handleLogin}
                 >

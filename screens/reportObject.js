@@ -10,18 +10,24 @@ import {
   Button,
   StyleSheet,
   TextInputComponent,
+  ImageBackground,
   Alert,
+  KeyboardAvoidingView,
+  Modal,
 } from "react-native";
+import { Icon } from "react-native-elements";
 
 import fire from "../database/firebase";
 import { NativeBaseProvider, Select } from "native-base";
-import { Icon } from "react-native-elements";
+
 import * as Location from "expo-location";
 import FloatingTextBox from "../assets/textEntry";
 import Constants from "expo-constants";
 import ModalSelector from "react-native-modal-selector";
 
 export default class ReportObject extends Component {
+  _isMounted = false;
+
   state = {
     userId: "",
     Zone: "",
@@ -32,6 +38,7 @@ export default class ReportObject extends Component {
     resultUri: " ",
     downloadUri: "",
     uploading: false,
+    loading: false,
   };
 
   _getLocation = async () => {
@@ -51,19 +58,24 @@ export default class ReportObject extends Component {
       }
 
       let location = await Location.getCurrentPositionAsync({});
-      this.setState(
-        {
-          latitude: location.coords.latitude.toString(),
-          longitude: location.coords.longitude.toString(),
-        },
-        this.handleReport
-      );
+      this._isMounted &&
+        this.setState(
+          {
+            latitude: location.coords.latitude.toString(),
+            longitude: location.coords.longitude.toString(),
+          },
+          this.handleReport
+        );
     })();
   };
 
   componentDidMount = () => {
+    this._isMounted = true;
     console.log(this.props.route.params.ID);
   };
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
 
   pickImage = async () => {
     if (Platform.OS !== "web") {
@@ -81,20 +93,17 @@ export default class ReportObject extends Component {
     });
 
     if (!result.cancelled) {
-      this.setState({ resultUri: result.uri });
+      this._isMounted && this.setState({ resultUri: result.uri });
       console.log("State");
       // console.log(this.state.resultUri);
     }
   };
 
-  handlesignout = () => {
-    fire.auth().signOut();
-  };
-
   setLocation = (value) => {
-    this.setState({
-      location: value,
-    });
+    this._isMounted &&
+      this.setState({
+        location: value,
+      });
   };
 
   checkEmpty = () => {
@@ -133,7 +142,11 @@ export default class ReportObject extends Component {
         eventID: this.props.route.params.ID,
       })
       .then(() => {
-        alert("Report Submitted!");
+        this._isMounted &&
+          this.setState({
+            loading: false,
+          });
+
         this.props.navigation.goBack();
       })
       .catch((err) => {
@@ -164,8 +177,8 @@ export default class ReportObject extends Component {
 
   handleImagePicker = () => {
     Alert.alert(
-      "Media",
-      "Please Select ",
+      "Select Media",
+      "",
 
       [
         {
@@ -180,11 +193,18 @@ export default class ReportObject extends Component {
             this.pickImage();
           },
         },
-      ]
+      ],
+      {
+        cancelable: true,
+      }
     );
   };
 
   uploadImage = async () => {
+    this._isMounted &&
+      this.setState({
+        loading: true,
+      });
     const blob = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.onload = function () {
@@ -204,25 +224,27 @@ export default class ReportObject extends Component {
       throw error;
     });
 
-    this.setState(
-      {
-        downloadUri: url,
-      },
-      this._getLocation
-    );
+    this._isMounted &&
+      this.setState(
+        {
+          downloadUri: url,
+        },
+        this._getLocation
+      );
   };
 
   onPickerSelect = (value) => {
-    this.setState({
-      Zone: value,
-      zoneplaceHolder: "Zone " + value,
-    });
+    this._isMounted &&
+      this.setState({
+        Zone: value,
+        zoneplaceHolder: "Zone " + value,
+      });
   };
 
   render() {
     const { navigation } = this.props;
     const data = [
-      { key: 1, section: true, label: "Zone 1" },
+      { key: 1, label: "Zone 1" },
       { key: 2, label: "Zone 2" },
       { key: 3, label: "Zone 3" },
       { key: 4, label: "Zone 4" },
@@ -230,56 +252,153 @@ export default class ReportObject extends Component {
       { key: 6, label: "Zone 6" },
     ];
     return (
-      <SafeAreaView style={styles.safeview}>
-        <View style={{ flex: 1 }}>
-          <ModalSelector
-            data={data}
-            initValue={this.state.zoneplaceHolder}
-            style={{ width: "50%" }}
-            initValueTextStyle={{ color: "black" }}
-            onChange={(option) => {
-              this.onPickerSelect(option.key);
-            }}
-          />
-        </View>
-        <View style={{ flex: 13 }}>
-          <TextInput
-            style={styles.input}
-            onChangeText={(val) => {
-              this.setState({ description: val });
-            }}
-            value={this.state.description}
-            placeholder="Description"
-            placeholderTextColor="purple"
-          />
-          <View style={styles.rowView}>
-            <TouchableOpacity
-              style={styles.card}
-              onPress={this.handleImagePicker}
-            >
-              <Text style={styles.text}>Add Image </Text>
-            </TouchableOpacity>
-          </View>
-          <View style={{ alignItems: "center" }}>
-            <Image
-              source={{ uri: this.state.resultUri }}
-              style={{ height: 150, width: 150 }}
-            ></Image>
-          </View>
+      <KeyboardAvoidingView style={{ flex: 1 }} enabled={true}>
+        <ImageBackground
+          source={{
+            uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
+          }}
+          style={styles.backgroundStyle}
+        >
+          {this.state.loading && this._isMounted ? (
+            <Modal animationType="fade" transparent={true}>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  backgroundColor: "rgba(0,0,0,0.5)",
+                  alignItems: "center",
+                }}
+              >
+                <View
+                  style={{
+                    backgroundColor: "rgba(255,255,255,0.6)",
+                    padding: "5%",
+                    width: "70%",
+                    height: "15%",
+                    justifyContent: "center",
+                    borderRadius: 20,
 
-          <View style={{ alignItems: "center" }}>
-            <TouchableOpacity style={styles.card} onPress={this.checkEmpty}>
-              <Text style={styles.text}>Report</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </SafeAreaView>
+                    shadowOffset: { width: 1, height: 1 },
+                    shadowColor: "#333",
+                    shadowOpacity: 0.5,
+                    shadowRadius: 5,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      alignSelf: "center",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Submitting...
+                  </Text>
+                </View>
+              </View>
+            </Modal>
+          ) : null}
+
+          <SafeAreaView style={styles.safeview}>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                justifyContent: "space-between",
+                backgroundColor: "rgba(36,160,237,0.4)",
+              }}
+            >
+              <ModalSelector
+                data={data}
+                initValue={this.state.zoneplaceHolder}
+                style={{
+                  marginTop: "2%",
+                  marginLeft: "5%",
+                }}
+                initValueTextStyle={{ color: "black", fontWeight: "bold" }}
+                onChange={(option) => {
+                  this.onPickerSelect(option.key);
+                }}
+              />
+              <TouchableOpacity
+                style={{
+                  margin: "2%",
+                  backgroundColor: "rgba(36,150,255,0.7)",
+                  borderRadius: 5,
+                }}
+                onPress={this.handleImagePicker}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    margin: "1%",
+                  }}
+                >
+                  <Icon
+                    name="photo"
+                    color="green"
+                    onPress={this.iconPress}
+                    size={40}
+                  ></Icon>
+                  <Text style={styles.headerText}>Add Image </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+
+            <View style={{ flex: 13 }}>
+              <TextInput
+                style={styles.input}
+                onChangeText={(val) => {
+                  this.setState({ description: val });
+                }}
+                value={this.state.description}
+                placeholder="Description"
+                placeholderTextColor="purple"
+              />
+
+              <View style={{ alignItems: "center" }}>
+                {this.state.resultUri == " " ? (
+                  <View style={{ alignItems: "center" }}>
+                    <TouchableOpacity
+                      style={{
+                        backgroundColor: "rgba(36,160,237,0.8)",
+                        borderRadius: 10,
+                      }}
+                      onPress={this.checkEmpty}
+                    >
+                      <Text style={styles.text}>Report</Text>
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <View style={{ alignItems: "center" }}>
+                    <Image
+                      source={{ uri: this.state.resultUri }}
+                      style={styles.imageStyle}
+                    ></Image>
+                    <TouchableOpacity
+                      style={{
+                        margin: "2%",
+                        backgroundColor: "rgba(36,160,237,0.8)",
+                        borderRadius: 20,
+                        borderBottomWidth: 2,
+                      }}
+                      onPress={this.checkEmpty}
+                    >
+                      <Text style={styles.text}>Report</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+            </View>
+          </SafeAreaView>
+        </ImageBackground>
+      </KeyboardAvoidingView>
     );
   }
 }
 const styles = StyleSheet.create({
   safeview: {
-    backgroundColor: "#a09fdf",
     height: "100%",
     width: "100%",
   },
@@ -290,11 +409,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   card: {
-    margin: "5%",
-    backgroundColor: "#ba84d1",
-    justifyContent: "center",
-    alignItems: "center",
-
+    backgroundColor: "lightblue",
+    margin: "2%",
+    opacity: 0.6,
     borderRadius: 20,
   },
   text: {
@@ -316,10 +433,62 @@ const styles = StyleSheet.create({
   },
   input: {
     height: "20%",
-    margin: "2%",
+    margin: "5%",
     borderWidth: 1,
     borderRadius: 12,
     borderColor: "blue",
     padding: "5%",
+    backgroundColor: "lightblue",
+    opacity: 0.6,
+  },
+  backgroundStyle: {
+    height: "100%",
+    width: "100%",
+  },
+  imageStyle: {
+    height: 300,
+    width: 300,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "rgba(36,160,237,0.5)",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: 20,
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
   },
 });

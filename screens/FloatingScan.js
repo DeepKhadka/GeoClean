@@ -47,13 +47,13 @@ export default class FloatingTitleTextInputField extends Component {
       }),
       color: this._animatedIsFocused.interpolate({
         inputRange: [0, 1],
-        outputRange: ["gray", "blue"],
+        outputRange: ["black", "black"],
       }),
     };
     return this.props.label != "Description" ? (
       <View
         style={{
-          backgroundColor: "white",
+          backgroundColor: "rgba(0,0,0,0.3)", //dekhine part
           width: "80%",
           borderTopEndRadius: 5,
           borderTopStartRadius: 5,
@@ -70,7 +70,7 @@ export default class FloatingTitleTextInputField extends Component {
             borderBottomWidth: 2,
             paddingLeft: 5,
             borderBottomColor:
-              isFocused || this.props.test !== "" ? "blue" : "gray",
+              isFocused || this.props.test !== "" ? "green" : "gray",
           }}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}

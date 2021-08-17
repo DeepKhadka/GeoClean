@@ -104,7 +104,7 @@ export default class Map extends Component {
     data_6: [],
     dataCheck: false,
     eventID: "",
-    volunteer_info: [],
+    volunteer_info: null,
     mType: false,
   };
   componentWillUnmount() {
@@ -114,7 +114,7 @@ export default class Map extends Component {
   getCurrentEvent = () => {
     var eventID = "";
 
-    fire
+    this._isMounted && fire
       .firestore()
       .collection("ADMIN")
       .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
@@ -122,7 +122,7 @@ export default class Map extends Component {
       .where("eventStatus", "==", "current")
       .get()
       .then(async (sub) => {
-        if (sub.docs.length > 0) {
+        if (sub.docs.length > 0 && this._isMounted) {
           const data = [];
           sub.forEach((doc) => {
             const x = doc.data();
@@ -130,11 +130,11 @@ export default class Map extends Component {
             eventID = doc.id.toString();
             data.push(x);
           });
-          this.setState({
+          this._isMounted &&  this.setState({
             eventID: eventID,
           });
         } else {
-          await fire
+          this._isMounted && await fire
             .firestore()
             .collection("ADMIN")
             .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
@@ -142,7 +142,7 @@ export default class Map extends Component {
             .where("eventStatus", "==", "paused")
             .get()
             .then((subdoc) => {
-              if (subdoc.docs.length > 0) {
+              if (subdoc.docs.length > 0 && this._isMounted) {
                 console.log("else bhitra");
                 const data_1 = [];
                 subdoc.forEach((doc_1) => {
@@ -151,7 +151,7 @@ export default class Map extends Component {
                   eventID = doc_1.id.toString();
                   data_1.push(x);
                 });
-                this.setState({
+                this._isMounted && this.setState({
                   eventID: eventID,
                 });
               }
@@ -163,8 +163,12 @@ export default class Map extends Component {
       })
       .then(() => {
         console.log(this.state.eventID);
-        if (this.state.eventID != "") {
-          this.statusCheck();
+        if (this.state.eventID != "" && this._isMounted) {
+          this._isMounted && this.statusCheck();
+        }else{
+          this._isMounted && this.setState({
+            dataCheck:true
+          })
         }
       })
 
@@ -174,7 +178,7 @@ export default class Map extends Component {
   };
 
   statusCheck = () => {
-    fire
+    this._isMounted && fire
       .firestore()
       .collection("ADMIN")
       .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
@@ -184,21 +188,21 @@ export default class Map extends Component {
       .where("volunteerID", "==", fire.auth().currentUser.uid.toString())
       .get()
       .then((sub) => {
-        if (sub.docs.length > 0) {
+        if (sub.docs.length > 0 && this._isMounted) {
           const data = [];
           sub.forEach((doc) => {
             const x = doc.data();
             data.push(x);
           });
 
-          this.setState({
+          this._isMounted &&   this.setState({
             volunteer_info: data,
           });
         }
       })
       .then(() => {
         console.log(this.state.volunteer_info);
-        this._getLocation();
+        this._isMounted &&  this._getLocation();
       })
 
       .catch((err) => {
@@ -208,6 +212,7 @@ export default class Map extends Component {
 
   componentDidMount() {
     this._isMounted = true;
+
     if (this.props.route.params.admin && this.state.dataCheck == false) {
       this.getZone1();
     } else if (
@@ -221,33 +226,33 @@ export default class Map extends Component {
   }
 
   onButtonPress = () => {
-    this.setState({
+    this._isMounted && this.setState({
       mType: !this.state.mType,
     });
   };
 
   getZone1 = () => {
-    fire
+    this._isMounted &&  fire
       .firestore()
       .collectionGroup("ZONE 1")
       .where("status", "==", false)
       .get()
       .then((querySnapshot) => {
-        if (!querySnapshot.empty) {
+        if (!querySnapshot.empty && this._isMounted) {
           const data = [];
           querySnapshot.forEach((doc) => {
             const x = doc.data();
             x.id = doc.id;
             data.push(x);
           });
-          this.setState({
+          this._isMounted &&  this.setState({
             data_1: data,
           });
         }
       })
       .then(() => {
         console.log(this.state.data_1);
-        this.getZone2();
+        this._isMounted &&   this.getZone2();
       })
       .catch((err) => {
         console.log(err.toString());
@@ -255,27 +260,27 @@ export default class Map extends Component {
   };
 
   getZone2 = () => {
-    fire
+    this._isMounted &&  fire
       .firestore()
       .collectionGroup("ZONE 2")
       .where("status", "==", false)
       .get()
       .then((querySnapshot) => {
-        if (!querySnapshot.empty) {
+        if (!querySnapshot.empty && this._isMounted) {
           const data = [];
           querySnapshot.forEach((doc) => {
             const x = doc.data();
             x.id = doc.id;
             data.push(x);
           });
-          this.setState({
+          this._isMounted && this.setState({
             data_2: data,
           });
         }
       })
       .then(() => {
         console.log(this.state.data_2);
-        this.getZone3();
+        this._isMounted &&  this.getZone3();
       })
       .catch((err) => {
         console.log(err.toString());
@@ -283,27 +288,27 @@ export default class Map extends Component {
   };
 
   getZone3 = () => {
-    fire
+    this._isMounted &&  fire
       .firestore()
       .collectionGroup("ZONE 3")
       .where("status", "==", false)
       .get()
       .then((querySnapshot) => {
-        if (!querySnapshot.empty) {
+        if (!querySnapshot.empty && this._isMounted) {
           const data = [];
           querySnapshot.forEach((doc) => {
             const x = doc.data();
             x.id = doc.id;
             data.push(x);
           });
-          this.setState({
+          this._isMounted && this.setState({
             data_3: data,
           });
         }
       })
       .then(() => {
         console.log(this.state.data_3);
-        this.getZone4();
+        this._isMounted && this.getZone4();
       })
       .catch((err) => {
         console.log(err.toString());
@@ -311,27 +316,27 @@ export default class Map extends Component {
   };
 
   getZone4 = () => {
-    fire
+    this._isMounted &&  fire
       .firestore()
       .collectionGroup("ZONE 4")
       .where("status", "==", false)
       .get()
       .then((querySnapshot) => {
-        if (!querySnapshot.empty) {
+        if (!querySnapshot.empty && this._isMounted) {
           const data = [];
           querySnapshot.forEach((doc) => {
             const x = doc.data();
             x.id = doc.id;
             data.push(x);
           });
-          this.setState({
+          this._isMounted &&  this.setState({
             data_4: data,
           });
         }
       })
       .then(() => {
         console.log(this.state.data_4);
-        this.getZone5();
+        this._isMounted &&  this.getZone5();
       })
       .catch((err) => {
         console.log(err.toString());
@@ -339,27 +344,27 @@ export default class Map extends Component {
   };
 
   getZone5 = () => {
-    fire
+    this._isMounted &&  fire
       .firestore()
       .collectionGroup("ZONE 5")
       .where("status", "==", false)
       .get()
       .then((querySnapshot) => {
-        if (!querySnapshot.empty) {
+        if (!querySnapshot.empty && this._isMounted) {
           const data = [];
           querySnapshot.forEach((doc) => {
             const x = doc.data();
             x.id = doc.id;
             data.push(x);
           });
-          this.setState({
+          this._isMounted &&  this.setState({
             data_5: data,
           });
         }
       })
       .then(() => {
         console.log(this.state.data_5);
-        this.getZone6();
+        this._isMounted &&  this.getZone6();
       })
       .catch((err) => {
         console.log(err.toString());
@@ -367,7 +372,7 @@ export default class Map extends Component {
   };
 
   getZone6 = () => {
-    fire
+    this._isMounted &&  fire
       .firestore()
       .collectionGroup("ZONE 6")
       .where("status", "==", false)
@@ -380,14 +385,14 @@ export default class Map extends Component {
             x.id = doc.id;
             data.push(x);
           });
-          this.setState({
+          this._isMounted &&  this.setState({
             data_6: data,
           });
         }
       })
       .then(() => {
         console.log(this.state.data_6);
-        this._getLocation();
+        this._isMounted &&   this._getLocation();
       })
       .catch((err) => {
         console.log(err.toString());
@@ -397,7 +402,7 @@ export default class Map extends Component {
   _getLocation = async () => {
     (async () => {
       if (Platform.OS === "android" && !Constants.isDevice) {
-        this.setState({
+        this._isMounted &&   this.setState({
           errorMessage:
             "Oops, this will not work on Snack in an Android emulator. Try it on your device!",
         });
@@ -406,7 +411,7 @@ export default class Map extends Component {
       }
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        this.setState({
+        this._isMounted &&   this.setState({
           errorMessage: "Permission to access location was denied",
         });
 
@@ -414,7 +419,7 @@ export default class Map extends Component {
       }
 
       let location = await Location.getCurrentPositionAsync({});
-      this.setState(
+      this._isMounted &&  this.setState(
         {
           location: location,
           latitude: location.coords.latitude.toString(),
@@ -422,7 +427,7 @@ export default class Map extends Component {
           dataCheck: true,
         },
         () => {
-          this.componentDidMount();
+          this._isMounted & this.componentDidMount();
         }
       );
     })();
@@ -579,10 +584,12 @@ export default class Map extends Component {
       });
     }
 
-    return (
+    return this.state.dataCheck ? (
       <View style={styles.container}>
         <MapView
-          provider={PROVIDER_GOOGLE}
+          //provider={PROVIDER_GOOGLE}
+
+          provider={null}
           style={styles.map}
           mapType={this.state.mType ? "hybrid" : "standard"}
           initialRegion={{
@@ -593,8 +600,11 @@ export default class Map extends Component {
           }}
         >
           <Button title="Map Type" onPress={this.onButtonPress} />
+         
 
-          {this.state.dataCheck && this.state.volunteer_info!=[] && this.state.volunteer_info[0].zoneNumber !=[0] && this.props.route.params.volunteer ? (
+          {this.state.dataCheck &&
+          this.state.volunteer_info &&
+          this.props.route.params.volunteer && this.state.volunteer_info[0].zoneNumber != 0 ? (
             <MapViewDirections
               style={{ position: "absolute" }}
               origin={
@@ -657,7 +667,7 @@ export default class Map extends Component {
                   >
                     <Image
                       source={{ uri: marker.imageUri }}
-                      style={{ height: 32, width: 32 }}
+                      style={{ height: 60, width: 60, borderRadius:400/2 }}
                     />
                   </MapView.Marker>
                 );
@@ -678,7 +688,7 @@ export default class Map extends Component {
                   >
                     <Image
                       source={{ uri: marker.imageUri }}
-                      style={{ height: 32, width: 32 }}
+                      style={{ height: 60, width: 60 ,borderRadius:200 }}
                     />
                   </MapView.Marker>
                 );
@@ -699,7 +709,7 @@ export default class Map extends Component {
                   >
                     <Image
                       source={{ uri: marker.imageUri }}
-                      style={{ height: 32, width: 32 }}
+                      style={{ height: 60, width: 60 ,borderRadius:200 }}
                     />
                   </MapView.Marker>
                 );
@@ -720,7 +730,7 @@ export default class Map extends Component {
                   >
                     <Image
                       source={{ uri: marker.imageUri }}
-                      style={{ height: 32, width: 32 }}
+                      style={{ height: 60, width: 60 ,borderRadius:200 }}
                     />
                   </MapView.Marker>
                 );
@@ -741,7 +751,7 @@ export default class Map extends Component {
                   >
                     <Image
                       source={{ uri: marker.imageUri }}
-                      style={{ height: 32, width: 32 }}
+                      style={{ height: 60, width: 60 ,borderRadius:200 }}
                     />
                   </MapView.Marker>
                 );
@@ -762,7 +772,7 @@ export default class Map extends Component {
                   >
                     <Image
                       source={{ uri: marker.imageUri }}
-                      style={{ height: 32, width: 32 }}
+                      style={{ height: 60, width: 60 ,borderRadius:200 }}
                     />
                   </MapView.Marker>
                 );
@@ -867,8 +877,10 @@ export default class Map extends Component {
           ))}
         </MapView>
 
-        <View>
-          {this.props.route.params.volunteer
+        {/* <View >
+          {this.state.dataCheck &&
+          this.state.volunteer_info &&
+          this.props.route.params.volunteer
             ? this.state.volunteer_info.map((info) => {
                 return info.arrived ? (
                   <Image
@@ -899,7 +911,7 @@ export default class Map extends Component {
                 );
               })
             : null}
-        </View>
+        </View> */}
 
         <View style={styles.legendContainer}>
           <Text style={styles.guide}>GUIDE</Text>
@@ -910,14 +922,14 @@ export default class Map extends Component {
           />
         </View>
       </View>
-    );
+    ) : null;
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "red",
+    // backgroundColor: "red",
   },
 
   legendContainer: {

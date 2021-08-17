@@ -7,15 +7,25 @@ import {
   TouchableOpacity,
   Text,
   Button,
+  ImageBackground,
+  FlatList,
 } from "react-native";
+
+import { Icon } from "react-native-elements";
+
+import ModalSelector from "react-native-modal-selector";
 
 import fire from "../database/firebase";
 
 export default class EventStatus extends Component {
+  _isMounted = false;
+
   state = {
     data_arrived: [],
     data_unarrived: [],
     refreshing: false,
+    status: "Arrived",
+    loading: false,
   };
 
   getArrived = async () => {
@@ -68,14 +78,15 @@ export default class EventStatus extends Component {
         }
       )
       .then(() => {
-        this.setState({
-          data_arrived: data,
-          refreshing: false,
-        });
+        this._isMounted &&
+          this.setState({
+            data_arrived: data,
+            refreshing: false,
+          });
       })
       .then(() => {
         console.log(this.state.data_arrived);
-        this.getUnarrived();
+        this._isMounted && this.getUnarrived();
       })
       .catch(function (error) {
         console.log("Error getting documents: ", error);
@@ -132,10 +143,12 @@ export default class EventStatus extends Component {
         }
       )
       .then(() => {
-        this.setState({
-          data_unarrived: data,
-          refreshing: false,
-        });
+        this._isMounted &&
+          this.setState({
+            data_unarrived: data,
+            refreshing: false,
+            loading: false,
+          });
       })
       .then(() => {
         console.log(this.state.data_unarrived);
@@ -145,45 +158,173 @@ export default class EventStatus extends Component {
       });
   };
 
+  onPickerSelect = (value, key) => {
+    this._isMounted &&
+      this.setState({
+        status: value == 1 ? "Arrived" : "Not Arrived",
+      });
+  };
+
   componentDidMount() {
     console.log(this.props.route.params.eventID);
+    this._isMounted = true;
+    this.setState({
+      loading: true,
+    });
     this.getArrived();
   }
 
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
+  emptyComponent = () => {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          marginTop: "7%",
+        }}
+      >
+        <Text style={{ fontSize: 20, fontStyle: "italic", fontWeight: "bold" }}>
+          No one here...
+        </Text>
+      </View>
+    );
+  };
+
+  handleRefresh = () => {
+    this.setState(
+      {
+        refreshing: true,
+
+        data_unarrived: [],
+        data_arrived: [],
+      },
+      () => {
+        this.componentDidMount();
+      }
+    );
+  };
+
   render() {
     const { navigation } = this.props;
-    const DATA = [
-      {
-        title: "Arrived",
-        data: this.state.data_arrived,
-      },
-      {
-        title: "Not Arrived",
-        data: this.state.data_unarrived,
-      },
+    const data = [
+      { key: 1, label: "Arrived" },
+      { key: 2, label: "Not Arrived" },
     ];
     return (
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ flex: 1, backgroundColor: "lightblue" }}>
-          <SectionList
-            sections={DATA}
-            keyExtractor={(item, index) => item + index}
-            renderItem={({ item }) => (
-              <View style={styles.flatView}>
-                <Text style={styles.text}>
-                  {item.fName} {item.lName}
-                </Text>
-                <Text style={styles.text}>Zone {item.zoneNumber}</Text>
-              </View>
-            )}
-            renderSectionHeader={({ section: { title } }) => (
-              <View>
-                <Text style={styles.text}>{title}</Text>
-              </View>
-            )}
-          />
-        </View>
-      </SafeAreaView>
+      <ImageBackground
+        source={{
+          uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
+        }}
+        style={styles.backgroundStyle}
+      >
+        <SafeAreaView style={{ flex: 1 }}>
+          <View style={{ flex: 1 }}>
+            <ModalSelector
+              data={data}
+              initValue={this.state.status}
+              style={{
+                width: "50%",
+                margin: "2%",
+                backgroundColor: "rgba(0, 0, 0, 0.2)",
+              }}
+              initValueTextStyle={{
+                fontWeight: "bold",
+                color: "blue",
+                padding: "2%",
+              }}
+              onChange={(option) => {
+                this.onPickerSelect(option.key);
+              }}
+            />
+            <View style={{ alignItems: "center" }}>
+              <Text style={{ fontSize: 15, color: "gray" }}>
+                Pull to refresh
+              </Text>
+            </View>
+          </View>
+          <View style={{ flex: 10 }}>
+            <FlatList
+              data={
+                this.state.status == "Arrived"
+                  ? this.state.data_arrived
+                  : this.state.data_unarrived
+              }
+              renderItem={({ item, key }) => (
+                <View
+                  style={{
+                    margin: "5%",
+                    padding: "2%",
+                    borderRadius: 10,
+
+                    backgroundColor: "rgba(0, 0, 0, 0.1)",
+                  }}
+                >
+                  <View>
+                    <Text style={styles.headerText}>
+                      {item.fName} {item.lName}
+                    </Text>
+                    <View style={styles.rowView}>
+                      <Text style={styles.text}>Status</Text>
+
+                      {item.status == true ? (
+                        <Icon
+                          name="check-circle"
+                          type="font-awesome"
+                          color="green"
+                          onPress={this.iconPress}
+                          size={30}
+                          margin="2%"
+                        ></Icon>
+                      ) : (
+                        <Icon
+                          name="times-circle"
+                          type="font-awesome"
+                          color="red"
+                          onPress={this.iconPress}
+                          size={30}
+                          margin="2%"
+                        ></Icon>
+                      )}
+
+                      <Text style={styles.text}>Leader</Text>
+                      {item.leader == true ? (
+                        <Icon
+                          name="check-circle"
+                          type="font-awesome"
+                          color="green"
+                          onPress={this.iconPress}
+                          size={30}
+                          margin="2%"
+                        ></Icon>
+                      ) : (
+                        <Icon
+                          name="times-circle"
+                          type="font-awesome"
+                          color="red"
+                          onPress={this.iconPress}
+                          size={30}
+                          margin="2%"
+                        ></Icon>
+                      )}
+
+                      <Text style={styles.text}>Zone {item.zoneNumber}</Text>
+                    </View>
+                  </View>
+                </View>
+              )}
+              keyExtractor={(item) => item.eventID}
+              refreshing={this.state.refreshing}
+              onRefresh={this.handleRefresh}
+              ListEmptyComponent={this.emptyComponent}
+            />
+          </View>
+        </SafeAreaView>
+      </ImageBackground>
     );
   }
 }
@@ -210,5 +351,47 @@ const styles = StyleSheet.create({
     backgroundColor: "lightblue",
     borderRadius: 20,
     flexDirection: "row",
+  },
+
+  card: {
+    margin: "5%",
+    backgroundColor: "#D9ACEA",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 20,
+  },
+  text: {
+    padding: "10%",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  text: {
+    fontSize: 15,
+    fontWeight: "bold",
+    marginTop: "2%",
+  },
+  headerText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    alignContent: "center",
+    margin: "5%",
+  },
+  rowView: {
+    flexDirection: "row",
+    marginVertical: "5 %",
+    justifyContent: "space-between",
+
+    margin: "5%",
+  },
+  flatView: {
+    margin: "5%",
+    padding: "2%",
+    borderRadius: 10,
+
+    backgroundColor: "rgba(0, 0, 0, 0.2)",
+  },
+  backgroundStyle: {
+    height: "100%",
+    width: "100%",
   },
 });

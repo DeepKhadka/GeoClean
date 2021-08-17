@@ -9,7 +9,6 @@ import {
   Button,
   Image,
   ImageBackground,
-  ScrollView,
   Alert,
 } from "react-native";
 import fire from "../database/firebase";
@@ -41,6 +40,7 @@ export default class AssignHome extends Component {
     loading: true,
     switch: false,
     refreshing: false,
+    past_pressed: false,
   };
 
   handleCancelCheck = () => {
@@ -110,175 +110,220 @@ export default class AssignHome extends Component {
   };
 
   releaseAllVolunteers = async () => {
-    await fire
-      .firestore()
-      .collection("ADMIN")
-      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-      .collection("EVENT MANAGEMENT")
-      .doc(this.state.currenteventID)
-      .collection("VOLUNTEERS")
-      .get()
-      .then((sub) => {
-        if (sub.docs.length > 0) {
-          var results = [];
-          sub.forEach((doc) => {
-            var docRef = fire
-              .firestore()
-              .collection("ADMIN")
-              .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-              .collection("EVENT MANAGEMENT")
-              .doc(this.state.currenteventID.toString())
-              .collection("VOLUNTEERS")
-              .doc(doc.id)
-              .update({
-                leader: false,
-                status: false,
-              })
-              .then(console.log("Updated - " + doc.id.toString()));
-            results.push(docRef);
-          });
-          return Promise.all(results);
-        }
-      })
-      .then(() => {
-        Alert.alert("All Volunteers released!");
-      })
-      .catch(function (error) {
-        console.log("Error getting documents: ", error);
-      });
+    this._isMounted &&
+      (await fire
+        .firestore()
+        .collection("ADMIN")
+        .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+        .collection("EVENT MANAGEMENT")
+        .doc(this.state.currenteventID)
+        .collection("VOLUNTEERS")
+        .get()
+        .then((sub) => {
+          if (sub.docs.length > 0) {
+            var results = [];
+            sub.forEach((doc) => {
+              var docRef = fire
+                .firestore()
+                .collection("ADMIN")
+                .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+                .collection("EVENT MANAGEMENT")
+                .doc(this.state.currenteventID.toString())
+                .collection("VOLUNTEERS")
+                .doc(doc.id)
+                .update({
+                  leader: false,
+                  status: false,
+                })
+                .then(console.log("Updated - " + doc.id.toString()));
+              results.push(docRef);
+            });
+            return Promise.all(results);
+          }
+        })
+        .then(() => {
+          Alert.alert("All Volunteers released!");
+        })
+        .catch(function (error) {
+          console.log("Error getting documents: ", error);
+        }));
   };
 
   getArrived = async () => {
-    await fire
-      .firestore()
-      .collection("ADMIN")
-      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-      .collection("EVENT MANAGEMENT")
-      .doc(this.state.currenteventID)
-      .collection("VOLUNTEERS")
-      .where("arrived", "==", true)
-      .get()
-      .then((sub) => {
-        if (sub.docs.length > 0) {
-          this.setState({
-            arrived: sub.docs.length,
-          });
-        }
-      })
-      .then(() => {
-        console.log(this.state.arrived);
-        this.getUnArrived();
-      })
-      .catch((err) => {
-        console.log(err.toString());
-      });
+    this._isMounted &&
+      (await fire
+        .firestore()
+        .collection("ADMIN")
+        .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+        .collection("EVENT MANAGEMENT")
+        .doc(this.state.currenteventID)
+        .collection("VOLUNTEERS")
+        .where("arrived", "==", true)
+        .get()
+        .then((sub) => {
+          if (sub.docs.length > 0) {
+            this.setState({
+              arrived: sub.docs.length,
+            });
+          }
+        })
+        .then(() => {
+          console.log(this.state.arrived);
+          this.getUnArrived();
+        })
+        .catch((err) => {
+          console.log(err.toString());
+        }));
   };
 
   getUnArrived = async () => {
-    await fire
-      .firestore()
-      .collection("ADMIN")
-      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-      .collection("EVENT MANAGEMENT")
-      .doc(this.state.currenteventID)
-      .collection("VOLUNTEERS")
-      .where("arrived", "==", false)
-      .get()
-      .then((sub) => {
-        if (sub.docs.length > 0) {
-          this.setState({
-            unarrived: sub.docs.length,
-            loading: false,
-            refreshing: false,
-          });
-        } else {
-          this.setState({
-            unarrived: 0,
-            refreshing: false,
-          });
-        }
-      })
-      .then(() => {
-        console.log(this.state.unarrived);
-      })
-      .catch((err) => {
-        console.log(err.toString());
-      });
+    this._isMounted &&
+      (await fire
+        .firestore()
+        .collection("ADMIN")
+        .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+        .collection("EVENT MANAGEMENT")
+        .doc(this.state.currenteventID)
+        .collection("VOLUNTEERS")
+        .where("arrived", "==", false)
+        .get()
+        .then((sub) => {
+          if (sub.docs.length > 0 && this._isMounted) {
+            this.setState({
+              unarrived: sub.docs.length,
+              loading: false,
+              refreshing: false,
+            });
+          } else {
+            this._isMounted &&
+              this.setState({
+                unarrived: 0,
+                refreshing: false,
+              });
+          }
+        })
+        .then(() => {
+          console.log(this.state.unarrived);
+        })
+        .catch((err) => {
+          console.log(err.toString());
+        }));
   };
 
   //Start the event
   handleStart = () => {
-    fire
-      .firestore()
-      .collection("ADMIN")
-      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-      .collection("EVENT MANAGEMENT")
-      .doc(this.state.currenteventID)
-      .update({
-        eventStatus: "current",
-      })
-      .then(() => {
-        Alert.alert("Event started!");
-      })
-      .catch((err) => {
-        console.log(err.toString());
-      });
+    this._isMounted &&
+      fire
+        .firestore()
+        .collection("ADMIN")
+        .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+        .collection("EVENT MANAGEMENT")
+        .doc(this.state.currenteventID)
+        .update({
+          eventStatus: "current",
+        })
+        .then(() => {
+          Alert.alert("Event started!");
+          this._isMounted &&
+            this.setState({
+              currenteventStatus: "current",
+            });
+          this._isMounted && this.componentDidMount();
+        })
+        .catch((err) => {
+          console.log(err.toString());
+        });
   };
 
   //pause the event
   handlePause = () => {
-    fire
-      .firestore()
-      .collection("ADMIN")
-      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-      .collection("EVENT MANAGEMENT")
-      .doc(this.state.currenteventID)
-      .update({
-        eventStatus: "paused",
-      })
-      .then(() => {
-        Alert.alert("Event Paused!");
-      })
-      .catch((err) => {
-        console.log(err.toString());
-      });
+    this._isMounted &&
+      fire
+        .firestore()
+        .collection("ADMIN")
+        .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+        .collection("EVENT MANAGEMENT")
+        .doc(this.state.currenteventID)
+        .update({
+          eventStatus: "paused",
+        })
+        .then(() => {
+          Alert.alert("Event Paused!");
+          this._isMounted &&
+            this.setState({
+              currenteventStatus: "paused",
+            });
+          this._isMounted && this.componentDidMount();
+        })
+        .catch((err) => {
+          console.log(err.toString());
+        });
   };
 
   //handles event status to completed
   handleCompleted = () => {
-    fire
-      .firestore()
-      .collection("ADMIN")
-      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-      .collection("EVENT MANAGEMENT")
-      .doc(this.state.currenteventID)
-      .update({
-        eventStatus: "completed",
-      })
-      .then(() => {
-        Alert.alert("Event completed!");
-      })
-      .catch((err) => {
-        console.log(err.toString());
-      });
+    this._isMounted &&
+      fire
+        .firestore()
+        .collection("ADMIN")
+        .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+        .collection("EVENT MANAGEMENT")
+        .doc(this.state.currenteventID)
+        .update({
+          eventStatus: "completed",
+        })
+        .then(() => {
+          Alert.alert("Event completed!");
+          this.setState({
+            data_current: null,
+            data_completed: null,
+            currenteventStatus: "",
+            currenteventID: "",
+            arrived: 0,
+            notarrived: 0,
+            arrived_past: 0,
+            notarrived_past: 0,
+          });
+          this._isMounted && this.componentDidMount();
+        })
+        .catch((err) => {
+          console.log(err.toString());
+        });
   };
 
   handleCancel = () => {
-    fire
-      .firestore()
-      .collection("ADMIN")
-      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-      .collection("EVENT MANAGEMENT")
-      .doc(this.state.currenteventID)
-      .update({
-        eventStatus: "canceled",
-      })
-      .then(() => {
-        Alert.alert("Event canceled!");
-      })
-      .catch((err) => {
-        console.log(err.toString());
-      });
+    this._isMounted &&
+      this._isMounted &&
+      fire
+        .firestore()
+        .collection("ADMIN")
+        .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+        .collection("EVENT MANAGEMENT")
+        .doc(this.state.currenteventID)
+        .update({
+          eventStatus: "canceled",
+        })
+        .then(() => {
+          Alert.alert("Event canceled!");
+          this._isMounted &&
+            this.setState({
+              data_current: null,
+              data_completed: null,
+              currenteventStatus: "",
+              currenteventID: "",
+              arrived: 0,
+              notarrived: 0,
+              arrived_past: 0,
+              notarrived_past: 0,
+              loading: true,
+              switch: false,
+              refreshing: false,
+            });
+          this._isMounted && this.componentDidMount();
+        })
+        .catch((err) => {
+          console.log(err.toString());
+        });
   };
 
   //gets the event ID of current/paused event
@@ -286,106 +331,123 @@ export default class AssignHome extends Component {
     var eventID;
     var eventStatus;
 
-    await fire
-      .firestore()
-      .collection("ADMIN")
-      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-      .collection("EVENT MANAGEMENT")
-      .where("eventStatus", "==", "current")
-      .get()
-      .then(async (sub) => {
-        if (sub.docs.length > 0) {
-          const data = [];
-          sub.forEach((doc) => {
-            const x = doc.data();
-            x.eventID = doc.id;
-            eventStatus = doc.data().eventStatus;
-            eventID = doc.id.toString();
-            data.push(x);
-          });
-          this.setState({
-            currenteventID: eventID,
-            currenteventStatus: eventStatus,
-            data_current: data,
-            loading: false,
-          });
-        } else {
-          await fire
-            .firestore()
-            .collection("ADMIN")
-            .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-            .collection("EVENT MANAGEMENT")
-            .where("eventStatus", "==", "paused")
-            .get()
-            .then((subdoc) => {
-              if (subdoc.docs.length > 0) {
-                const data = [];
-                subdoc.forEach((doc_1) => {
-                  const x = doc_1.data();
-                  x.eventID = doc_1.id;
-                  eventID = doc_1.id.toString();
-                  eventStatus = doc_1.data().eventStatus;
-                  data.push(x);
-                });
-                this.setState({
-                  currenteventID: eventID,
-                  currenteventStatus: eventStatus,
-                  data_current: data,
-                  loading: false,
-                });
-              }
-            })
-            .catch((err) => {
-              console.log(err.toString() + " error");
+    this._isMounted &&
+      (await fire
+        .firestore()
+        .collection("ADMIN")
+        .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+        .collection("EVENT MANAGEMENT")
+        .where("eventStatus", "==", "current")
+        .get()
+        .then(async (sub) => {
+          if (sub.docs.length > 0 && this._isMounted) {
+            const data = [];
+            sub.forEach((doc) => {
+              const x = doc.data();
+              x.eventID = doc.id;
+              eventStatus = doc.data().eventStatus;
+              eventID = doc.id.toString();
+              data.push(x);
             });
-        }
-      })
-      .then(() => {
-        console.log(this.state.data_current);
-        this.getCompleted();
-      })
-      .catch((err) => {
-        console.log(err.toString());
-      });
+            this._isMounted &&
+              this.setState({
+                currenteventID: eventID,
+                currenteventStatus: eventStatus,
+                data_current: data,
+                loading: false,
+              });
+          } else {
+            this._isMounted &&
+              (await fire
+                .firestore()
+                .collection("ADMIN")
+                .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+                .collection("EVENT MANAGEMENT")
+                .where("eventStatus", "==", "paused")
+                .get()
+                .then((subdoc) => {
+                  if (subdoc.docs.length > 0 && this._isMounted) {
+                    const data = [];
+                    subdoc.forEach((doc_1) => {
+                      const x = doc_1.data();
+                      x.eventID = doc_1.id;
+                      eventID = doc_1.id.toString();
+                      eventStatus = doc_1.data().eventStatus;
+                      data.push(x);
+                    });
+                    this._isMounted &&
+                      this.setState({
+                        currenteventID: eventID,
+                        currenteventStatus: eventStatus,
+                        data_current: data,
+                        loading: false,
+                      });
+                  }
+                })
+                .catch((err) => {
+                  console.log(err.toString() + " error");
+                }));
+          }
+        })
+        .then(() => {
+          console.log(this.state.data_current);
+          this._isMounted && this.getCompleted();
+        })
+        .catch((err) => {
+          console.log(err.toString());
+        }));
   };
 
   async getCompleted() {
-    await fire
-      .firestore()
-      .collection("ADMIN")
-      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-      .collection("EVENT MANAGEMENT")
-      .where("eventStatus", "==", "completed")
-      .get()
-      .then((sub) => {
-        if (sub.docs.length > 0) {
-          const data = [];
-          sub.forEach((doc) => {
-            const x = doc.data();
-            x.eventID = doc.id;
-            data.push(x);
-          });
-          this.setState({
-            data_completed: data,
-            loading: false,
-          });
-        }
-      })
-      .then(() => {
-        console.log(this.state.data_completed);
-        if (this.state.currenteventID == "") {
-          this.setState({
-            loading: false,
-            refreshing: false,
-          });
-        } else {
-          this.getArrived();
-        }
-      })
-      .catch((err) => {
-        console.log(err.toString());
-      });
+    this._isMounted &&
+      (await fire
+        .firestore()
+        .collection("ADMIN")
+        .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+        .collection("EVENT MANAGEMENT")
+        .where("eventStatus", "==", "completed")
+        .get()
+        .then((sub) => {
+          if (sub.docs.length > 0 && this._isMounted) {
+            const data = [];
+            sub.forEach((doc) => {
+              const x = doc.data();
+              x.eventID = doc.id;
+              data.push(x);
+            });
+            this._isMounted &&
+              this.setState({
+                data_completed: data,
+                loading: false,
+              });
+          }
+        })
+        .then(() => {
+          console.log(this.state.data_completed);
+          if (this.state.currenteventID == "") {
+            this._isMounted &&
+              this.setState({
+                loading: false,
+                refreshing: false,
+              });
+          } else {
+            this._isMounted && this.getArrived();
+          }
+        })
+        .catch((err) => {
+          console.log(err.toString());
+        }));
   }
+
+  emptyComponent = () => {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <Text style={{ fontSize: 20, fontStyle: "italic", fontWeight: "bold" }}>
+          No events...
+        </Text>
+      </View>
+    );
+  };
 
   componentDidMount() {
     this._isMounted = true;
@@ -400,6 +462,16 @@ export default class AssignHome extends Component {
     this.setState(
       {
         refreshing: true,
+
+        data_current: null,
+        data_completed: null,
+        currenteventStatus: "",
+        currenteventID: "",
+        arrived: 0,
+        notarrived: 0,
+        arrived_past: 0,
+        notarrived_past: 0,
+        past_pressed: false,
       },
       () => {
         this.componentDidMount();
@@ -438,15 +510,6 @@ export default class AssignHome extends Component {
                     backgroundColor: "lightblue",
                     margin: "2%",
                     borderRadius: 5,
-                    backgroundColor: "rgba(36,160,237,0.5)",
-                    borderBottomWidth: 2,
-                    shadowOffset: {
-                      width: 0,
-                      height: 2,
-                    },
-                    shadowOpacity: 0.1,
-                    shadowRadius: 2,
-                    elevation: 5,
                   }}
                   onPress={() => {
                     this.props.navigation.navigate("StartEvent");
@@ -458,50 +521,19 @@ export default class AssignHome extends Component {
                     Start an Event
                   </Text>
                 </TouchableOpacity>
-                {this.state.currenteventID == "" ? (
+                {this.state.currenteventID == "" ? null : (
                   <TouchableOpacity
                     style={{
                       justifyContent: "center",
                       backgroundColor: "lightblue",
                       margin: "2%",
                       borderRadius: 5,
-                      backgroundColor: "rgba(36,160,237,0.5)",
-                      borderBottomWidth: 2,
-                      shadowOffset: {
-                        width: 0,
-                        height: 2,
-                      },
-                      shadowOpacity: 0.1,
-                      shadowRadius: 2,
-                      elevation: 5,
                     }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 15,
-                        fontWeight: "bold",
-                        padding: "2%",
-                      }}
-                    >
-                      Ongoing Event
-                    </Text>
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity
-                    style={{
-                      justifyContent: "center",
-                      backgroundColor: "lightblue",
-                      margin: "2%",
-                      borderRadius: 5,
-                      backgroundColor: "rgba(36,160,237,0.5)",
-                      borderBottomWidth: 2,
-                      shadowOffset: {
-                        width: 0,
-                        height: 2,
-                      },
-                      shadowOpacity: 0.1,
-                      shadowRadius: 2,
-                      elevation: 5,
+                    onPress={() => {
+                      this.setState({
+                        currenteventID: "",
+                        past_pressed: true,
+                      });
                     }}
                   >
                     <Text
@@ -516,31 +548,38 @@ export default class AssignHome extends Component {
                   </TouchableOpacity>
                 )}
 
-                <TouchableOpacity
-                  style={{
-                    backgroundColor: "lightblue",
-
-                    borderRadius: 5,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    margin: "2%",
-                    width: "10%",
-                    backgroundColor: "rgba(36,160,237,0.5)",
-                    borderBottomWidth: 2,
-                    shadowOffset: {
-                      width: 0,
-                      height: 2,
-                    },
-                    shadowOpacity: 0.1,
-                    shadowRadius: 2,
-                  }}
-                  onPress={() => {
-                    this.componentDidMount();
-                  }}
-                >
-                  <Icon name="refresh" size={25}></Icon>
-                </TouchableOpacity>
+                {!this.state.past_pressed ? null : (
+                  <TouchableOpacity
+                    style={{
+                      justifyContent: "center",
+                      backgroundColor: "lightblue",
+                      margin: "2%",
+                      borderRadius: 5,
+                    }}
+                    onPress={this.handleRefresh}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 15,
+                        fontWeight: "bold",
+                        padding: "2%",
+                      }}
+                    >
+                      Show Ongoing Events
+                    </Text>
+                  </TouchableOpacity>
+                )}
               </View>
+              <Text
+                style={{
+                  fontSize: 15,
+                  color: "gray",
+                  alignSelf: "center",
+                  margin: "2%",
+                }}
+              >
+                Pull to Refresh
+              </Text>
 
               <View style={{ flex: 14 }}>
                 {this.state.currenteventID == "" ? (
@@ -548,9 +587,8 @@ export default class AssignHome extends Component {
                     data={this.state.data_completed}
                     renderItem={({ item }) => (
                       <View
-                        horizontal={true}
                         style={{
-                          margin: "5%",
+                          margin: "2%",
                           padding: "2%",
                           borderRadius: 10,
 
@@ -619,8 +657,6 @@ export default class AssignHome extends Component {
                             </View>
                           </View>
 
-                          <View style={{}}></View>
-
                           <View
                             style={{
                               justifyContent: "space-between",
@@ -633,15 +669,6 @@ export default class AssignHome extends Component {
                                 marginTop: "3%",
                                 alignItems: "center",
                                 backgroundColor: "rgba(36,160,237,0.5)",
-                                borderBottomWidth: 1,
-                                borderLeftWidth: 1,
-                                borderRightWidth: 1,
-                                shadowOffset: {
-                                  width: 0,
-                                  height: 2,
-                                },
-                                shadowOpacity: 0.1,
-                                shadowRadius: 5,
                               }}
                               onPress={() => {
                                 navigation.navigate("EventStatus", {
@@ -666,6 +693,7 @@ export default class AssignHome extends Component {
                     keyExtractor={(item) => item.eventID}
                     refreshing={this.state.refreshing}
                     onRefresh={this.handleRefresh}
+                    ListEmptyComponent={this.emptyComponent}
                   />
                 ) : (
                   <FlatList
@@ -677,7 +705,6 @@ export default class AssignHome extends Component {
                           padding: "2%",
                           borderRadius: 10,
                           backgroundColor: "rgba(0, 0, 0, 0.2)",
-
                           shadowOffset: {
                             width: 0,
                             height: 2,
@@ -878,6 +905,7 @@ export default class AssignHome extends Component {
                                 style={{
                                   fontSize: 20,
                                   fontWeight: "bold",
+
                                   marginLeft: "3%",
                                 }}
                               >
@@ -930,19 +958,13 @@ export default class AssignHome extends Component {
                                 borderRadius: 10,
                                 alignItems: "center",
                                 backgroundColor: "rgba(36,160,237,0.5)",
-                                borderBottomWidth: 1,
-                                borderLeftWidth: 1,
-                                borderRightWidth: 1,
-                                shadowOffset: {
-                                  width: 0,
-                                  height: 2,
-                                },
-                                shadowOpacity: 0.1,
-                                shadowRadius: 5,
                               }}
                               onPress={() => {
                                 this.props.navigation.navigate(
-                                  "AssignVolunteer"
+                                  "AssignVolunteer",
+                                  {
+                                    eventName: item.eventName,
+                                  }
                                 );
                               }}
                             >
@@ -962,15 +984,6 @@ export default class AssignHome extends Component {
                                 marginTop: "3%",
                                 alignItems: "center",
                                 backgroundColor: "rgba(36,160,237,0.5)",
-                                borderBottomWidth: 1,
-                                borderLeftWidth: 1,
-                                borderRightWidth: 1,
-                                shadowOffset: {
-                                  width: 0,
-                                  height: 2,
-                                },
-                                shadowOpacity: 0.1,
-                                shadowRadius: 5,
                               }}
                               onPress={() => {
                                 navigation.navigate("EventStatus", {
@@ -994,15 +1007,6 @@ export default class AssignHome extends Component {
                                 marginTop: "3%",
                                 alignItems: "center",
                                 backgroundColor: "rgba(36,160,237,0.5)",
-                                borderBottomWidth: 1,
-                                borderLeftWidth: 1,
-                                borderRightWidth: 1,
-                                shadowOffset: {
-                                  width: 0,
-                                  height: 2,
-                                },
-                                shadowOpacity: 0.1,
-                                shadowRadius: 5,
                               }}
                               onPress={this.handleRelease}
                             >
@@ -1023,6 +1027,7 @@ export default class AssignHome extends Component {
                     keyExtractor={(item) => item.eventID}
                     refreshing={this.state.refreshing}
                     onRefresh={this.handleRefresh}
+                    ListEmptyComponent={this.emptyComponent}
                   />
                 )}
               </View>

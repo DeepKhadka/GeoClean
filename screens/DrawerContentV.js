@@ -34,26 +34,7 @@ export function DrawerContentV(props) {
               props.navigation.navigate("VolunteerHome");
             }}
           />
-          <DrawerItem
-            icon={({ color, size }) => (
-              <FontAwesome name="calendar" color="gray" size={size} />
-            )}
-            label="Join Ongoing Event"
-            labelStyle={{ color: "black", fontSize: 15, fontWeight: "bold" }}
-            onPress={() => {
-              props.navigation.navigate("JoinEvent");
-            }}
-          />
-          <DrawerItem
-            icon={({ color, size }) => (
-              <Icon name="account-group" color="gray" size={size} />
-            )}
-            label="Current Event"
-            labelStyle={{ color: "black", fontSize: 15, fontWeight: "bold" }}
-            onPress={() => {
-              props.navigation.navigate("CurrentEvent");
-            }}
-          />
+
           <DrawerItem
             icon={({ color, size }) => (
               <Icon name="map-search" color="gray" size={size} />
@@ -63,7 +44,7 @@ export function DrawerContentV(props) {
             onPress={() => {
               props.navigation.navigate("ZONE", {
                 admin: false,
-                volunteer:true
+                volunteer: true,
               });
             }}
           />
