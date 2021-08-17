@@ -55,7 +55,6 @@ export default class AssignHome extends Component {
         .collection("EVENT MANAGEMENT")
         .doc(this.state.currenteventID)
         .collection("VOLUNTEERS")
-        .where("leader", "==", true)
         .where("zoneCompletion", "==", true)
         .get()
         .then((querySnapshot) => {
