@@ -24,6 +24,7 @@ import * as Location from "expo-location";
 import FloatingTextBox from "../assets/textEntry";
 import Constants from "expo-constants";
 import ModalSelector from "react-native-modal-selector";
+import DatePicker from 'react-native-date-picker'
 
 export default class ReportObject extends Component {
   _isMounted = false;
@@ -307,7 +308,7 @@ export default class ReportObject extends Component {
                 backgroundColor: "rgba(36,160,237,0.4)",
               }}
             >
-              <ModalSelector
+              {/* <ModalSelector
                 data={data}
                 initValue={this.state.zoneplaceHolder}
                 style={{
@@ -318,7 +319,11 @@ export default class ReportObject extends Component {
                 onChange={(option) => {
                   this.onPickerSelect(option.key);
                 }}
-              />
+              /> */}
+               <DatePicker
+      date={date}
+      onDateChange={setDate}
+    />
               <TouchableOpacity
                 style={{
                   margin: "2%",

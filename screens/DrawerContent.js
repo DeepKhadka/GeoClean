@@ -19,7 +19,7 @@ export function DrawerContent(props) {
           }}
         />
       </View>
-      <View style={{ flex: 7 }}>
+      <View style={{ backgroundColor:"rgba(0,0,30,0.1)",flex: 7 }}>
         <Drawer.Section style={styles.drawerSection}>
           <DrawerItem
             icon={({ color, size }) => (

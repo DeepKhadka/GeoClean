@@ -43,6 +43,7 @@ export default class Login extends Component {
               }}
               style={styles.backgroundStyle}
             >
+              
               <View style={{ flex: 8, transform: [{ scale: 0.8 }] }}>
                 <Image
                   style={styles.image}

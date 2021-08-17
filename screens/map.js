@@ -588,7 +588,7 @@ export default class Map extends Component {
       <View style={styles.container}>
         <MapView
           //provider={PROVIDER_GOOGLE}
-
+          showsCompass={true}
           provider={null}
           style={styles.map}
           mapType={this.state.mType ? "hybrid" : "standard"}
@@ -785,6 +785,7 @@ export default class Map extends Component {
               coordinate={marker.coordinates}
               title={marker.title}
               description={marker.description}
+            
             >
               <Image source={marker.icon} style={{ height: 32, width: 32 }} />
             </MapView.Marker>
