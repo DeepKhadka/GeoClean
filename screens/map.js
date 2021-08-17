@@ -3,10 +3,16 @@ import { Platform } from "react-native";
 import * as Permissions from "expo-permissions";
 import Constants from "expo-constants";
 import * as Location from "expo-location";
-import { StyleSheet, View, Text, Image } from "react-native";
+import { StyleSheet, View, Text, Image, Modal } from "react-native";
 import MapView, { PROVIDER_GOOGLE, Marker, Polygon } from "react-native-maps";
 import fire from "../database/firebase";
 import MapViewDirections from "react-native-maps-directions";
+import {
+  Spinner,
+  useColorModeValue,
+  Center,
+  NativeBaseProvider,
+} from "native-base";
 
 import {
   locations1,
@@ -114,100 +120,107 @@ export default class Map extends Component {
   getCurrentEvent = () => {
     var eventID = "";
 
-    this._isMounted && fire
-      .firestore()
-      .collection("ADMIN")
-      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-      .collection("EVENT MANAGEMENT")
-      .where("eventStatus", "==", "current")
-      .get()
-      .then(async (sub) => {
-        if (sub.docs.length > 0 && this._isMounted) {
-          const data = [];
-          sub.forEach((doc) => {
-            const x = doc.data();
-            x.id = doc.id;
-            eventID = doc.id.toString();
-            data.push(x);
-          });
-          this._isMounted &&  this.setState({
-            eventID: eventID,
-          });
-        } else {
-          this._isMounted && await fire
-            .firestore()
-            .collection("ADMIN")
-            .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-            .collection("EVENT MANAGEMENT")
-            .where("eventStatus", "==", "paused")
-            .get()
-            .then((subdoc) => {
-              if (subdoc.docs.length > 0 && this._isMounted) {
-                console.log("else bhitra");
-                const data_1 = [];
-                subdoc.forEach((doc_1) => {
-                  const x = doc_1.data();
-                  x.id = doc_1.id;
-                  eventID = doc_1.id.toString();
-                  data_1.push(x);
-                });
-                this._isMounted && this.setState({
-                  eventID: eventID,
-                });
-              }
-            })
-            .catch((err) => {
-              console.log(err.toString() + " error");
+    this._isMounted &&
+      fire
+        .firestore()
+        .collection("ADMIN")
+        .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+        .collection("EVENT MANAGEMENT")
+        .where("eventStatus", "==", "current")
+        .get()
+        .then(async (sub) => {
+          if (sub.docs.length > 0 && this._isMounted) {
+            const data = [];
+            sub.forEach((doc) => {
+              const x = doc.data();
+              x.id = doc.id;
+              eventID = doc.id.toString();
+              data.push(x);
             });
-        }
-      })
-      .then(() => {
-        console.log(this.state.eventID);
-        if (this.state.eventID != "" && this._isMounted) {
-          this._isMounted && this.statusCheck();
-        }else{
-          this._isMounted && this.setState({
-            dataCheck:true
-          })
-        }
-      })
+            this._isMounted &&
+              this.setState({
+                eventID: eventID,
+              });
+          } else {
+            this._isMounted &&
+              (await fire
+                .firestore()
+                .collection("ADMIN")
+                .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+                .collection("EVENT MANAGEMENT")
+                .where("eventStatus", "==", "paused")
+                .get()
+                .then((subdoc) => {
+                  if (subdoc.docs.length > 0 && this._isMounted) {
+                    console.log("else bhitra");
+                    const data_1 = [];
+                    subdoc.forEach((doc_1) => {
+                      const x = doc_1.data();
+                      x.id = doc_1.id;
+                      eventID = doc_1.id.toString();
+                      data_1.push(x);
+                    });
+                    this._isMounted &&
+                      this.setState({
+                        eventID: eventID,
+                      });
+                  }
+                })
+                .catch((err) => {
+                  console.log(err.toString() + " error");
+                }));
+          }
+        })
+        .then(() => {
+          console.log(this.state.eventID);
+          if (this.state.eventID != "" && this._isMounted) {
+            this._isMounted && this.statusCheck();
+          } else {
+            this._isMounted &&
+              this.setState({
+                dataCheck: true,
+              });
+          }
+        })
 
-      .catch((err) => {
-        console.log(err.toString());
-      });
+        .catch((err) => {
+          console.log(err.toString());
+        });
   };
 
   statusCheck = () => {
-    this._isMounted && fire
-      .firestore()
-      .collection("ADMIN")
-      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-      .collection("EVENT MANAGEMENT")
-      .doc(this.state.eventID)
-      .collection("VOLUNTEERS")
-      .where("volunteerID", "==", fire.auth().currentUser.uid.toString())
-      .get()
-      .then((sub) => {
-        if (sub.docs.length > 0 && this._isMounted) {
-          const data = [];
-          sub.forEach((doc) => {
-            const x = doc.data();
-            data.push(x);
-          });
+    this._isMounted &&
+      fire
+        .firestore()
+        .collection("ADMIN")
+        .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+        .collection("EVENT MANAGEMENT")
+        .doc(this.state.eventID)
+        .collection("VOLUNTEERS")
+        .where("volunteerID", "==", fire.auth().currentUser.uid.toString())
+        .get()
+        .then((sub) => {
+          if (sub.docs.length > 0 && this._isMounted) {
+            const data = [];
+            sub.forEach((doc) => {
+              const x = doc.data();
+              data.push(x);
+            });
 
-          this._isMounted &&   this.setState({
-            volunteer_info: data,
-          });
-        }
-      })
-      .then(() => {
-        console.log(this.state.volunteer_info);
-        this._isMounted &&  this._getLocation();
-      })
+            this._isMounted &&
+              this.setState({
+                volunteer_info: data,
+              });
+          }
+        })
+        .then(() => {
+          console.log(this.state.volunteer_info);
+          this._isMounted && this._getLocation();
+        })
 
-      .catch((err) => {
-        console.log(err.toString());
-      });
+        .catch((err) => {
+          console.log(err.toString());
+        });
   };
 
   componentDidMount() {
@@ -226,210 +239,226 @@ export default class Map extends Component {
   }
 
   onButtonPress = () => {
-    this._isMounted && this.setState({
-      mType: !this.state.mType,
-    });
+    this._isMounted &&
+      this.setState({
+        mType: !this.state.mType,
+      });
   };
 
   getZone1 = () => {
-    this._isMounted &&  fire
-      .firestore()
-      .collectionGroup("ZONE 1")
-      .where("status", "==", false)
-      .get()
-      .then((querySnapshot) => {
-        if (!querySnapshot.empty && this._isMounted) {
-          const data = [];
-          querySnapshot.forEach((doc) => {
-            const x = doc.data();
-            x.id = doc.id;
-            data.push(x);
-          });
-          this._isMounted &&  this.setState({
-            data_1: data,
-          });
-        }
-      })
-      .then(() => {
-        console.log(this.state.data_1);
-        this._isMounted &&   this.getZone2();
-      })
-      .catch((err) => {
-        console.log(err.toString());
-      });
+    this._isMounted &&
+      fire
+        .firestore()
+        .collectionGroup("ZONE 1")
+        .where("status", "==", false)
+        .get()
+        .then((querySnapshot) => {
+          if (!querySnapshot.empty && this._isMounted) {
+            const data = [];
+            querySnapshot.forEach((doc) => {
+              const x = doc.data();
+              x.id = doc.id;
+              data.push(x);
+            });
+            this._isMounted &&
+              this.setState({
+                data_1: data,
+              });
+          }
+        })
+        .then(() => {
+          console.log(this.state.data_1);
+          this._isMounted && this.getZone2();
+        })
+        .catch((err) => {
+          console.log(err.toString());
+        });
   };
 
   getZone2 = () => {
-    this._isMounted &&  fire
-      .firestore()
-      .collectionGroup("ZONE 2")
-      .where("status", "==", false)
-      .get()
-      .then((querySnapshot) => {
-        if (!querySnapshot.empty && this._isMounted) {
-          const data = [];
-          querySnapshot.forEach((doc) => {
-            const x = doc.data();
-            x.id = doc.id;
-            data.push(x);
-          });
-          this._isMounted && this.setState({
-            data_2: data,
-          });
-        }
-      })
-      .then(() => {
-        console.log(this.state.data_2);
-        this._isMounted &&  this.getZone3();
-      })
-      .catch((err) => {
-        console.log(err.toString());
-      });
+    this._isMounted &&
+      fire
+        .firestore()
+        .collectionGroup("ZONE 2")
+        .where("status", "==", false)
+        .get()
+        .then((querySnapshot) => {
+          if (!querySnapshot.empty && this._isMounted) {
+            const data = [];
+            querySnapshot.forEach((doc) => {
+              const x = doc.data();
+              x.id = doc.id;
+              data.push(x);
+            });
+            this._isMounted &&
+              this.setState({
+                data_2: data,
+              });
+          }
+        })
+        .then(() => {
+          console.log(this.state.data_2);
+          this._isMounted && this.getZone3();
+        })
+        .catch((err) => {
+          console.log(err.toString());
+        });
   };
 
   getZone3 = () => {
-    this._isMounted &&  fire
-      .firestore()
-      .collectionGroup("ZONE 3")
-      .where("status", "==", false)
-      .get()
-      .then((querySnapshot) => {
-        if (!querySnapshot.empty && this._isMounted) {
-          const data = [];
-          querySnapshot.forEach((doc) => {
-            const x = doc.data();
-            x.id = doc.id;
-            data.push(x);
-          });
-          this._isMounted && this.setState({
-            data_3: data,
-          });
-        }
-      })
-      .then(() => {
-        console.log(this.state.data_3);
-        this._isMounted && this.getZone4();
-      })
-      .catch((err) => {
-        console.log(err.toString());
-      });
+    this._isMounted &&
+      fire
+        .firestore()
+        .collectionGroup("ZONE 3")
+        .where("status", "==", false)
+        .get()
+        .then((querySnapshot) => {
+          if (!querySnapshot.empty && this._isMounted) {
+            const data = [];
+            querySnapshot.forEach((doc) => {
+              const x = doc.data();
+              x.id = doc.id;
+              data.push(x);
+            });
+            this._isMounted &&
+              this.setState({
+                data_3: data,
+              });
+          }
+        })
+        .then(() => {
+          console.log(this.state.data_3);
+          this._isMounted && this.getZone4();
+        })
+        .catch((err) => {
+          console.log(err.toString());
+        });
   };
 
   getZone4 = () => {
-    this._isMounted &&  fire
-      .firestore()
-      .collectionGroup("ZONE 4")
-      .where("status", "==", false)
-      .get()
-      .then((querySnapshot) => {
-        if (!querySnapshot.empty && this._isMounted) {
-          const data = [];
-          querySnapshot.forEach((doc) => {
-            const x = doc.data();
-            x.id = doc.id;
-            data.push(x);
-          });
-          this._isMounted &&  this.setState({
-            data_4: data,
-          });
-        }
-      })
-      .then(() => {
-        console.log(this.state.data_4);
-        this._isMounted &&  this.getZone5();
-      })
-      .catch((err) => {
-        console.log(err.toString());
-      });
+    this._isMounted &&
+      fire
+        .firestore()
+        .collectionGroup("ZONE 4")
+        .where("status", "==", false)
+        .get()
+        .then((querySnapshot) => {
+          if (!querySnapshot.empty && this._isMounted) {
+            const data = [];
+            querySnapshot.forEach((doc) => {
+              const x = doc.data();
+              x.id = doc.id;
+              data.push(x);
+            });
+            this._isMounted &&
+              this.setState({
+                data_4: data,
+              });
+          }
+        })
+        .then(() => {
+          console.log(this.state.data_4);
+          this._isMounted && this.getZone5();
+        })
+        .catch((err) => {
+          console.log(err.toString());
+        });
   };
 
   getZone5 = () => {
-    this._isMounted &&  fire
-      .firestore()
-      .collectionGroup("ZONE 5")
-      .where("status", "==", false)
-      .get()
-      .then((querySnapshot) => {
-        if (!querySnapshot.empty && this._isMounted) {
-          const data = [];
-          querySnapshot.forEach((doc) => {
-            const x = doc.data();
-            x.id = doc.id;
-            data.push(x);
-          });
-          this._isMounted &&  this.setState({
-            data_5: data,
-          });
-        }
-      })
-      .then(() => {
-        console.log(this.state.data_5);
-        this._isMounted &&  this.getZone6();
-      })
-      .catch((err) => {
-        console.log(err.toString());
-      });
+    this._isMounted &&
+      fire
+        .firestore()
+        .collectionGroup("ZONE 5")
+        .where("status", "==", false)
+        .get()
+        .then((querySnapshot) => {
+          if (!querySnapshot.empty && this._isMounted) {
+            const data = [];
+            querySnapshot.forEach((doc) => {
+              const x = doc.data();
+              x.id = doc.id;
+              data.push(x);
+            });
+            this._isMounted &&
+              this.setState({
+                data_5: data,
+              });
+          }
+        })
+        .then(() => {
+          console.log(this.state.data_5);
+          this._isMounted && this.getZone6();
+        })
+        .catch((err) => {
+          console.log(err.toString());
+        });
   };
 
   getZone6 = () => {
-    this._isMounted &&  fire
-      .firestore()
-      .collectionGroup("ZONE 6")
-      .where("status", "==", false)
-      .get()
-      .then((querySnapshot) => {
-        if (!querySnapshot.empty) {
-          const data = [];
-          querySnapshot.forEach((doc) => {
-            const x = doc.data();
-            x.id = doc.id;
-            data.push(x);
-          });
-          this._isMounted &&  this.setState({
-            data_6: data,
-          });
-        }
-      })
-      .then(() => {
-        console.log(this.state.data_6);
-        this._isMounted &&   this._getLocation();
-      })
-      .catch((err) => {
-        console.log(err.toString());
-      });
+    this._isMounted &&
+      fire
+        .firestore()
+        .collectionGroup("ZONE 6")
+        .where("status", "==", false)
+        .get()
+        .then((querySnapshot) => {
+          if (!querySnapshot.empty) {
+            const data = [];
+            querySnapshot.forEach((doc) => {
+              const x = doc.data();
+              x.id = doc.id;
+              data.push(x);
+            });
+            this._isMounted &&
+              this.setState({
+                data_6: data,
+              });
+          }
+        })
+        .then(() => {
+          console.log(this.state.data_6);
+          this._isMounted && this._getLocation();
+        })
+        .catch((err) => {
+          console.log(err.toString());
+        });
   };
 
   _getLocation = async () => {
     (async () => {
       if (Platform.OS === "android" && !Constants.isDevice) {
-        this._isMounted &&   this.setState({
-          errorMessage:
-            "Oops, this will not work on Snack in an Android emulator. Try it on your device!",
-        });
+        this._isMounted &&
+          this.setState({
+            errorMessage:
+              "Oops, this will not work on Snack in an Android emulator. Try it on your device!",
+          });
 
         return;
       }
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        this._isMounted &&   this.setState({
-          errorMessage: "Permission to access location was denied",
-        });
+        this._isMounted &&
+          this.setState({
+            errorMessage: "Permission to access location was denied",
+          });
 
         return;
       }
 
       let location = await Location.getCurrentPositionAsync({});
-      this._isMounted &&  this.setState(
-        {
-          location: location,
-          latitude: location.coords.latitude.toString(),
-          longitude: location.coords.longitude.toString(),
-          dataCheck: true,
-        },
-        () => {
-          this._isMounted & this.componentDidMount();
-        }
-      );
+      this._isMounted &&
+        this.setState(
+          {
+            location: location,
+            latitude: location.coords.latitude.toString(),
+            longitude: location.coords.longitude.toString(),
+            dataCheck: true,
+          },
+          () => {
+            this._isMounted & this.componentDidMount();
+          }
+        );
     })();
   };
 
@@ -600,11 +629,11 @@ export default class Map extends Component {
           }}
         >
           <Button title="Map Type" onPress={this.onButtonPress} />
-         
 
           {this.state.dataCheck &&
           this.state.volunteer_info &&
-          this.props.route.params.volunteer && this.state.volunteer_info[0].zoneNumber != 0 ? (
+          this.props.route.params.volunteer &&
+          this.state.volunteer_info[0].zoneNumber != 0 ? (
             <MapViewDirections
               style={{ position: "absolute" }}
               origin={
@@ -667,7 +696,7 @@ export default class Map extends Component {
                   >
                     <Image
                       source={{ uri: marker.imageUri }}
-                      style={{ height: 60, width: 60, borderRadius:400/2 }}
+                      style={{ height: 60, width: 60, borderRadius: 400 / 2 }}
                     />
                   </MapView.Marker>
                 );
@@ -688,7 +717,7 @@ export default class Map extends Component {
                   >
                     <Image
                       source={{ uri: marker.imageUri }}
-                      style={{ height: 60, width: 60 ,borderRadius:200 }}
+                      style={{ height: 60, width: 60, borderRadius: 200 }}
                     />
                   </MapView.Marker>
                 );
@@ -709,7 +738,7 @@ export default class Map extends Component {
                   >
                     <Image
                       source={{ uri: marker.imageUri }}
-                      style={{ height: 60, width: 60 ,borderRadius:200 }}
+                      style={{ height: 60, width: 60, borderRadius: 200 }}
                     />
                   </MapView.Marker>
                 );
@@ -730,7 +759,7 @@ export default class Map extends Component {
                   >
                     <Image
                       source={{ uri: marker.imageUri }}
-                      style={{ height: 60, width: 60 ,borderRadius:200 }}
+                      style={{ height: 60, width: 60, borderRadius: 200 }}
                     />
                   </MapView.Marker>
                 );
@@ -751,7 +780,7 @@ export default class Map extends Component {
                   >
                     <Image
                       source={{ uri: marker.imageUri }}
-                      style={{ height: 60, width: 60 ,borderRadius:200 }}
+                      style={{ height: 60, width: 60, borderRadius: 200 }}
                     />
                   </MapView.Marker>
                 );
@@ -772,7 +801,7 @@ export default class Map extends Component {
                   >
                     <Image
                       source={{ uri: marker.imageUri }}
-                      style={{ height: 60, width: 60 ,borderRadius:200 }}
+                      style={{ height: 60, width: 60, borderRadius: 200 }}
                     />
                   </MapView.Marker>
                 );
@@ -922,7 +951,13 @@ export default class Map extends Component {
           />
         </View>
       </View>
-    ) : null;
+    ) : (
+      <NativeBaseProvider>
+        <Center flex={1}>
+          <Spinner color="blue.500" />
+        </Center>
+      </NativeBaseProvider>
+    );
   }
 }
 

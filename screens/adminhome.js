@@ -15,11 +15,13 @@ import fire from "../database/firebase";
 import DefaultCard from "../assets/Defaultcardview";
 import {
   Spinner,
-  HStack,
-  useColorModeValue,
   Center,
   NativeBaseProvider,
   Select,
+  Box,
+  Progress,
+  VStack,
+  Heading,
 } from "native-base";
 
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -41,6 +43,37 @@ export default class AssignHome extends Component {
     switch: false,
     refreshing: false,
     past_pressed: false,
+    noOfZoneCompleted: 0,
+  };
+
+  getZoneCompleted = async () => {
+    this._isMounted &&
+      (await fire
+        .firestore()
+        .collection("ADMIN")
+        .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+        .collection("EVENT MANAGEMENT")
+        .doc(this.state.currenteventID)
+        .collection("VOLUNTEERS")
+        .where("leader", "==", true)
+        .where("zoneCompletion", "==", true)
+        .get()
+        .then((querySnapshot) => {
+          if (querySnapshot.docs.length > 0 && this._isMounted) {
+            this._isMounted &&
+              this.setState({
+                noOfZoneCompleted: querySnapshot.docs.length,
+                loading: false,
+                refreshing: false,
+              });
+          } else {
+            this._isMounted &&
+              this.setState({
+                loading: false,
+                refreshing: false,
+              });
+          }
+        }));
   };
 
   handleCancelCheck = () => {
@@ -58,7 +91,7 @@ export default class AssignHome extends Component {
         {
           text: "Yes",
           onPress: () => {
-            this.handleCancel();
+            this._isMounted && this.handleCancel();
           },
         },
       ]
@@ -80,7 +113,7 @@ export default class AssignHome extends Component {
         {
           text: "Yes",
           onPress: () => {
-            this.releaseAllVolunteers();
+            this._isMounted && this.releaseAllVolunteers();
           },
         },
       ]
@@ -88,25 +121,47 @@ export default class AssignHome extends Component {
   };
 
   handleCompletedCheck = () => {
-    Alert.alert(
-      "Complete",
-      "Are you sure ? This will complete the event. ",
+    if (this.state.noOfZoneCompleted == 6) {
+      Alert.alert(
+        "Complete",
+        "Are you sure ? This will complete the event. ",
 
-      [
-        {
-          text: "No",
-          onPress: () => {
-            console.log("No");
+        [
+          {
+            text: "No",
+            onPress: () => {
+              console.log("No");
+            },
           },
-        },
-        {
-          text: "Yes",
-          onPress: () => {
-            this.handleCompleted();
+          {
+            text: "Yes",
+            onPress: () => {
+              this._isMounted && this.handleCompleted();
+            },
           },
-        },
-      ]
-    );
+        ]
+      );
+    } else {
+      Alert.alert(
+        "Complete",
+        "Are you sure? Some zones have not been marked complete.",
+
+        [
+          {
+            text: "No",
+            onPress: () => {
+              console.log("No");
+            },
+          },
+          {
+            text: "Yes",
+            onPress: () => {
+              this._isMounted && this.handleCompleted();
+            },
+          },
+        ]
+      );
+    }
   };
 
   releaseAllVolunteers = async () => {
@@ -120,7 +175,7 @@ export default class AssignHome extends Component {
         .collection("VOLUNTEERS")
         .get()
         .then((sub) => {
-          if (sub.docs.length > 0) {
+          if (sub.docs.length > 0 && this._isMounted) {
             var results = [];
             sub.forEach((doc) => {
               var docRef = fire
@@ -161,15 +216,16 @@ export default class AssignHome extends Component {
         .where("arrived", "==", true)
         .get()
         .then((sub) => {
-          if (sub.docs.length > 0) {
-            this.setState({
-              arrived: sub.docs.length,
-            });
+          if (sub.docs.length > 0 && this._isMounted) {
+            this._isMounted &&
+              this.setState({
+                arrived: sub.docs.length,
+              });
           }
         })
         .then(() => {
           console.log(this.state.arrived);
-          this.getUnArrived();
+          this._isMounted && this.getUnArrived();
         })
         .catch((err) => {
           console.log(err.toString());
@@ -204,6 +260,7 @@ export default class AssignHome extends Component {
         })
         .then(() => {
           console.log(this.state.unarrived);
+          this._isMounted && this.getZoneCompleted();
         })
         .catch((err) => {
           console.log(err.toString());
@@ -274,16 +331,17 @@ export default class AssignHome extends Component {
         })
         .then(() => {
           Alert.alert("Event completed!");
-          this.setState({
-            data_current: null,
-            data_completed: null,
-            currenteventStatus: "",
-            currenteventID: "",
-            arrived: 0,
-            notarrived: 0,
-            arrived_past: 0,
-            notarrived_past: 0,
-          });
+          this._isMounted &&
+            this.setState({
+              data_current: null,
+              data_completed: null,
+              currenteventStatus: "",
+              currenteventID: "",
+              arrived: 0,
+              notarrived: 0,
+              arrived_past: 0,
+              notarrived_past: 0,
+            });
           this._isMounted && this.componentDidMount();
         })
         .catch((err) => {
@@ -293,7 +351,6 @@ export default class AssignHome extends Component {
 
   handleCancel = () => {
     this._isMounted &&
-      this._isMounted &&
       fire
         .firestore()
         .collection("ADMIN")
@@ -424,7 +481,7 @@ export default class AssignHome extends Component {
         })
         .then(() => {
           console.log(this.state.data_completed);
-          if (this.state.currenteventID == "") {
+          if ((this.state.currenteventID == "") & this._isMounted) {
             this._isMounted &&
               this.setState({
                 loading: false,
@@ -459,24 +516,25 @@ export default class AssignHome extends Component {
   }
 
   handleRefresh = () => {
-    this.setState(
-      {
-        refreshing: true,
+    this._isMounted &&
+      this.setState(
+        {
+          refreshing: true,
 
-        data_current: null,
-        data_completed: null,
-        currenteventStatus: "",
-        currenteventID: "",
-        arrived: 0,
-        notarrived: 0,
-        arrived_past: 0,
-        notarrived_past: 0,
-        past_pressed: false,
-      },
-      () => {
-        this.componentDidMount();
-      }
-    );
+          data_current: null,
+          data_completed: null,
+          currenteventStatus: "",
+          currenteventID: "",
+          arrived: 0,
+          notarrived: 0,
+          arrived_past: 0,
+          notarrived_past: 0,
+          past_pressed: false,
+        },
+        () => {
+          this.componentDidMount();
+        }
+      );
   };
 
   render() {
@@ -484,9 +542,7 @@ export default class AssignHome extends Component {
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <ImageBackground
-          source={{
-            uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
-          }}
+          source={require("../assets/background.png")}
           style={{ flex: 1 }}
         >
           {this.state.loading ? (
@@ -713,10 +769,90 @@ export default class AssignHome extends Component {
                           shadowRadius: 2,
                         }}
                       >
-                        <View style={{ borderBottomWidth: 1, padding: "3%" }}>
-                          <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-                            ONGOING EVENT
-                          </Text>
+                        <View style={{ padding: "2%" }}>
+                          <View
+                            style={{
+                              flex: 1,
+                              justifyContent: "flex-end",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+                              ONGOING EVENT
+                            </Text>
+                          </View>
+                          <View
+                            style={{
+                              flex: 1,
+                              flexDirection: "row",
+                              marginTop: "3%",
+                            }}
+                          >
+                            <NativeBaseProvider>
+                              <Center flex={1}>
+                                <Box w="100%">
+                                  <VStack mx={4} space="md">
+                                    <Progress
+                                      colorScheme="emerald"
+                                      value={
+                                        (this.state.noOfZoneCompleted / 6) * 100
+                                      }
+                                    />
+                                  </VStack>
+                                </Box>
+                              </Center>
+                            </NativeBaseProvider>
+                            <Text style={{ fontSize: 15, fontWeight: "bold" }}>
+                              {this.state.noOfZoneCompleted} / 6
+                            </Text>
+                          </View>
+                          <View style={{ flex: 1 }}>
+                            <View style={{ alignItems: "center" }}>
+                              <Text
+                                style={{
+                                  fontSize: 15,
+                                  fontWeight: "bold",
+                                  marginTop: "1%",
+                                }}
+                              >
+                                Zone Completion Status
+                              </Text>
+                            </View>
+                          </View>
+
+                          {this.state.noOfZoneCompleted == 6 ? (
+                            <View style={{ flex: 1 }}>
+                              {" "}
+                              <View style={{ flexDirection: "row" }}>
+                                <Image
+                                  source={require("../assets/start.png")}
+                                  style={{
+                                    transform: [{ scale: 1 }],
+                                  }}
+                                />
+                                <Text
+                                  style={{
+                                    fontSize: 15,
+                                    fontWeight: "bold",
+                                    marginLeft: "3%",
+                                  }}
+                                >
+                                  All Zone leaders have marked complete
+                                </Text>
+                              </View>
+                              <View style={{ alignItems: "center" }}>
+                                <Text
+                                  style={{
+                                    fontSize: 15,
+                                    fontWeight: "bold",
+                                    marginLeft: "3%",
+                                  }}
+                                >
+                                  You can close the event now
+                                </Text>
+                              </View>
+                            </View>
+                          ) : null}
                         </View>
                         <View style={{ padding: "2%" }}>
                           <View style={{ marginTop: "1%" }}>
