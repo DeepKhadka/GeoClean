@@ -23,7 +23,7 @@ import * as AddCalendarEvent from "react-native-add-calendar-event";
 import moment from "moment";
 
 import fire from "../database/firebase";
-import DefaultCard from "../assets/Defaultcardview";
+
 import { Icon } from "react-native-elements";
 
 const TIME_NOW_IN_UTC = moment.utc();
@@ -82,15 +82,17 @@ export default class VolunteerHome extends Component {
       })
       .then(() => {
         Alert.alert("Arrival reported!");
-        this.setState({
-          arrivalStatus: true,
-        });
-        this.componentDidMount();
+        this._isMounted &&
+          this.setState({
+            arrivalStatus: true,
+          });
+        this._isMounted && this.componentDidMount();
       })
       .catch((err) => {
         console.log(err.toString());
       });
   };
+
   joinEvent = () => {
     fire
       .firestore()
@@ -102,7 +104,7 @@ export default class VolunteerHome extends Component {
       .where("volunteerID", "==", fire.auth().currentUser.uid.toString())
       .get()
       .then((sub) => {
-        if (sub.docs.length > 0) {
+        if (sub.docs.length > 0 && this._isMounted) {
           return Alert.alert("Already a volunteer!");
         } else {
           fire
@@ -122,14 +124,15 @@ export default class VolunteerHome extends Component {
             })
             .then(() => {
               Alert.alert("Event Joined Successfully!");
-              this.setState({
-                status: true,
-                arrivalStatus: false,
+              this._isMounted &&
+                this.setState({
+                  status: true,
+                  arrivalStatus: false,
 
-                refreshing: false,
-              });
+                  refreshing: false,
+                });
 
-              this.componentDidMount();
+              this._isMounted && this.componentDidMount();
             })
             .catch((err) => {
               console.log(err.toString());
@@ -153,15 +156,16 @@ export default class VolunteerHome extends Component {
       .delete()
       .then(() => {
         Alert.alert("You are removed as a volunteer!");
-        this.setState({
-          data: [],
-          eventID: "",
-          status: false,
-          arrivalStatus: false,
-          volunteerCompletedEvents: [],
-          refreshing: false,
-        });
-        this.componentDidMount();
+        this._isMounted &&
+          this.setState({
+            data: [],
+            eventID: "",
+            status: false,
+            arrivalStatus: false,
+            volunteerCompletedEvents: [],
+            refreshing: false,
+          });
+        this._isMounted && this.componentDidMount();
       })
       .catch((err) => {
         console.log(err.toString());
@@ -177,7 +181,7 @@ export default class VolunteerHome extends Component {
       .where("eventStatus", "==", "completed")
       .get()
       .then((querySnapshot) => {
-        if (querySnapshot.docs.length > 0) {
+        if (querySnapshot.docs.length > 0 && this._isMounted) {
           var results = [];
           var data = [];
           querySnapshot.forEach((doc) => {
@@ -191,25 +195,27 @@ export default class VolunteerHome extends Component {
               .doc(fire.auth().currentUser.uid.toString())
               .get()
               .then((doc_1) => {
-                if (doc_1.exists) {
+                if (doc_1.exists && this._isMounted) {
                   data.push(doc.data());
                 }
               });
             results.push(docRef);
           });
 
-          this.setState({
-            volunteerCompletedEvents: data,
-          });
+          this._isMounted &&
+            this.setState({
+              volunteerCompletedEvents: data,
+            });
           return Promise.all(results);
         }
       })
 
       .then(() => {
-        this.setState({
-          refreshing: false,
-          loading: false,
-        });
+        this._isMounted &&
+          this.setState({
+            refreshing: false,
+            loading: false,
+          });
       })
       .catch(function (error) {
         console.log("Error getting documents: ", error);
@@ -227,7 +233,7 @@ export default class VolunteerHome extends Component {
       .where("eventStatus", "==", "current")
       .get()
       .then(async (sub) => {
-        if (sub.docs.length > 0) {
+        if (sub.docs.length > 0 && this._isMounted) {
           const data = [];
           sub.forEach((doc) => {
             const x = doc.data();
@@ -235,11 +241,12 @@ export default class VolunteerHome extends Component {
             eventID = doc.id.toString();
             data.push(x);
           });
-          this.setState({
-            eventID: eventID,
+          this._isMounted &&
+            this.setState({
+              eventID: eventID,
 
-            data: data,
-          });
+              data: data,
+            });
         } else {
           await fire
             .firestore()
@@ -249,7 +256,7 @@ export default class VolunteerHome extends Component {
             .where("eventStatus", "==", "paused")
             .get()
             .then((subdoc) => {
-              if (subdoc.docs.length > 0) {
+              if (subdoc.docs.length > 0 && this._isMounted) {
                 console.log("else bhitra");
                 const data_1 = [];
                 subdoc.forEach((doc_1) => {
@@ -258,10 +265,11 @@ export default class VolunteerHome extends Component {
                   eventID = doc_1.id.toString();
                   data_1.push(x);
                 });
-                this.setState({
-                  eventID: eventID,
-                  data: data_1,
-                });
+                this._isMounted &&
+                  this.setState({
+                    eventID: eventID,
+                    data: data_1,
+                  });
               }
             })
             .catch((err) => {
@@ -271,7 +279,7 @@ export default class VolunteerHome extends Component {
       })
       .then(() => {
         console.log(this.state.data);
-        if (this.state.eventID != "") {
+        if (this.state.eventID != "" && this._isMounted) {
           this.statusCheck();
         } else {
           this.getCompletedEvents();
@@ -423,16 +431,10 @@ export default class VolunteerHome extends Component {
                     </Text>
                   </TouchableOpacity>
                 )}
-
-                <Text
-                  style={{
-                    fontSize: 15,
-                    color: "gray",
-                    alignSelf: "flex-end",
-                    margin: "2%",
-                  }}
-                >
-                  Pull to Refresh
+              </View>
+              <View style={{ alignItems: "center", marginBottom: "5%" }}>
+                <Text style={{ fontSize: 15, color: "gray" }}>
+                  Pull to refresh
                 </Text>
               </View>
 
@@ -616,7 +618,7 @@ export default class VolunteerHome extends Component {
                                         ></Icon>
                                       ) : (
                                         <Icon
-                                          name="check-circle"
+                                          name="times-circle"
                                           type="font-awesome"
                                           color="red"
                                           size={30}
@@ -644,7 +646,7 @@ export default class VolunteerHome extends Component {
                                         ></Icon>
                                       ) : (
                                         <Icon
-                                          name="check-circle"
+                                          name="times-circle"
                                           type="font-awesome"
                                           color="red"
                                           size={30}
@@ -678,12 +680,17 @@ export default class VolunteerHome extends Component {
                           >
                             {this.state.arrivalStatus && this.state.status ? (
                               <View
-                                style={{ margin: "5%", flexDirection: "row" }}
+                                style={{
+                                  margin: "5%",
+                                  flexDirection: "row",
+                                  justifyContent: "space-between",
+                                }}
                               >
                                 <View
                                   style={{
                                     flexDirection: "row",
                                     marginLeft: "5%",
+                                    alignItems: "center",
                                   }}
                                 >
                                   <Text style={styles.headerText}>

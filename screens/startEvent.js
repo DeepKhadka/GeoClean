@@ -44,6 +44,16 @@ function formateTime(date) {
 }
 
 export default class StartEvent extends Component {
+  _isMounted = false;
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
+  componentDidMount() {
+    this._isMounted = true;
+  }
+
   state = {
     eventName: "",
     eventDate: "",
@@ -54,17 +64,17 @@ export default class StartEvent extends Component {
     visibility: false,
   };
   showDatePicker = () => {
-    this.setState({ visibility: true });
+    this._isMounted && this.setState({ visibility: true });
   };
 
   hideDatePicker = () => {
-    this.setState({ visibility: false });
+    this._isMounted && this.setState({ visibility: false });
   };
 
   handleConfirm = (datetime) => {
-    this.setState({ eventDate: formatDate(datetime) });
-    this.setState({ eventTime: formateTime(datetime) });
-    this.hideDatePicker();
+    this._isMounted && this.setState({ eventDate: formatDate(datetime) });
+    this._isMounted && this.setState({ eventTime: formateTime(datetime) });
+    this._isMounted && this.hideDatePicker();
     console.log(this.state.eventDate);
     console.log(this.state.eventTime);
   };
@@ -102,7 +112,7 @@ export default class StartEvent extends Component {
       this.state.eventTime == "" ||
       this.state.eventDate == "" ||
       this.state.eventDescription == "" ||
-      this.state.volunteers == 0
+      this.state.volunteers == "0"
     ) {
       Alert.alert("Please fill all the fields!");
     } else {
@@ -114,7 +124,7 @@ export default class StartEvent extends Component {
         .where("eventStatus", "==", "current")
         .get()
         .then((snapshot) => {
-          if (snapshot.empty) {
+          if (snapshot.empty && this._isMounted) {
             fire
               .firestore()
               .collection("ADMIN")
@@ -123,7 +133,7 @@ export default class StartEvent extends Component {
               .where("eventStatus", "==", "paused")
               .get()
               .then((snap) => {
-                if (snap.empty) {
+                if (snap.empty && this._isMounted) {
                   return this.startevent();
                 } else {
                   Alert.alert("Ongoing Event!");
@@ -135,7 +145,6 @@ export default class StartEvent extends Component {
         })
         .catch((err) => {
           console.log(err.toString());
-          //Alert.alert(err.toString())
         });
     }
   };
@@ -189,7 +198,7 @@ export default class StartEvent extends Component {
                 onChangeText={(val) => {
                   this.setState({ eventName: val });
                 }}
-                test={this.state.eventName}
+                value={this.state.eventName}
               />
             </View>
             <DateTimePickerModal
@@ -207,9 +216,9 @@ export default class StartEvent extends Component {
                 style={styles.textInput}
                 placeholderTextColor="black"
                 onChangeText={(val) => {
-                  this.setState({ eventAdress: val });
+                  this.setState({ eventAddress: val });
                 }}
-                test={this.state.eventName}
+                value={this.state.eventAddress}
               />
             </View>
             <View style={styles.defaultPlace}>
@@ -222,7 +231,7 @@ export default class StartEvent extends Component {
                 onChangeText={(val) => {
                   this.setState({ volunteers: val });
                 }}
-                test={this.state.eventName}
+                value={this.state.volunteers}
               />
             </View>
             <View style={styles.desInput}>
@@ -234,7 +243,7 @@ export default class StartEvent extends Component {
                 onChangeText={(val) => {
                   this.setState({ eventDescription: val });
                 }}
-                test={this.state.eventName}
+                value={this.state.eventDescription}
               />
             </View>
             <TouchableOpacity

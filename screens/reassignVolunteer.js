@@ -26,6 +26,8 @@ import ModalSelector from "react-native-modal-selector";
 import { borderBottom, typography } from "styled-system";
 
 export default class ReassignVolunteers extends Component {
+  _isMounted = false;
+
   state = {
     userId: "",
     Zone: 0,
@@ -149,6 +151,7 @@ export default class ReassignVolunteers extends Component {
     });
   };
   componentDidMount() {
+    this._isMounted = true;
     this.setState(
       {
         leader: this.props.route.params.leader,
@@ -161,6 +164,10 @@ export default class ReassignVolunteers extends Component {
         });
       }
     );
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   render() {

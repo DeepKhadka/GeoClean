@@ -147,7 +147,9 @@ function authStack() {
           }}
         />
         <Stack.Screen name="Signup" component={Signup} />
-        <Stack.Screen name="ForgotPassword" component={ForgotPass} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPass} options={{
+        }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

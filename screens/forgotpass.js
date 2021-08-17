@@ -11,93 +11,87 @@ import {
   ScrollView,
   ToastAndroid,
   TextInput,
-  ImageBackground
+  ImageBackground,
 } from "react-native";
 import fire from "../database/firebase";
 
 import { Icon } from "react-native-elements";
+import { isMoment } from "moment";
 
 export default class ForgotPassword extends Component {
+  _isMounted = false;
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+  componentDidMount() {
+    this._isMounted = true;
+  }
   state = {
     email: "",
   };
 
   handleReset = () => {
-    fire
-      .auth()
-      .sendPasswordResetEmail(this.state.email)
-      .then(() => {
-        ToastAndroid.show(
-          "Password reset email sent successfully.",
-          ToastAndroid.LONG
-        );
-        this.props.navigation.goBack();
-      })
-      .catch((err) => {
-        Alert.alert(err.toString());
-      });
+    this._isMounted
+      ? fire
+          .auth()
+          .sendPasswordResetEmail(this.state.email)
+          .then(() => {
+            alert("Password reset email sent!");
+            this.props.navigation.goBack();
+          })
+          .catch((err) => {
+            Alert.alert(err.toString());
+          })
+      : null;
   };
 
   render() {
     return (
       <ImageBackground
-      source={{
-        uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
-      }}
-      style={styles.backgroundStyle}
-    >
-      <KeyboardAvoidingView
-        style={{
-          flex: 1,
-          
+        source={{
+          uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
         }}
-        enabled={true}
+        style={styles.backgroundStyle}
       >
-        <View style={{flex:1,alignItems:"center"}}>
-        <View style={styles.defaultPlace}>
-            <Icon
-              name="envelope"
-              type="font-awesome"
-              size={30}
-      
-            ></Icon>
-            <TextInput
-              placeholder="Email Address"
-             
-              style={styles.textInput}
-              placeholderTextColor="black"
-              autoCapitalize="none"
-              onChangeText={(val) => {
-                this.setState({ email: val });
+        <KeyboardAvoidingView
+          style={{
+            flex: 1,
+          }}
+          enabled={true}
+        >
+          <View style={{ flex: 1, alignItems: "center" }}>
+            <View style={styles.defaultPlace}>
+              <Icon name="envelope" type="font-awesome" size={30}></Icon>
+              <TextInput
+                placeholder="Email Address"
+                style={styles.textInput}
+                placeholderTextColor="black"
+                autoCapitalize="none"
+                onChangeText={(val) => {
+                  this.setState({ email: val });
+                }}
+                test={this.state.eventName}
+              />
+            </View>
+            <TouchableOpacity
+              style={{
+                margin: "5%",
+                padding: "2%",
+                borderRadius: 10,
+                justifyContent: "center",
+                alignItems: "center",
+                width: "50%",
+
+                backgroundColor: " rgba(0, 100, 0, 0.8)",
+                borderBottom: 2,
               }}
-              test={this.state.eventName}
-            />
+              onPress={this.handleReset}
+            >
+              <Text style={{ fontWeight: "bold", fontSize: 18 }}>Reset</Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity
-                        style={{
-                          margin: "5%",
-                          padding: "2%",
-                          borderRadius: 10,
-                          justifyContent: "center",
-                          alignItems:'center',
-                          width:"50%",
-
-                          backgroundColor: " rgba(0, 100, 0, 0.8)",
-                          borderBottom: 2,
-                        }}
-                        onPress={this.handleReset}
-                      >
-
-                        <Text style={{ fontWeight: "bold", fontSize: 18 }}>
-                         Reset
-                        </Text>
-                      </TouchableOpacity>
-       
-          
-          
-        </View>
-       
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
       </ImageBackground>
     );
   }
@@ -109,23 +103,22 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "black",
   },
-  backgroundStyle:{
-    height:"100%",
-    width:"100%"
+  backgroundStyle: {
+    height: "100%",
+    width: "100%",
   },
   textInput: {
     height: "100%",
     width: "80%",
-   
 
     justifyContent: "center",
     borderRadius: 20,
     alignContent: "center",
     marginLeft: "5%",
-    fontWeight:'bold',
-    fontSize:15
+    fontWeight: "bold",
+    fontSize: 15,
   },
-  
+
   defaultPlace: {
     flexDirection: "row",
     backgroundColor: " rgba(0, 115, 189, 0.3);",

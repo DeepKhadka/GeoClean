@@ -10,7 +10,7 @@ import {
   FlatList,
   Switch,
   TextInput,
-  ImageBackground
+  ImageBackground,
 } from "react-native";
 import fire from "../database/firebase";
 import {
@@ -55,27 +55,39 @@ export default class AssignVolunteer extends Component {
   }
 
   handleRefresh = () => {
-    this.setState(
-      {
-        refreshing: true,
-      },
-      () => {
-        this.componentDidMount();
-      }
-    );
+    this._isMounted &&
+      this.setState(
+        {
+          refreshing: true,
+
+          data: null,
+          eventID: "",
+          volunteers: null,
+
+          selected: {},
+          pickerText: {},
+          status: true,
+          tempStatus: false,
+        },
+        () => {
+          this.componentDidMount();
+        }
+      );
   };
 
   handleChange = (index) => {
-    this.setState({
-      selected: index,
-    });
+    this._isMounted &&
+      this.setState({
+        selected: index,
+      });
   };
 
   getCurrentEvent = () => {
     var eventID;
-    this.setState({
-      eventID: "",
-    });
+    this._isMounted &&
+      this.setState({
+        eventID: "",
+      });
 
     fire
       .firestore()
@@ -85,14 +97,15 @@ export default class AssignVolunteer extends Component {
       .where("eventStatus", "==", "current")
       .get()
       .then(async (sub) => {
-        if (sub.docs.length > 0) {
+        if (sub.docs.length > 0 && this._isMounted) {
           const data = [];
           sub.forEach((doc) => {
             eventID = doc.id.toString();
           });
-          this.setState({
-            eventID: eventID,
-          });
+          this._isMounted &&
+            this.setState({
+              eventID: eventID,
+            });
         } else {
           await fire
             .firestore()
@@ -102,15 +115,16 @@ export default class AssignVolunteer extends Component {
             .where("eventStatus", "==", "paused")
             .get()
             .then((subdoc) => {
-              if (subdoc.docs.length > 0) {
+              if (subdoc.docs.length > 0 && this._isMounted) {
                 console.log("else bhitra");
                 const data_1 = [];
                 subdoc.forEach((doc_1) => {
                   eventID = doc_1.id.toString();
                 });
-                this.setState({
-                  eventID: eventID,
-                });
+                this._isMounted &&
+                  this.setState({
+                    eventID: eventID,
+                  });
               }
             })
             .catch((err) => {
@@ -120,12 +134,13 @@ export default class AssignVolunteer extends Component {
       })
       .then(() => {
         if (this.state.eventID == "") {
-          this.setState({
-            data: [],
-            refreshing: false,
-          });
+          this._isMounted &&
+            this.setState({
+              data: [],
+              refreshing: false,
+            });
         } else {
-          this.getVolunteersInfo();
+          this._isMounted && this.getVolunteersInfo();
         }
       })
       .catch((err) => {
@@ -182,14 +197,13 @@ export default class AssignVolunteer extends Component {
         }
       )
       .then(() => {
-        this.setState({
-          data: data,
-          refreshing: false,
-        });
+        this._isMounted &&
+          this.setState({
+            data: data,
+            refreshing: false,
+          });
       })
-      .then(() => {
-        console.log(this.state.data);
-      })
+
       .catch(function (error) {
         console.log("Error getting documents: ", error);
       });
@@ -207,7 +221,7 @@ export default class AssignVolunteer extends Component {
 
   componentDidMount() {
     this._isMounted = true;
-    console.log(this.props.route.params.refresh)
+
     this.getCurrentEvent();
   }
 
@@ -220,100 +234,111 @@ export default class AssignVolunteer extends Component {
 
     return (
       <ImageBackground
-      source={{
-        uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
-      }}
-      style={styles.backgroundStyle}
-    >
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={{flexDirection:'row'}}>
-          <Text style={styles.headerText}>{this.props.route.params.eventName}</Text>
-        </View>
-        {this.state.data ? (
-          <FlatList
-            data={this.state.data}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate("ReassignVolunteers", {
-                    itemId: item.id,
-                    fname: item.fName,
-                    lname: item.lName,
-                    email: item.email,
-                    currentEventID: this.state.eventID,
-                    status:item.status,
-                    leader:item.leader,
-                    zone:item.zoneNumber
-                  });
-                }}
-                style={{
-                  margin: "5%",
-                  padding: "2%",
-                  borderRadius: 10,
+        source={{
+          uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
+        }}
+        style={styles.backgroundStyle}
+      >
+        <SafeAreaView style={{ flex: 1 }}>
+          <View style={{ flexDirection: "row" }}>
+            <Text style={styles.headerText}>
+              {this.props.route.params.eventName}
+            </Text>
+          </View>
+          <View style={{ alignItems: "center" }}>
+            <Text style={{ fontSize: 15, color: "gray" }}>Pull to refresh</Text>
+          </View>
+          {this.state.data ? (
+            <FlatList
+              data={this.state.data}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate("ReassignVolunteers", {
+                      itemId: item.id,
+                      fname: item.fName,
+                      lname: item.lName,
+                      email: item.email,
+                      currentEventID: this.state.eventID,
+                      status: item.status,
+                      leader: item.leader,
+                      zone: item.zoneNumber,
+                    });
+                  }}
+                  style={{
+                    margin: "5%",
+                    padding: "2%",
+                    borderRadius: 10,
 
-                  backgroundColor: "rgba(0, 0, 0, 0.1)",
-            
-                
-                }}
-              >
-                <View>
-                  <Text style={styles.headerText}>
-                    {item.fName} {item.lName}
-                  </Text>
-                  <View style={styles.rowView}>
-                    <Text style={styles.text}>Status</Text>
+                    backgroundColor: "rgba(0, 0, 0, 0.1)",
+                  }}
+                >
+                  <View>
+                    <Text style={styles.headerText}>
+                      {item.fName} {item.lName}
+                    </Text>
+                    <View style={styles.rowView}>
+                      <Text style={styles.text}>Status</Text>
 
-                    {item.status==true ?<Icon
-                      name="check-circle"
-                      type="font-awesome"
-                      color="green"
-                      onPress={this.iconPress}
-                      size={30}
-                      margin="2%"
-                    ></Icon> :<Icon
-                      name="times-circle"
-                      type="font-awesome"
-                      color="red"
-                      onPress={this.iconPress}
-                      size={30}
-                      margin="2%"
-                    ></Icon>}
-                    
-                    <Text style={styles.text}>Leader</Text>
-                   { item.leader==true ?<Icon
-                      name="check-circle"
-                      type="font-awesome"
-                      color="green"
-                      onPress={this.iconPress}
-                      size={30}
-                      margin="2%"
-                    ></Icon> :<Icon
-                      name="times-circle"
-                      type="font-awesome"
-                      color="red"
-                      onPress={this.iconPress}
-                      size={30}
-                      margin="2%"
-                    ></Icon>}
-                    
-                    <Text style={styles.text}>Zone {item.zoneNumber}</Text>
+                      {item.status == true ? (
+                        <Icon
+                          name="check-circle"
+                          type="font-awesome"
+                          color="green"
+                          onPress={this.iconPress}
+                          size={30}
+                          margin="2%"
+                        ></Icon>
+                      ) : (
+                        <Icon
+                          name="times-circle"
+                          type="font-awesome"
+                          color="red"
+                          onPress={this.iconPress}
+                          size={30}
+                          margin="2%"
+                        ></Icon>
+                      )}
+
+                      <Text style={styles.text}>Leader</Text>
+                      {item.leader == true ? (
+                        <Icon
+                          name="check-circle"
+                          type="font-awesome"
+                          color="green"
+                          onPress={this.iconPress}
+                          size={30}
+                          margin="2%"
+                        ></Icon>
+                      ) : (
+                        <Icon
+                          name="times-circle"
+                          type="font-awesome"
+                          color="red"
+                          onPress={this.iconPress}
+                          size={30}
+                          margin="2%"
+                        ></Icon>
+                      )}
+
+                      <Text style={styles.text}>Zone {item.zoneNumber}</Text>
+                    </View>
                   </View>
-                </View>
-              </TouchableOpacity>
-            )}
-            keyExtractor={(item) => item.email}
-            ListEmptyComponent={this.emptyComponent}
-            refreshing={this.state.refreshing}
-            onRefresh={this.handleRefresh}
-          />
-        ) : (
-          <NativeBaseProvider>
-            <Center flex={1}>
-              <Spinner color="blue.500" />
-            </Center>
-          </NativeBaseProvider>
-        )}
-      </SafeAreaView>
+                </TouchableOpacity>
+              )}
+              keyExtractor={(item) => item.email}
+              ListEmptyComponent={this.emptyComponent}
+              refreshing={this.state.refreshing}
+              onRefresh={this.handleRefresh}
+            />
+          ) : (
+            <NativeBaseProvider>
+              <Center flex={1}>
+                <Spinner color="blue.500" />
+              </Center>
+            </NativeBaseProvider>
+          )}
+        </SafeAreaView>
       </ImageBackground>
     );
   }

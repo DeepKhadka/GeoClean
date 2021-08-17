@@ -26,6 +26,8 @@ import Constants from "expo-constants";
 import ModalSelector from "react-native-modal-selector";
 
 export default class ReportObject extends Component {
+  _isMounted = false;
+
   state = {
     userId: "",
     Zone: "",
@@ -56,19 +58,24 @@ export default class ReportObject extends Component {
       }
 
       let location = await Location.getCurrentPositionAsync({});
-      this.setState(
-        {
-          latitude: location.coords.latitude.toString(),
-          longitude: location.coords.longitude.toString(),
-        },
-        this.handleReport
-      );
+      this._isMounted &&
+        this.setState(
+          {
+            latitude: location.coords.latitude.toString(),
+            longitude: location.coords.longitude.toString(),
+          },
+          this.handleReport
+        );
     })();
   };
 
   componentDidMount = () => {
+    this._isMounted = true;
     console.log(this.props.route.params.ID);
   };
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
 
   pickImage = async () => {
     if (Platform.OS !== "web") {
@@ -86,20 +93,17 @@ export default class ReportObject extends Component {
     });
 
     if (!result.cancelled) {
-      this.setState({ resultUri: result.uri });
+      this._isMounted && this.setState({ resultUri: result.uri });
       console.log("State");
       // console.log(this.state.resultUri);
     }
   };
 
-  handlesignout = () => {
-    fire.auth().signOut();
-  };
-
   setLocation = (value) => {
-    this.setState({
-      location: value,
-    });
+    this._isMounted &&
+      this.setState({
+        location: value,
+      });
   };
 
   checkEmpty = () => {
@@ -138,9 +142,10 @@ export default class ReportObject extends Component {
         eventID: this.props.route.params.ID,
       })
       .then(() => {
-        this.setState({
-          loading: false,
-        });
+        this._isMounted &&
+          this.setState({
+            loading: false,
+          });
 
         this.props.navigation.goBack();
       })
@@ -172,8 +177,8 @@ export default class ReportObject extends Component {
 
   handleImagePicker = () => {
     Alert.alert(
-      "Media",
-      "Please Select ",
+      "Select Media",
+      "",
 
       [
         {
@@ -188,14 +193,18 @@ export default class ReportObject extends Component {
             this.pickImage();
           },
         },
-      ]
+      ],
+      {
+        cancelable: true,
+      }
     );
   };
 
   uploadImage = async () => {
-    this.setState({
-      loading: true,
-    });
+    this._isMounted &&
+      this.setState({
+        loading: true,
+      });
     const blob = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.onload = function () {
@@ -215,25 +224,27 @@ export default class ReportObject extends Component {
       throw error;
     });
 
-    this.setState(
-      {
-        downloadUri: url,
-      },
-      this._getLocation
-    );
+    this._isMounted &&
+      this.setState(
+        {
+          downloadUri: url,
+        },
+        this._getLocation
+      );
   };
 
   onPickerSelect = (value) => {
-    this.setState({
-      Zone: value,
-      zoneplaceHolder: "Zone " + value,
-    });
+    this._isMounted &&
+      this.setState({
+        Zone: value,
+        zoneplaceHolder: "Zone " + value,
+      });
   };
 
   render() {
     const { navigation } = this.props;
     const data = [
-      { key: 1, section: true, label: "Zone 1" },
+      { key: 1, label: "Zone 1" },
       { key: 2, label: "Zone 2" },
       { key: 3, label: "Zone 3" },
       { key: 4, label: "Zone 4" },
@@ -248,7 +259,7 @@ export default class ReportObject extends Component {
           }}
           style={styles.backgroundStyle}
         >
-          {this.state.loading ? (
+          {this.state.loading && this._isMounted ? (
             <Modal animationType="fade" transparent={true}>
               <View
                 style={{
@@ -302,8 +313,6 @@ export default class ReportObject extends Component {
                 style={{
                   marginTop: "2%",
                   marginLeft: "5%",
-                  borderRadius: 5,
-                  borderBottomWidth: 2,
                 }}
                 initValueTextStyle={{ color: "black", fontWeight: "bold" }}
                 onChange={(option) => {
@@ -313,9 +322,8 @@ export default class ReportObject extends Component {
               <TouchableOpacity
                 style={{
                   margin: "2%",
-                  backgroundColor: "rgba(36,160,237,0.8)",
-                  borderRadius: 10,
-                  borderBottomWidth: 2,
+                  backgroundColor: "rgba(36,150,255,0.7)",
+                  borderRadius: 5,
                 }}
                 onPress={this.handleImagePicker}
               >
@@ -324,6 +332,7 @@ export default class ReportObject extends Component {
                     flexDirection: "row",
                     justifyContent: "center",
                     alignItems: "center",
+                    margin: "1%",
                   }}
                 >
                   <Icon
@@ -353,10 +362,8 @@ export default class ReportObject extends Component {
                   <View style={{ alignItems: "center" }}>
                     <TouchableOpacity
                       style={{
-                        margin: "2%",
                         backgroundColor: "rgba(36,160,237,0.8)",
                         borderRadius: 10,
-                        borderBottomWidth: 2,
                       }}
                       onPress={this.checkEmpty}
                     >

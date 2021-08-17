@@ -17,6 +17,8 @@ import DefaultCard from "../assets/Defaultcardview";
 import ModalSelector from "react-native-modal-selector";
 
 export default class EventReport extends Component {
+  _isMounted = false;
+
   state = {
     data_1: [],
     data_2: [],
@@ -25,8 +27,9 @@ export default class EventReport extends Component {
     data_5: [],
     data_6: [],
     data: "",
-    zone: 0,
-    zoneplaceHolder: "Select a Zone",
+    zone: 1,
+    zoneplaceHolder: "Zone 1",
+    refreshing: false,
   };
 
   handleFilter = (val) => {
@@ -60,15 +63,16 @@ export default class EventReport extends Component {
       })
       .then(() => {
         console.log("ACKNOWLEDGED!");
-        this.setState({
-          data_6: [],
-          data_1: [],
-          data_2: [],
-          data_3: [],
-          data_4: [],
-          data_5: [],
-        });
-        this.componentDidMount();
+        this._isMounted &&
+          this.setState({
+            data_6: [],
+            data_1: [],
+            data_2: [],
+            data_3: [],
+            data_4: [],
+            data_5: [],
+          });
+        this._isMounted && this.handleRefresh();
       })
       .catch((err) => {
         console.log(err.toString());
@@ -82,21 +86,23 @@ export default class EventReport extends Component {
       .where("status", "==", false)
       .get()
       .then((querySnapshot) => {
-        if (!querySnapshot.empty) {
+        if (!querySnapshot.empty && this._isMounted) {
           const data = [];
           querySnapshot.forEach((doc) => {
             const x = doc.data();
             x.id = doc.id;
             data.push(x);
           });
-          this.setState({
-            data_1: data,
-          });
+          this._isMounted &&
+            this._isMounted &&
+            this.setState({
+              data_1: data,
+            });
         }
       })
       .then(() => {
         console.log(this.state.data_1);
-        this.getZone2();
+        this._isMounted && this.getZone2();
       })
       .catch((err) => {
         console.log(err.toString());
@@ -110,21 +116,23 @@ export default class EventReport extends Component {
       .where("status", "==", false)
       .get()
       .then((querySnapshot) => {
-        if (!querySnapshot.empty) {
+        if (!querySnapshot.empty && this._isMounted) {
           const data = [];
           querySnapshot.forEach((doc) => {
             const x = doc.data();
             x.id = doc.id;
             data.push(x);
           });
-          this.setState({
-            data_2: data,
-          });
+          this._isMounted &&
+            this._isMounted &&
+            this.setState({
+              data_2: data,
+            });
         }
       })
       .then(() => {
         console.log(this.state.data_2);
-        this.getZone3();
+        this._isMounted && this.getZone3();
       })
       .catch((err) => {
         console.log(err.toString());
@@ -138,21 +146,23 @@ export default class EventReport extends Component {
       .where("status", "==", false)
       .get()
       .then((querySnapshot) => {
-        if (!querySnapshot.empty) {
+        if (!querySnapshot.empty && this._isMounted) {
           const data = [];
           querySnapshot.forEach((doc) => {
             const x = doc.data();
             x.id = doc.id;
             data.push(x);
           });
-          this.setState({
-            data_3: data,
-          });
+          this._isMounted &&
+            this._isMounted &&
+            this.setState({
+              data_3: data,
+            });
         }
       })
       .then(() => {
         console.log(this.state.data_3);
-        this.getZone4();
+        this._isMounted && this.getZone4();
       })
       .catch((err) => {
         console.log(err.toString());
@@ -173,14 +183,15 @@ export default class EventReport extends Component {
             x.id = doc.id;
             data.push(x);
           });
-          this.setState({
-            data_4: data,
-          });
+          this._isMounted &&
+            this.setState({
+              data_4: data,
+            });
         }
       })
       .then(() => {
         console.log(this.state.data_4);
-        this.getZone5();
+        this._isMounted && this.getZone5();
       })
       .catch((err) => {
         console.log(err.toString());
@@ -194,21 +205,22 @@ export default class EventReport extends Component {
       .where("status", "==", false)
       .get()
       .then((querySnapshot) => {
-        if (!querySnapshot.empty) {
+        if (!querySnapshot.empty && this._isMounted) {
           const data = [];
           querySnapshot.forEach((doc) => {
             const x = doc.data();
             x.id = doc.id;
             data.push(x);
           });
-          this.setState({
-            data_5: data,
-          });
+          this._isMounted &&
+            this.setState({
+              data_5: data,
+            });
         }
       })
       .then(() => {
         console.log(this.state.data_5);
-        this.getZone6();
+        this._isMounted && this.getZone6();
       })
       .catch((err) => {
         console.log(err.toString());
@@ -222,20 +234,25 @@ export default class EventReport extends Component {
       .where("status", "==", false)
       .get()
       .then((querySnapshot) => {
-        if (!querySnapshot.empty) {
+        if (!querySnapshot.empty && this._isMounted) {
           const data = [];
           querySnapshot.forEach((doc) => {
             const x = doc.data();
             x.id = doc.id;
             data.push(x);
           });
-          this.setState({
-            data_6: data,
-          });
+          this._isMounted &&
+            this.setState({
+              data_6: data,
+            });
         }
       })
       .then(() => {
         console.log(this.state.data_6);
+        this._isMounted &&
+          this.setState({
+            refreshing: false,
+          });
       })
       .catch((err) => {
         console.log(err.toString());
@@ -246,31 +263,63 @@ export default class EventReport extends Component {
   };
 
   componentDidMount() {
+    this._isMounted = true;
     this.getZone1();
   }
 
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
   onPickerSelect = (value, key) => {
-    this.setState(
-      {
-        zone: value,
-        zoneplaceHolder: "Zone " + value,
-      },
-      console.log(value)
-    );
+    this._isMounted &&
+      this.setState(
+        {
+          zone: value,
+          zoneplaceHolder: "Zone " + value,
+        },
+        console.log(value)
+      );
   };
   emptyComponent = () => {
     return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <View
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          marginTop: "7%",
+        }}
+      >
         <Text style={{ fontSize: 20, fontStyle: "italic", fontWeight: "bold" }}>
-          No Volunteers Signed Up Yet...
+          No reports on this Zone...
         </Text>
       </View>
     );
   };
+
+  handleRefresh = () => {
+    this.setState(
+      {
+        refreshing: true,
+
+        data_1: [],
+        data_2: [],
+        data_3: [],
+        data_4: [],
+        data_5: [],
+        data_6: [],
+      },
+      () => {
+        this.componentDidMount();
+      }
+    );
+  };
+
   render() {
     const { navigation } = this.props;
     const data = [
-      { key: 1, section: true, label: "Zone 1" },
+      { key: 1, label: "Zone 1" },
       { key: 2, label: "Zone 2" },
       { key: 3, label: "Zone 3" },
       { key: 4, label: "Zone 4" },
@@ -304,8 +353,13 @@ export default class EventReport extends Component {
                 this.onPickerSelect(option.key);
               }}
             />
+            <View style={{ alignItems: "center" }}>
+              <Text style={{ fontSize: 15, color: "gray" }}>
+                Pull to refresh
+              </Text>
+            </View>
           </View>
-          <View style={{ flex: 12 }}>
+          <View style={{ flex: 10 }}>
             {this.state.zone == 0 ? null : (
               <FlatList
                 data={this.handleFilter(this.state.zone)}
@@ -361,6 +415,9 @@ export default class EventReport extends Component {
                   </View>
                 )}
                 keyExtractor={(item) => item.id}
+                refreshing={this.state.refreshing}
+                onRefresh={this.handleRefresh}
+                ListEmptyComponent={this.emptyComponent}
               />
             )}
           </View>
