@@ -161,9 +161,7 @@ export default class StartEvent extends Component {
     const { navigation } = this.props;
     return (
       <ImageBackground
-        source={{
-          uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
-        }}
+      source={require("../assets/background.png")}
         style={styles.backgroundStyle}
       >
         <SafeAreaView style={styles.safeview}>

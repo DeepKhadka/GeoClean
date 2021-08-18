@@ -48,10 +48,9 @@ export default class ForgotPassword extends Component {
 
   render() {
     return (
+      
       <ImageBackground
-        source={{
-          uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
-        }}
+      source={require("../assets/background.png")}
         style={styles.backgroundStyle}
       >
         <KeyboardAvoidingView
@@ -93,6 +92,7 @@ export default class ForgotPassword extends Component {
           </View>
         </KeyboardAvoidingView>
       </ImageBackground>
+     
     );
   }
   1;
@@ -104,8 +104,9 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
   backgroundStyle: {
-    height: "100%",
-    width: "100%",
+   
+    flex:1,
+    
   },
   textInput: {
     height: "100%",
