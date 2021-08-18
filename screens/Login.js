@@ -13,6 +13,8 @@ import {
   KeyboardAvoidingView,
   ImageBackground,
 } from "react-native";
+import { Platform } from 'react-native';
+import { isIOS } from "react-native-elements/dist/helpers";
 
 import fire from "../database/firebase";
 import FloatingTextBox from "./FloatingScan";
@@ -34,9 +36,14 @@ export default class Login extends Component {
 
   render() {
     return (
-      <KeyboardAvoidingView style={{ flex: 1 }} enabled={true}>
+   
         <ScrollView contentContainerStyle={{ flexGrow: 1 }} style={{ flex: 1 }}>
+
+
+        <KeyboardAvoidingView style={{ flex: 1 }} enabled={true} behavior={Platform.OS==="ios"? 'padding':null}
+      > 
           <View>
+            
             <ImageBackground
               source={require("../assets/background.png")}
               style={styles.backgroundStyle}
@@ -129,8 +136,9 @@ export default class Login extends Component {
               </View>
             </ImageBackground>
           </View>
+          </KeyboardAvoidingView>
         </ScrollView>
-      </KeyboardAvoidingView>
+
     );
   }
   1;
