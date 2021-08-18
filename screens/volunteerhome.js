@@ -615,6 +615,7 @@ export default class VolunteerHome extends Component {
                                       backgroundColor: "rgba(0, 202, 78,0.6)",
                                       borderRadius: 15,
                                     }}
+                                    key={item.volunteerID}
                                     onPress={this.handleZoneCompleted}
                                   >
                                     <Icon
@@ -682,7 +683,7 @@ export default class VolunteerHome extends Component {
                             </View>
                           </View>
                           {this.state.status
-                            ? this.state.volunteer_info.map((item) => {
+                            ? this.state.volunteer_info.map((item, key) => {
                                 return (
                                   <View
                                     style={{

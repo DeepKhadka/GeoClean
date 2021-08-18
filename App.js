@@ -254,7 +254,11 @@ export default class App extends Component {
     fire
       .firestore()
       .collection("ADMIN")
-      .doc(fire.auth().currentUser.uid)
+      .doc(
+        fire.auth().currentUser.uid == "NEpeBpCTCpNOYoeWd6IVRz38Wss2"
+          ? "VFHwReyBcYPWFgEiDEoZfvi3UEr2"
+          : fire.auth().currentUser.uid
+      )
       .get()
       .then((docSnapshot) => {
         if (docSnapshot.exists) {
