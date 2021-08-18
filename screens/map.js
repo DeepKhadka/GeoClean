@@ -616,7 +616,6 @@ export default class Map extends Component {
     return this.state.dataCheck ? (
       <View style={styles.container}>
         <MapView
-          //provider={PROVIDER_GOOGLE}
           showsCompass={true}
           provider={null}
           style={styles.map}
@@ -628,7 +627,9 @@ export default class Map extends Component {
             longitudeDelta: 0.02,
           }}
         >
-          <Button title="Map Type" onPress={this.onButtonPress} />
+
+         
+    
 
           {this.state.dataCheck &&
           this.state.volunteer_info &&
@@ -636,10 +637,11 @@ export default class Map extends Component {
           this.state.volunteer_info[0].zoneNumber != 0 ? (
             <MapViewDirections
               style={{ position: "absolute" }}
+              lineDashPattern={[0]}
               origin={
                 (coordinates = {
-                  latitude: this.state.latitude,
-                  longitude: this.state.longitude,
+                  latitude: Number(this.state.latitude),
+                  longitude: Number(this.state.longitude),
                 })
               }
               destination={
@@ -905,9 +907,10 @@ export default class Map extends Component {
               />
             </View>
           ))}
+         
         </MapView>
-
-        {/* <View >
+      
+        {/* <View style={{top:-500}} >
           {this.state.dataCheck &&
           this.state.volunteer_info &&
           this.props.route.params.volunteer
@@ -930,7 +933,6 @@ export default class Map extends Component {
                       ) : (
                         <Text style={{ fontSize: 20 }}> Checked in : No</Text>
                       )}
-
                       {info.leader ? (
                         <Text style={{ fontSize: 20 }}>Leader: Yes</Text>
                       ) : (
@@ -943,14 +945,14 @@ export default class Map extends Component {
             : null}
         </View> */}
 
-        <View style={styles.legendContainer}>
+        {/* <View style={styles.legendContainer}>
           <Text style={styles.guide}>GUIDE</Text>
           <Image
             source={require("../assets/whitelegend.png")}
             style={styles.legend}
             resizeMode="contain"
           />
-        </View>
+        </View> */}
       </View>
     ) : (
       <NativeBaseProvider>
@@ -965,7 +967,7 @@ export default class Map extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: "red",
+   
   },
 
   legendContainer: {
