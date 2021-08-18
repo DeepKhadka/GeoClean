@@ -55,6 +55,12 @@ function drawerAdmin() {
       <DrawerAdmin.Screen
         name="AdminHome"
         component={AdminHome}
+        options={{
+          title: "Dashboard",
+          headerStyle: {
+            backgroundColor: "rgba(36,160,237,0.6)",
+          },
+        }}
       ></DrawerAdmin.Screen>
     </DrawerAdmin.Navigator>
   );
@@ -68,6 +74,12 @@ function drawerVolunteer() {
       <DrawerVolunteer.Screen
         name="VolunteerHome"
         component={VolunteerHome}
+        options={{
+          title: "Dashboard",
+          headerStyle: {
+            backgroundColor: "rgba(36,160,237,0.6)",
+          },
+        }}
       ></DrawerVolunteer.Screen>
     </DrawerVolunteer.Navigator>
   );
@@ -81,31 +93,83 @@ function adminhome() {
           name="Drawer"
           children={drawerAdmin}
           options={{
-            
             headerShown: false,
             headerStyle: { backgroundColor: "red" },
           }}
         />
-        <Stack.Screen name="AdminHome" component={AdminHome} options={{title:"DashBoard"}}/>
+        <Stack.Screen
+          name="AdminHome"
+          component={AdminHome}
+          options={{ title: "DashBoard" }}
+        />
         <Stack.Screen
           name="VolunteerManagement"
           component={VolunteerManagement}
         />
-        <Stack.Screen name="ZoneManagement" component={Map} 
-      
+        <Stack.Screen
+          name="ZoneManagement"
+          component={Map}
+          options={{
+            title: "Zones",
+            headerStyle: {
+              backgroundColor: "transparent",
+            },
+          }}
         />
         <Stack.Screen name="EventManagement" component={EventManagement} />
-        <Stack.Screen name="StartEvent" component={StartEvent} />
-        <Stack.Screen name="EventReport" component={EventReport} />
-        <Stack.Screen name="EventStatus" component={EventStatus} />
+        <Stack.Screen
+          name="StartEvent"
+          component={StartEvent}
+          options={{
+            title: "Start An Event",
+            headerStyle: {
+              backgroundColor: "rgba(36,160,237,0.6)",
+            },
+          }}
+        />
+        <Stack.Screen
+          name="EventReport"
+          component={EventReport}
+          options={{
+            title: "Objects Reported",
+            headerStyle: {
+              backgroundColor: "rgba(36,160,237,0.6)",
+            },
+          }}
+        />
+        <Stack.Screen
+          name="EventStatus"
+          component={EventStatus}
+          options={{
+            title: "Check-In Status",
+            headerStyle: {
+              backgroundColor: "rgba(36,160,237,0.6)",
+            },
+          }}
+        />
         <Stack.Screen name="LastEvent" component={LastEvent} />
-        <Stack.Screen name="AssignVolunteer" component={AsssignVolunteer} />
+        <Stack.Screen
+          name="AssignVolunteer"
+          component={AsssignVolunteer}
+          options={{
+            title: "Make Assignment",
+            headerStyle: {
+              backgroundColor: "rgba(36,160,237,0.6)",
+            },
+          }}
+        />
         <Stack.Screen name="RemoveVolunteer" component={RemoveVolunteer} />
         <Stack.Screen name="ZoneDetail" component={ZoneDetail} />
         <Stack.Screen name="CurrentEventAdmin" component={CurrentEventAdmin} />
         <Stack.Screen
           name="ReassignVolunteers"
           component={ReassignVolunteers}
+          options={{
+            title: "Change Assignment",
+            headerStyle: {
+              backgroundColor: "rgba(36,160,237,0.6)",
+            },
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>
@@ -128,7 +192,16 @@ function volunteerhome() {
         <Stack.Screen name="JoinEvent" component={JoinEvent} />
         <Stack.Screen name="CurrentEvent" component={CurrentEvent} />
         <Stack.Screen name="ReportOther" component={ReportOther} />
-        <Stack.Screen name="ReportObject" component={ReportObject} />
+        <Stack.Screen
+          name="ReportObject"
+          component={ReportObject}
+          options={{
+            title: "Report an Object",
+            headerStyle: {
+              backgroundColor: "rgba(36,160,237,0.6)",
+            },
+          }}
+        />
         <Stack.Screen name="ZONE" component={Map} />
       </Stack.Navigator>
     </NavigationContainer>
@@ -146,9 +219,25 @@ function authStack() {
             headerShown: false,
           }}
         />
-        <Stack.Screen name="Signup" component={Signup} />
-        <Stack.Screen name="ForgotPassword" component={ForgotPass} options={{
-        }}
+        <Stack.Screen
+          name="Signup"
+          component={Signup}
+          options={{
+            title: "SIGNUP",
+            headerStyle: {
+              backgroundColor: "rgba(36,160,237,0.6)",
+            },
+          }}
+        />
+        <Stack.Screen
+          name="ForgotPassword"
+          component={ForgotPass}
+          options={{
+            title: "Reset Password",
+            headerStyle: {
+              backgroundColor: "rgba(36,160,237,0.6)",
+            },
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>

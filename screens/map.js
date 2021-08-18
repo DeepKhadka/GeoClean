@@ -616,8 +616,6 @@ export default class Map extends Component {
     return this.state.dataCheck ? (
       <View style={styles.container}>
         <MapView
-          // provider={PROVIDER_GOOGLE}
-        
           showsCompass={true}
           provider={null}
           style={styles.map}

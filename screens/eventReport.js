@@ -30,6 +30,7 @@ export default class EventReport extends Component {
     zone: 1,
     zoneplaceHolder: "Zone 1",
     refreshing: false,
+    eventName: "",
   };
 
   handleFilter = (val) => {
@@ -329,30 +330,43 @@ export default class EventReport extends Component {
 
     return (
       <ImageBackground
-        source={{
-          uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
-        }}
+        source={require("../assets/background.png")}
         style={styles.backgroundStyle}
       >
         <SafeAreaView style={{ flex: 1 }}>
           <View style={{ flex: 1 }}>
-            <ModalSelector
-              data={data}
-              initValue={this.state.zoneplaceHolder}
+            <View
               style={{
-                width: "50%",
-                margin: "2%",
-                backgroundColor: "rgba(0, 0, 0, 0.2)",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                backgroundColor: "rgba(0, 115, 189, 0.3)",
               }}
-              initValueTextStyle={{
-                fontWeight: "bold",
-                color: "blue",
-                padding: "2%",
-              }}
-              onChange={(option) => {
-                this.onPickerSelect(option.key);
-              }}
-            />
+            >
+              <Text
+                style={{ fontSize: 18, fontWeight: "bold", marginLeft: "5%" }}
+              >
+                Select a Zone
+              </Text>
+              <ModalSelector
+                data={data}
+                initValue={this.state.zoneplaceHolder}
+                style={{
+                  width: "50%",
+                  margin: "2%",
+                  backgroundColor: "rgba(0, 0, 0, 0.2)",
+                }}
+                initValueTextStyle={{
+                  fontWeight: "bold",
+                  color: "blue",
+                  padding: "2%",
+                }}
+                onChange={(option) => {
+                  this.onPickerSelect(option.key);
+                }}
+              />
+            </View>
+
             <View style={{ alignItems: "center" }}>
               <Text style={{ fontSize: 15, color: "gray" }}>
                 Pull to refresh
@@ -365,14 +379,46 @@ export default class EventReport extends Component {
                 data={this.handleFilter(this.state.zone)}
                 renderItem={({ item, key }) => (
                   <View style={styles.flatView}>
-                    <Text style={styles.headerText}>{item.description}</Text>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        borderBottomWidth: 2,
+                      }}
+                    >
+                      <Text style={styles.headerText}>{item.eventName}</Text>
+
+                      <TouchableOpacity
+                        style={{
+                          margin: "5%",
+                          padding: "4%",
+                          borderRadius: 10,
+                          justifyContent: "center",
+
+                          backgroundColor: "rgba(50, 200, 100,0.5)",
+                          borderBottom: 2,
+                        }}
+                        onPress={() => {
+                          this.changeStatus(item.zone, item.id, item.eventID);
+                          alert("Report Acknowledged");
+                        }}
+                      >
+                        <Text style={{ fontWeight: "bold", fontSize: 14 }}>
+                          Acknowledge
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                    <Text style={{ fontSize: 18 }}>{item.description}</Text>
+
                     <View style={{ alignItems: "center" }}>
                       <Image
                         source={{ uri: item.imageUri }}
-                        style={{ height: 300, width: 300, margin: "2%" }}
+                        style={{ height: 300, width: "100%", margin: "2%" }}
                       ></Image>
                     </View>
-                    <View style={styles.rowView}>
+                    <View
+                      style={{ justifyContent: "center", alignItems: "center" }}
+                    >
                       <TouchableOpacity
                         style={{
                           margin: "5%",
@@ -389,26 +435,6 @@ export default class EventReport extends Component {
                       >
                         <Text style={{ fontWeight: "bold", fontSize: 18 }}>
                           See in Maps
-                        </Text>
-                      </TouchableOpacity>
-
-                      <TouchableOpacity
-                        style={{
-                          margin: "5%",
-                          padding: "2%",
-                          borderRadius: 10,
-                          justifyContent: "center",
-
-                          backgroundColor: "rgba(50, 200, 100,0.5)",
-                          borderBottom: 2,
-                        }}
-                        onPress={() => {
-                          this.changeStatus(item.zone, item.id, item.eventID);
-                          alert("Report Acknowledged");
-                        }}
-                      >
-                        <Text style={{ fontWeight: "bold", fontSize: 18 }}>
-                          Acknowledge
                         </Text>
                       </TouchableOpacity>
                     </View>

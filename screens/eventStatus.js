@@ -217,9 +217,7 @@ export default class EventStatus extends Component {
     ];
     return (
       <ImageBackground
-        source={{
-          uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
-        }}
+      source={require("../assets/background.png")}
         style={styles.backgroundStyle}
       >
         <SafeAreaView style={{ flex: 1 }}>
@@ -317,7 +315,7 @@ export default class EventStatus extends Component {
                   </View>
                 </View>
               )}
-              keyExtractor={(item) => item.eventID}
+              keyExtractor={(item) => item.id}
               refreshing={this.state.refreshing}
               onRefresh={this.handleRefresh}
               ListEmptyComponent={this.emptyComponent}

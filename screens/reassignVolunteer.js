@@ -38,22 +38,23 @@ export default class ReassignVolunteers extends Component {
   };
 
   removeVolunteer = () => {
-    fire
-      .firestore()
-      .collection("ADMIN")
-      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-      .collection("EVENT MANAGEMENT")
-      .doc(this.props.route.params.currentEventID.toString())
-      .collection("VOLUNTEERS")
-      .doc(this.props.route.params.itemId.toString())
-      .delete()
-      .then(() => {
-        Alert.alert("Volunteer removed!");
-        this.props.navigation.goBack();
-      })
-      .catch((err) => {
-        console.log(err.toString());
-      });
+    this._isMounted &&
+      fire
+        .firestore()
+        .collection("ADMIN")
+        .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+        .collection("EVENT MANAGEMENT")
+        .doc(this.props.route.params.currentEventID.toString())
+        .collection("VOLUNTEERS")
+        .doc(this.props.route.params.itemId.toString())
+        .delete()
+        .then(() => {
+          Alert.alert("Volunteer removed!");
+          this.props.navigation.goBack();
+        })
+        .catch((err) => {
+          console.log(err.toString());
+        });
   };
 
   checkLeaderStatus = () => {
@@ -62,6 +63,34 @@ export default class ReassignVolunteers extends Component {
     } else if (this.state.status == false && this.state.leader == true) {
       Alert.alert("A leader cannot be inactive!");
     } else if (this.state.leader == true) {
+      this._isMounted &&
+        fire
+          .firestore()
+          .collection("ADMIN")
+          .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+          .collection("EVENT MANAGEMENT")
+          .doc(this.props.route.params.currentEventID.toString())
+          .collection("VOLUNTEERS")
+          .where("leader", "==", true)
+          .where("zoneNumber", "==", this.state.Zone)
+          .get()
+          .then((sub) => {
+            if (sub.docs.length > 0 && this._isMounted) {
+              Alert.alert("Leader already assigned!");
+            } else {
+              this.onPressUpdate();
+            }
+          })
+          .catch((err) => {
+            console.log(err.toString());
+          });
+    } else {
+      this.onPressUpdate();
+    }
+  };
+
+  onPressUpdate = () => {
+    this._isMounted &&
       fire
         .firestore()
         .collection("ADMIN")
@@ -69,45 +98,19 @@ export default class ReassignVolunteers extends Component {
         .collection("EVENT MANAGEMENT")
         .doc(this.props.route.params.currentEventID.toString())
         .collection("VOLUNTEERS")
-        .where("leader", "==", true)
-        .where("zoneNumber", "==", this.state.Zone)
-        .get()
-        .then((sub) => {
-          if (sub.docs.length > 0) {
-            Alert.alert("Leader already assigned!");
-          } else {
-            this.onPressUpdate();
-          }
+        .doc(this.props.route.params.itemId.toString())
+        .update({
+          leader: this.state.leader,
+          status: this.state.status,
+          zoneNumber: this.state.Zone,
+        })
+        .then(() => {
+          Alert.alert("Assignment completed!");
+          this.props.navigation.goBack({ refresh: true });
         })
         .catch((err) => {
           console.log(err.toString());
         });
-    } else {
-      this.onPressUpdate();
-    }
-  };
-
-  onPressUpdate = () => {
-    fire
-      .firestore()
-      .collection("ADMIN")
-      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-      .collection("EVENT MANAGEMENT")
-      .doc(this.props.route.params.currentEventID.toString())
-      .collection("VOLUNTEERS")
-      .doc(this.props.route.params.itemId.toString())
-      .update({
-        leader: this.state.leader,
-        status: this.state.status,
-        zoneNumber: this.state.Zone,
-      })
-      .then(() => {
-        Alert.alert("Assignment completed!");
-        this.props.navigation.goBack({ refresh: true });
-      })
-      .catch((err) => {
-        console.log(err.toString());
-      });
   };
 
   iconPress = () => {
@@ -117,7 +120,7 @@ export default class ReassignVolunteers extends Component {
         onPress: () => {
           // console.log("Ask me later pressed")
 
-          this.removeVolunteer();
+          this._isMounted && this.removeVolunteer();
         },
       },
       {
@@ -128,27 +131,26 @@ export default class ReassignVolunteers extends Component {
     ]);
   };
 
-  handlesignout = () => {
-    fire.auth().signOut();
-  };
-
   toggleSwitch() {
-    this.setState({
-      leader: !this.state.leader,
-    });
+    this._isMounted &&
+      this.setState({
+        leader: !this.state.leader,
+      });
   }
 
   statusSwitch = () => {
-    this.setState({
-      status: !this.state.status,
-    });
+    this._isMounted &&
+      this.setState({
+        status: !this.state.status,
+      });
   };
 
   onPickerSelect = (value) => {
-    this.setState({
-      Zone: value,
-      zoneplaceHolder: "Zone " + value,
-    });
+    this._isMounted &&
+      this.setState({
+        Zone: value,
+        zoneplaceHolder: "Zone " + value,
+      });
   };
   componentDidMount() {
     this._isMounted = true;
@@ -177,7 +179,7 @@ export default class ReassignVolunteers extends Component {
     const lname = this.props.route.params.lname;
     const email = this.props.route.params.email;
     const data = [
-      { key: 1, section: true, label: "Zone 1" },
+      { key: 1, label: "Zone 1" },
       { key: 2, label: "Zone 2" },
       { key: 3, label: "Zone 3" },
       { key: 4, label: "Zone 4" },
@@ -187,9 +189,7 @@ export default class ReassignVolunteers extends Component {
 
     return (
       <ImageBackground
-        source={{
-          uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
-        }}
+        source={require("../assets/background.png")}
         style={styles.backgroundStyle}
       >
         <SafeAreaView style={styles.safeview}>

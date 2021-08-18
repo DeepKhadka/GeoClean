@@ -41,10 +41,55 @@ export default class VolunteerHome extends Component {
     past_pressed: false,
     eventName: "",
     volunteer_info: [],
+    zoneCompleted: false,
   };
   componentWillUnmount() {
     this._isMounted = false;
   }
+
+  handleZoneCompleted = () => {
+    Alert.alert(
+      "Mark Zone Complete",
+      "Are you sure ? You will not be able to undo it.",
+
+      [
+        {
+          text: "No",
+          onPress: () => {
+            console.log("No");
+          },
+        },
+        {
+          text: "Yes",
+          onPress: () => {
+            this._isMounted && this.zoneComplete();
+          },
+        },
+      ]
+    );
+  };
+
+  zoneComplete = async () => {
+    this._isMounted &&
+      (await fire
+        .firestore()
+        .collection("ADMIN")
+        .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+        .collection("EVENT MANAGEMENT")
+        .doc(this.state.eventID)
+        .collection("VOLUNTEERS")
+        .doc(fire.auth().currentUser.uid.toString())
+        .update({
+          zoneCompletion: true,
+        })
+        .then(() => {
+          this._isMounted &&
+            this.setState({
+              zoneCompleted: true,
+            });
+          this._isMounted && this.componentDidMount();
+        }));
+  };
 
   handleDelete = () => {
     Alert.alert(
@@ -61,234 +106,240 @@ export default class VolunteerHome extends Component {
         {
           text: "Yes",
           onPress: () => {
-            this.removeVolunteer();
+            this._isMounted && this.removeVolunteer();
           },
         },
       ]
     );
   };
 
-  reportArrival = () => {
-    fire
-      .firestore()
-      .collection("ADMIN")
-      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-      .collection("EVENT MANAGEMENT")
-      .doc(this.state.eventID)
-      .collection("VOLUNTEERS")
-      .doc(fire.auth().currentUser.uid.toString())
-      .update({
-        arrived: true,
-      })
-      .then(() => {
-        Alert.alert("Arrival reported!");
-        this._isMounted &&
-          this.setState({
-            arrivalStatus: true,
-          });
-        this._isMounted && this.componentDidMount();
-      })
-      .catch((err) => {
-        console.log(err.toString());
-      });
-  };
-
-  joinEvent = () => {
-    fire
-      .firestore()
-      .collection("ADMIN")
-      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-      .collection("EVENT MANAGEMENT")
-      .doc(this.state.eventID)
-      .collection("VOLUNTEERS")
-      .where("volunteerID", "==", fire.auth().currentUser.uid.toString())
-      .get()
-      .then((sub) => {
-        if (sub.docs.length > 0 && this._isMounted) {
-          return Alert.alert("Already a volunteer!");
-        } else {
-          fire
-            .firestore()
-            .collection("ADMIN")
-            .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-            .collection("EVENT MANAGEMENT")
-            .doc(this.state.eventID)
-            .collection("VOLUNTEERS")
-            .doc(fire.auth().currentUser.uid.toString())
-            .set({
-              volunteerID: fire.auth().currentUser.uid.toString(),
-              status: "active",
-              leader: false,
-              zoneNumber: 0,
-              arrived: false,
-            })
-            .then(() => {
-              Alert.alert("Event Joined Successfully!");
-              this._isMounted &&
-                this.setState({
-                  status: true,
-                  arrivalStatus: false,
-
-                  refreshing: false,
-                });
-
-              this._isMounted && this.componentDidMount();
-            })
-            .catch((err) => {
-              console.log(err.toString());
+  reportArrival = async () => {
+    this._isMounted &&
+      (await fire
+        .firestore()
+        .collection("ADMIN")
+        .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+        .collection("EVENT MANAGEMENT")
+        .doc(this.state.eventID)
+        .collection("VOLUNTEERS")
+        .doc(fire.auth().currentUser.uid.toString())
+        .update({
+          arrived: true,
+        })
+        .then(() => {
+          Alert.alert("Arrival reported!");
+          this._isMounted &&
+            this.setState({
+              arrivalStatus: true,
             });
-        }
-      })
-      .catch((err) => {
-        console.log(err.toString());
-      });
+          this._isMounted && this.componentDidMount();
+        })
+        .catch((err) => {
+          console.log(err.toString());
+        }));
   };
 
-  removeVolunteer = () => {
-    fire
-      .firestore()
-      .collection("ADMIN")
-      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-      .collection("EVENT MANAGEMENT")
-      .doc(this.state.eventID.toString())
-      .collection("VOLUNTEERS")
-      .doc(fire.auth().currentUser.uid.toString())
-      .delete()
-      .then(() => {
-        Alert.alert("You are removed as a volunteer!");
-        this._isMounted &&
-          this.setState({
-            data: [],
-            eventID: "",
-            status: false,
-            arrivalStatus: false,
-            volunteerCompletedEvents: [],
-            refreshing: false,
-          });
-        this._isMounted && this.componentDidMount();
-      })
-      .catch((err) => {
-        console.log(err.toString());
-      });
+  joinEvent = async () => {
+    this._isMounted &&
+      (await fire
+        .firestore()
+        .collection("ADMIN")
+        .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+        .collection("EVENT MANAGEMENT")
+        .doc(this.state.eventID)
+        .collection("VOLUNTEERS")
+        .where("volunteerID", "==", fire.auth().currentUser.uid.toString())
+        .get()
+        .then((sub) => {
+          if (sub.docs.length > 0 && this._isMounted) {
+            return Alert.alert("Already a volunteer!");
+          } else {
+            this._isMounted &&
+              fire
+                .firestore()
+                .collection("ADMIN")
+                .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+                .collection("EVENT MANAGEMENT")
+                .doc(this.state.eventID)
+                .collection("VOLUNTEERS")
+                .doc(fire.auth().currentUser.uid.toString())
+                .set({
+                  volunteerID: fire.auth().currentUser.uid.toString(),
+                  status: "active",
+                  leader: false,
+                  zoneNumber: 0,
+                  arrived: false,
+                })
+                .then(() => {
+                  Alert.alert("Event Joined Successfully!");
+                  this._isMounted &&
+                    this.setState({
+                      status: true,
+                      arrivalStatus: false,
+
+                      refreshing: false,
+                    });
+
+                  this._isMounted && this.componentDidMount();
+                })
+                .catch((err) => {
+                  console.log(err.toString());
+                });
+          }
+        })
+        .catch((err) => {
+          console.log(err.toString());
+        }));
+  };
+
+  removeVolunteer = async () => {
+    this._isMounted &&
+      (await fire
+        .firestore()
+        .collection("ADMIN")
+        .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+        .collection("EVENT MANAGEMENT")
+        .doc(this.state.eventID.toString())
+        .collection("VOLUNTEERS")
+        .doc(fire.auth().currentUser.uid.toString())
+        .delete()
+        .then(() => {
+          Alert.alert("You are removed as a volunteer!");
+          this._isMounted &&
+            this.setState({
+              data: [],
+              eventID: "",
+              status: false,
+              arrivalStatus: false,
+              volunteerCompletedEvents: [],
+              refreshing: false,
+            });
+          this._isMounted && this.componentDidMount();
+        })
+        .catch((err) => {
+          console.log(err.toString());
+        }));
   };
 
   getCompletedEvents = async () => {
-    await fire
-      .firestore()
-      .collection("ADMIN")
-      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-      .collection("EVENT MANAGEMENT")
-      .where("eventStatus", "==", "completed")
-      .get()
-      .then((querySnapshot) => {
-        if (querySnapshot.docs.length > 0 && this._isMounted) {
-          var results = [];
-          var data = [];
-          querySnapshot.forEach((doc) => {
-            var docRef = fire
-              .firestore()
-              .collection("ADMIN")
-              .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-              .collection("EVENT MANAGEMENT")
-              .doc(doc.id)
-              .collection("VOLUNTEERS")
-              .doc(fire.auth().currentUser.uid.toString())
-              .get()
-              .then((doc_1) => {
-                if (doc_1.exists && this._isMounted) {
-                  data.push(doc.data());
-                }
-              });
-            results.push(docRef);
-          });
+    this._isMounted &&
+      (await fire
+        .firestore()
+        .collection("ADMIN")
+        .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+        .collection("EVENT MANAGEMENT")
+        .where("eventStatus", "==", "completed")
+        .get()
+        .then((querySnapshot) => {
+          if (querySnapshot.docs.length > 0 && this._isMounted) {
+            var results = [];
+            var data = [];
+            querySnapshot.forEach((doc) => {
+              var docRef = fire
+                .firestore()
+                .collection("ADMIN")
+                .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+                .collection("EVENT MANAGEMENT")
+                .doc(doc.id)
+                .collection("VOLUNTEERS")
+                .doc(fire.auth().currentUser.uid.toString())
+                .get()
+                .then((doc_1) => {
+                  if (doc_1.exists && this._isMounted) {
+                    data.push(doc.data());
+                  }
+                });
+              results.push(docRef);
+            });
 
+            this._isMounted &&
+              this.setState({
+                volunteerCompletedEvents: data,
+              });
+            return Promise.all(results);
+          }
+        })
+
+        .then(() => {
           this._isMounted &&
             this.setState({
-              volunteerCompletedEvents: data,
+              refreshing: false,
+              loading: false,
             });
-          return Promise.all(results);
-        }
-      })
-
-      .then(() => {
-        this._isMounted &&
-          this.setState({
-            refreshing: false,
-            loading: false,
-          });
-      })
-      .catch(function (error) {
-        console.log("Error getting documents: ", error);
-      });
+        })
+        .catch(function (error) {
+          console.log("Error getting documents: ", error);
+        }));
   };
 
   getCurrentEvent = () => {
     var eventID = "";
 
-    fire
-      .firestore()
-      .collection("ADMIN")
-      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-      .collection("EVENT MANAGEMENT")
-      .where("eventStatus", "==", "current")
-      .get()
-      .then(async (sub) => {
-        if (sub.docs.length > 0 && this._isMounted) {
-          const data = [];
-          sub.forEach((doc) => {
-            const x = doc.data();
-            x.id = doc.id;
-            eventID = doc.id.toString();
-            data.push(x);
-          });
-          this._isMounted &&
-            this.setState({
-              eventID: eventID,
-
-              data: data,
+    this._isMounted &&
+      fire
+        .firestore()
+        .collection("ADMIN")
+        .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+        .collection("EVENT MANAGEMENT")
+        .where("eventStatus", "==", "current")
+        .get()
+        .then(async (sub) => {
+          if (sub.docs.length > 0 && this._isMounted) {
+            const data = [];
+            sub.forEach((doc) => {
+              const x = doc.data();
+              x.id = doc.id;
+              eventID = doc.id.toString();
+              data.push(x);
             });
-        } else {
-          await fire
-            .firestore()
-            .collection("ADMIN")
-            .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-            .collection("EVENT MANAGEMENT")
-            .where("eventStatus", "==", "paused")
-            .get()
-            .then((subdoc) => {
-              if (subdoc.docs.length > 0 && this._isMounted) {
-                console.log("else bhitra");
-                const data_1 = [];
-                subdoc.forEach((doc_1) => {
-                  const x = doc_1.data();
-                  x.id = doc_1.id;
-                  eventID = doc_1.id.toString();
-                  data_1.push(x);
-                });
-                this._isMounted &&
-                  this.setState({
-                    eventID: eventID,
-                    data: data_1,
+            this._isMounted &&
+              this.setState({
+                eventID: eventID,
+
+                data: data,
+              });
+          } else {
+            await fire
+              .firestore()
+              .collection("ADMIN")
+              .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+              .collection("EVENT MANAGEMENT")
+              .where("eventStatus", "==", "paused")
+              .get()
+              .then((subdoc) => {
+                if (subdoc.docs.length > 0 && this._isMounted) {
+                  console.log("else bhitra");
+                  const data_1 = [];
+                  subdoc.forEach((doc_1) => {
+                    const x = doc_1.data();
+                    x.id = doc_1.id;
+                    eventID = doc_1.id.toString();
+                    data_1.push(x);
                   });
-              }
-            })
-            .catch((err) => {
-              console.log(err.toString() + " error");
-            });
-        }
-      })
-      .then(() => {
-        console.log(this.state.data);
-        if (this.state.eventID != "" && this._isMounted) {
-          this.statusCheck();
-        } else {
-          this.getCompletedEvents();
-        }
-      })
+                  this._isMounted &&
+                    this.setState({
+                      eventID: eventID,
+                      data: data_1,
+                    });
+                }
+              })
+              .catch((err) => {
+                console.log(err.toString() + " error");
+              });
+          }
+        })
+        .then(() => {
+          console.log(this.state.data);
+          if (this.state.eventID != "" && this._isMounted) {
+            this.statusCheck();
+          } else {
+            this.getCompletedEvents();
+          }
+        })
 
-      .catch((err) => {
-        console.log(err.toString());
-      });
+        .catch((err) => {
+          console.log(err.toString());
+        });
   };
 
   emptyComponent = () => {
@@ -302,55 +353,58 @@ export default class VolunteerHome extends Component {
   };
 
   statusCheck = () => {
-    fire
-      .firestore()
-      .collection("ADMIN")
-      .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
-      .collection("EVENT MANAGEMENT")
-      .doc(this.state.eventID)
-      .collection("VOLUNTEERS")
-      .where("volunteerID", "==", fire.auth().currentUser.uid.toString())
-      .get()
-      .then((sub) => {
-        if (sub.docs.length > 0) {
-          const data = [];
-          var arrived = false;
-          sub.forEach((doc) => {
-            const x = doc.data();
-            data.push(x);
-            arrived = doc.data().arrived;
-          });
+    this._isMounted &&
+      fire
+        .firestore()
+        .collection("ADMIN")
+        .doc("VFHwReyBcYPWFgEiDEoZfvi3UEr2")
+        .collection("EVENT MANAGEMENT")
+        .doc(this.state.eventID)
+        .collection("VOLUNTEERS")
+        .where("volunteerID", "==", fire.auth().currentUser.uid.toString())
+        .get()
+        .then((sub) => {
+          if (sub.docs.length > 0 && this._isMounted) {
+            const data = [];
+            var arrived = false;
+            sub.forEach((doc) => {
+              const x = doc.data();
+              data.push(x);
+              arrived = doc.data().arrived;
+            });
 
-          this.setState({
-            volunteer_info: data,
-            status: true,
-            arrivalStatus: arrived,
-          });
-        }
-      })
-      .then(() => {
-        console.log(this.state.volunteer_info);
-        this.getCompletedEvents();
-      })
+            this._isMounted &&
+              this.setState({
+                volunteer_info: data,
+                status: true,
+                arrivalStatus: arrived,
+              });
+          }
+        })
+        .then(() => {
+          console.log(this.state.volunteer_info);
+          this._isMounted && this.getCompletedEvents();
+        })
 
-      .catch((err) => {
-        console.log(err.toString());
-      });
+        .catch((err) => {
+          console.log(err.toString());
+        });
   };
 
   handleRefresh = () => {
-    this.setState(
-      {
-        data: [],
-        volunteerCompletedEvents: [],
-        refreshing: true,
-        eventID: "",
-        past_pressed: false,
-      },
-      () => {
-        this.componentDidMount();
-      }
-    );
+    this._isMounted &&
+      this.setState(
+        {
+          data: [],
+          volunteerCompletedEvents: [],
+          refreshing: true,
+          eventID: "",
+          past_pressed: false,
+        },
+        () => {
+          this._isMounted && this.componentDidMount();
+        }
+      );
   };
 
   componentDidMount() {
@@ -363,9 +417,7 @@ export default class VolunteerHome extends Component {
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <ImageBackground
-          source={{
-            uri: "https://firebasestorage.googleapis.com/v0/b/geoclean-d8fa8.appspot.com/o/loginBackground.png?alt=media&token=42816f1f-8ecb-4ae5-9dd4-3d9c7f4ce377",
-          }}
+          source={require("../assets/background.png")}
           style={{ flex: 1 }}
         >
           {this.state.loading ? (
@@ -539,10 +591,51 @@ export default class VolunteerHome extends Component {
                           shadowRadius: 2,
                         }}
                       >
-                        <View style={{ borderBottomWidth: 1, padding: "3%" }}>
-                          <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-                            ONGOING EVENT
-                          </Text>
+                        <View
+                          style={{
+                            borderBottomWidth: 1,
+                            padding: "3%",
+                            flexDirection: "row",
+                          }}
+                        >
+                          <View style={{ flex: 1.5 }}>
+                            <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+                              ONGOING EVENT
+                            </Text>
+                          </View>
+                          <View style={{ flex: 1 }}>
+                            {this.state.status &&
+                              this.state.volunteer_info.map((item) => {
+                                return item.leader &&
+                                  item.zoneCompletion == null ? (
+                                  <TouchableOpacity
+                                    style={{
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      backgroundColor: "rgba(0, 202, 78,0.6)",
+                                      borderRadius: 15,
+                                    }}
+                                    onPress={this.handleZoneCompleted}
+                                  >
+                                    <Icon
+                                      name="check-circle"
+                                      type="font-awesome"
+                                      color="green"
+                                      size={30}
+                                      margin="2%"
+                                    ></Icon>
+                                    <Text
+                                      style={{
+                                        fontSize: 20,
+                                        fontWeight: "bold",
+                                      }}
+                                    >
+                                      Complete
+                                    </Text>
+                                  </TouchableOpacity>
+                                ) : null;
+                              })}
+                          </View>
                         </View>
                         <View style={{ padding: "2%" }}>
                           <View style={{ marginTop: "1%" }}>
@@ -710,6 +803,7 @@ export default class VolunteerHome extends Component {
                                   onPress={() => {
                                     navigation.navigate("ReportObject", {
                                       ID: this.state.eventID,
+                                      eventName: item.eventName,
                                     });
                                   }}
                                 >
